@@ -1,7 +1,9 @@
 
 package com.criticalsoftware.automation
 
+class Pipelines{
 
+    
 def devops_call(String repoName) {
     println "The repository name inside the parameter is $repoName"
 
@@ -32,4 +34,5 @@ if (repoName == "sometext") {
 }
 
 
+}
 
