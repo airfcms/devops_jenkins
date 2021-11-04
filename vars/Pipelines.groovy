@@ -1,9 +1,9 @@
 
 package com.criticalsoftware.automation
 
-@Library('Pipeline-Global-Library') _
+//@Library('Pipeline-Global-Library') _
 
-class Pipelines{
+class Pipelines {
 
 
 def devops_call(String repoName) {
