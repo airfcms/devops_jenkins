@@ -15,8 +15,8 @@ def call(body) {
             stage('build') {
               steps {
                 echo "condition one"
-                println pipelineParams['name']
-                println body
+                println config.name
+
              }
             }
           }
