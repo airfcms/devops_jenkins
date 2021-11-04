@@ -1,14 +1,10 @@
 
-package com.criticalsoftware.automation
-
-//@Library('Pipeline-Global-Library') _
-
-class Pipelines {
 
 
-def devops_call(String repoName) {
+def call(Map config) {
 
-if (repoName == "sometext") {
+  node {
+if (${config.name} == "sometext") {
     pipeline {
       agent any
       stages {
@@ -31,9 +27,12 @@ if (repoName == "sometext") {
       }
     }
   }
+  }
+
+
 
 }
 
 
-}
+
 
