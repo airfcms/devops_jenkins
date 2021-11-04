@@ -16,6 +16,7 @@ def call(body) {
               steps {
                 echo "condition one"
                 println pipelineParams['name']
+                println body
              }
             }
           }
