@@ -43,8 +43,8 @@ def call(body) {
 
                 //testing
                 //echo $DOCKER_CREDENTIALS_ID
-                echo 'Testing docker run from artifactory'
-                /*
+                echo 'Testing docker run from artifactory -- Success'
+
                 sh"""
                   echo Cloning Repo
                   git clone https://github.com/airfcms/hello_world.git
@@ -54,7 +54,7 @@ def call(body) {
                   make
                   ./hello_world
                  """
-                 */
+                 
              }
             }
           }
