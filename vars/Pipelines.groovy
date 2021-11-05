@@ -29,19 +29,20 @@ def call(body) {
         agent any
           stages {
             stage('build') {
-              agent{
+             /* agent{
                 docker {
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
-                  registryCredentialsId $DOCKER_CREDENTIALS_ID //DOCKER_REG_ARTIFACTORY_TOKEN
+                  registryCredentialsId '${DOCKER_CREDENTIALS_ID}' //DOCKER_REG_ARTIFACTORY_TOKEN
 
                   reuseNode true
                 }
-              }
+              } */
               steps {
                 //Link can't be literally here #########
 
                 //testing
+                echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory'
                 /*
                 sh"""
