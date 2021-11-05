@@ -10,6 +10,7 @@ def call(body) {
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
     String passwordTesting = "rfrosa:;,yw4mnGAd9D,BG}"
+    String credentialTesting = credentials('docker_registry')
 
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
@@ -64,6 +65,7 @@ def call(body) {
             stage('deploy') { //it seems that the docker image is remove before this stage !!IMPORTANT!!
               steps{
                 sh"""
+                  echo $credentialTesting
                   ls -lha
                   pwd
                   curl "$passwordTesting" -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
