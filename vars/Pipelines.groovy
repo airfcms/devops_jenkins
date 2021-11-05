@@ -44,7 +44,7 @@ def call(body) {
                 //testing
                 //echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory -- Success'
-                echo ls
+                echo '${ls}'
 
                 sh"""
                   echo Cloning Repo
