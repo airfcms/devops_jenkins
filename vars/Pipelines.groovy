@@ -9,7 +9,7 @@ def call(body) {
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-    String passwordTesting = "rfrosa:;,yw4mnGAd9D,BG"
+    String passwordTesting = "rfrosa:;,yw4mnGAd9D,BG}"
 
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
