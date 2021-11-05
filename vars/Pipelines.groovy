@@ -36,7 +36,7 @@ def call(body) {
                 docker {
                   image 'csw-docker-registry/csw-airfcms-ubuntu'
                   registryUrl 'https://airfcms.jfrog.io/'
-                  registryCredentialsId 'docker-registry'
+                  //registryCredentialsId 'docker-registry'
 
                   reuseNode true
                 }
@@ -67,7 +67,7 @@ def call(body) {
                   ls -lha
                   pwd
                 """
-               /* rtServer (
+               /* rtServer ( //Not need because i changed the credentials in configuration system for user:pass
                     id: 'artifactory_generic_repository',
                     url: 'http://40.67.228.51:8082/artifactory',
                     // If you're using Credentials ID:
