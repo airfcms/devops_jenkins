@@ -65,7 +65,7 @@ def call(body) {
             stage('deploy') { //it seems that the docker image is remove before this stage !!IMPORTANT!!
               steps{
                 sh"""
-                  echo $credentialTesting
+                  echo '${credentialTesting}'
                   ls -lha
                   pwd
                   curl "$passwordTesting" -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
