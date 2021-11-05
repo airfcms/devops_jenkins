@@ -2,7 +2,7 @@
 
 def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
-    pipelineParams= [:]
+    pipelineParams = [:]
 /*
     DOCKER_IMAGE = pipelineParams['dockerImage']
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
