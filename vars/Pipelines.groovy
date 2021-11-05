@@ -41,10 +41,9 @@ def call(body) {
               steps {
                 //Link can't be literally here #########
 
-                //testing
-                //echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory -- Success'
-                echo '${ls}'
+                def test = 'ls'.execute().text
+                echo test
 
                 sh"""
                   echo Cloning Repo
