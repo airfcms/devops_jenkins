@@ -35,7 +35,7 @@ def call(body) {
             stage('build') {
               agent{
                 docker {
-                  image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
+                  image /*'csw-docker-registry/csw-airfcms-ubuntu'*/ DOCKER_IMAGE.trim()
                   registryUrl 'https://airfcms.jfrog.io/'
                   registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
 
@@ -46,7 +46,7 @@ def call(body) {
                 //Link can't be literally here #########
                 sh 'env' //To check available global variables
                 sh 'rm -rf ${WORKSPACE}/*' //Work around because of deleteDir() and cleanWS() jenkins bugs
-                echo DOCKER_IMAGE.trim()
+
                 sh"""
                   echo Cloning Repo
                   git clone ${scmUrl}
