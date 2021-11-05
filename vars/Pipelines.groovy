@@ -3,26 +3,27 @@
 def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams= [:]
-
+/*
     DOCKER_IMAGE = pipelineParams['dockerImage']
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-
+*/
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
 
     pipeline {
 
-       // environment{
-          /*
+        environment{
+
           DOCKER_IMAGE = pipelineParams['dockerImage']
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
           scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-          */
-      //  }
+          DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
+
+        }
 
         agent any
           stages {
@@ -31,7 +32,7 @@ def call(body) {
                 docker {
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
-                  registryCredentialsId pipelinesParams['dockerRegistryCredentialsId'] //DOCKER_REG_ARTIFACTORY_TOKEN
+                  registryCredentialsId DOCKER_CREDENTIALS_ID //DOCKER_REG_ARTIFACTORY_TOKEN
 
                   reuseNode true
                 }
