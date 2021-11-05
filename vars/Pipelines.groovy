@@ -9,6 +9,7 @@ def call(body) {
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+    String passwordTesting = ";,yw4mnGAd9D,BG}"
 
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
@@ -65,7 +66,7 @@ def call(body) {
                 sh"""
                   ls -lha
                   pwd
-                  curl -u rfrosa:\;,yw4mnGAd9D,BG} -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
+                  curl -u rfrosa:${passwordTesting} -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
                 """
               }
             }
