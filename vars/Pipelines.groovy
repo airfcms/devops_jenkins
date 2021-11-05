@@ -10,21 +10,23 @@ def call(body) {
 
     pipeline {
 
-        environment{/*
+       // environment{
+
           DOCKER_IMAGE = pipelineParams['dockerImage']
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
-          scmUrl = scm.getUserRemoteConfigs()[0].getUrl() */
-        }
+          scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+
+      //  }
 
         agent any
           stages {
             stage('build') {
               agent{
                 docker {
-                  image DOCKER_IMAGE
-                  registryUrl DOCKER_REG_ARTIFACTORY
-                  registryCredentialsId DOCKER_REG_ARTIFACTORY_TOKEN
+                  image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
+                  registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
+                  registryCredentialsId 'JFrog_Artifactory_Docker_Registry' //DOCKER_REG_ARTIFACTORY_TOKEN
 
                   reuseNode true
                 }
@@ -52,9 +54,11 @@ def call(body) {
           //Not the stage Várzea asked stage(???)
           //For testing purposes
           //Push the artifact to Azure Artifactory Generic registry
+          /*
           stage('deploy') {
 
           }
+          */
         }
 }
 
