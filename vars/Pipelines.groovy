@@ -65,8 +65,9 @@ def call(body) {
 
                 sh"""
                   ls -lha
+                  pwd
                   echo ############################################\n################################
-                  ls - lha ..
+                  ls -lha ..
                   pwd
                 """
                /* rtServer ( //Not need because i changed the credentials in configuration system for user:pass
