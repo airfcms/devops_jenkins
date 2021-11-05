@@ -16,7 +16,11 @@ def call(body) {
 
     pipeline {
 
-        environment{
+
+        agent any
+          stages {
+            stage('build') {
+              environment{
 
           DOCKER_IMAGE = """
                             ${sh(returnStdout: true, script: "echo ${pipelineParams['dockerImage']}")}
@@ -30,9 +34,6 @@ def call(body) {
 
         }
 
-        agent any
-          stages {
-            stage('build') {
               agent{
                 docker {
                   image /*'csw-docker-registry/csw-airfcms-ubuntu'*/ DOCKER_IMAGE.trim()
