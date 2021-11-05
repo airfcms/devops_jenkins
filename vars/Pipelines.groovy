@@ -30,7 +30,9 @@ def call(body) {
           stages {
             stage('build') {
               agent{
+                deleteDir()
                 docker {
+
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
                   registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
@@ -44,7 +46,7 @@ def call(body) {
                 //testing
                 //echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory -- Success'
-                //deleteDir() //testing
+
 
                 sh"""
                   echo Cloning Repo
