@@ -1,4 +1,4 @@
-
+//Cleaning is needed and Integrate with SonnarQube
 
 def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
@@ -19,7 +19,7 @@ def call(body) {
 
             DOCKER_IMAGE = """
                             ${sh(returnStdout: true, script: "echo ${pipelineParams['dockerImage']}")}
-                          """ //For some reason this is null but it echo's the right string
+                          """ //For some reason this is null but it echo's the right string.. nut it doesn't show an error anymore.. why?!
              /*
             DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
             DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
@@ -90,7 +90,7 @@ def call(body) {
                                 }'''
                 )
 
-                rtPublishBuildInfo (
+                rtPublishBuildInfo ( //Just to not get the notification error
                     serverId: 'artifactory_generic_repository'
                 )
               }
