@@ -69,7 +69,7 @@ def call(body) {
                 """
                 rtServer (
                     id: 'artifactory_generic_repository',
-                    url: 'http://40.67.228.51:8082/',
+                    url: 'http://40.67.228.51:8082/artifactory',
                     // If you're using Credentials ID:
                     credentialsId: 'artifact_registry'
                 )
@@ -81,11 +81,15 @@ def call(body) {
                                 "files": [
                                            {
                                             "pattern": "hello_world",
-                                            "target": "build-repo/"
+                                            "target": "artifactory/build-repo/"
                                             }
                                          ]
                                 }''',
                       buildName: 'Hello_World'
+                )
+
+                rtPublishBuildInfo (
+                    serverId: 'artifactory_generic_repository'
                 )
               }
             }
