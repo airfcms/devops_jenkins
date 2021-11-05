@@ -74,7 +74,7 @@ def call(body) {
                                 "files": [
                                            {
                                             "pattern": "hello_world",
-                                            "target": ""
+                                            "target": "build-repo/"
                                             }
                                          ]
                                 }''',
