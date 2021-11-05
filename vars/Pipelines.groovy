@@ -44,7 +44,7 @@ def call(body) {
                 echo 'Testing docker run from artifactory -- Success'
                 echo sh (script: "ls -lha", returnStdout: true)
                 sh 'printenv'
-                sh 'print ${scm}'
+                sh 'echo ${scm}'
                 sh 'rm -rf ${WORKSPACE}/'
 
                 sh"""
