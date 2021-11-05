@@ -11,10 +11,10 @@ def call(body) {
     pipeline {
 
         environment{
-          String DOCKER_IMAGE = pipelineParams['dockerImage']
-          String DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
-          String DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
-          def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+          DOCKER_IMAGE = pipelineParams['dockerImage']
+          DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
+          DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
+          scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
         }
 
         agent any
