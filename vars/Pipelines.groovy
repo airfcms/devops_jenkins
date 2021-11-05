@@ -35,7 +35,7 @@ def call(body) {
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
                   registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
 
-                  reuseNode true
+                  //reuseNode true
                 }
               }
               steps {
