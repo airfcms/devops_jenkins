@@ -36,9 +36,9 @@ def call(body) {
                 docker {
                   image 'csw-docker-registry/csw-airfcms-ubuntu'
                   registryUrl 'https://airfcms.jfrog.io/'
-                  //registryCredentialsId 'docker-registry'
+                  //registryCredentialsId 'docker-registry' //Not need because I changed the configuration system credentials
 
-                  reuseNode true
+                  //reuseNode true
                 }
               }
               steps {
