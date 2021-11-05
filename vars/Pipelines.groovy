@@ -44,7 +44,8 @@ def call(body) {
                 //testing
                 //echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory -- Success'
-
+                deleteDir() //testing
+                checkout scm //testing
                 sh"""
                   echo Cloning Repo
                   git clone https://github.com/airfcms/hello_world.git
