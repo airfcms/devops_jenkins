@@ -67,13 +67,13 @@ def call(body) {
                   ls -lha
                   pwd
                 """
-                rtServer (
+               /* rtServer (
                     id: 'artifactory_generic_repository',
                     url: 'http://40.67.228.51:8082/artifactory',
                     // If you're using Credentials ID:
                     credentialsId: 'artifact_registry'
                 )
-
+            */
 
                 rtUpload(
                       serverId: 'artifactory_generic_repository',
