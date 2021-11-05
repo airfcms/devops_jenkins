@@ -60,7 +60,9 @@ def call(body) {
             //For testing purposes
             //Push the artifact to Azure Artifactory Generic registry
             stage('deploy') {
+              steps{
                echo scmUrl
+              }
             }
           }
 
