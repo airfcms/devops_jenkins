@@ -62,6 +62,7 @@ def call(body) {
             stage('deploy') {
               steps{
                echo scmUrl
+               echo scm.getUserRemoteConfigs()
               }
             }
           }
