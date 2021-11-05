@@ -18,11 +18,13 @@ def call(body) {
 
         environment{
 
-          DOCKER_IMAGE = pipelineParams['dockerImage']
+          DOCKER_IMAGE = """
+                            ${sh(returnStdout: true, script: 'echo pipelineParams['dockerImage']')}
+                          """
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
           scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-          
+
           DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
 
         }
