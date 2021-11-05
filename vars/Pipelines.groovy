@@ -21,10 +21,11 @@ def call(body) {
           DOCKER_IMAGE = """
                             ${sh(returnStdout: true, script: "echo pipelineParams['dockerImage']")}
                           """
+          /*
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
           scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-
+          */
           DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
 
         }
@@ -45,7 +46,7 @@ def call(body) {
                 //Link can't be literally here #########
                 sh 'env' //To check available global variables
                 sh 'rm -rf ${WORKSPACE}/*' //Work around because of deleteDir() and cleanWS() jenkins bugs
-
+                echo $DOCKER_IMAGE
                 sh"""
                   echo Cloning Repo
                   git clone ${scmUrl}
