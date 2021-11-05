@@ -30,9 +30,8 @@ def call(body) {
           stages {
             stage('build') {
               agent{
-                deleteDir()
                 docker {
-
+deleteDir()
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
                   registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
