@@ -38,7 +38,7 @@ def call(body) {
                   registryUrl 'https://airfcms.jfrog.io/'
                   //registryCredentialsId 'docker-registry' //Not need because I changed the configuration system credentials
 
-                  //reuseNode true
+                  reuseNode true //Don't see the difference on::off
                 }
               }
               steps {
@@ -65,6 +65,8 @@ def call(body) {
 
                 sh"""
                   ls -lha
+                  echo ############################################\n################################
+                  ls - lha ..
                   pwd
                 """
                /* rtServer ( //Not need because i changed the credentials in configuration system for user:pass
