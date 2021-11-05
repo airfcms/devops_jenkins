@@ -4,7 +4,8 @@ def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams = [:]
 
-    String DOCKER_IMAGE = pipelineParams['dockerImage']
+    //Appears with null value.... why?!
+    DOCKER_IMAGE = pipelineParams['dockerImage']
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
@@ -12,16 +13,16 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    echo DOCKER_IMAGE
+
     pipeline {
 
         environment{
-          /*
+
           DOCKER_IMAGE = pipelineParams['dockerImage']
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
           scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-          */
+          
           DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
 
         }
