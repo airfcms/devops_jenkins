@@ -12,7 +12,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    sh 'echo teste'
+    echo 'teste'
     pipeline {
 
         environment{
