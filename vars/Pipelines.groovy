@@ -54,19 +54,16 @@ def call(body) {
                   make
                   ./hello_world
                  """
-                 
              }
             }
           }
-
           //Not the stage Várzea asked stage(???)
           //For testing purposes
           //Push the artifact to Azure Artifactory Generic registry
-          /*
           stage('deploy') {
-
+              echo scmUrl
           }
-          */
+
         }
 }
 
