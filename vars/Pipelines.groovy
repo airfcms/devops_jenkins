@@ -42,7 +42,7 @@ def call(body) {
                 //Link can't be literally here #########
 
                 echo 'Testing docker run from artifactory -- Success'
-                eco sh (script: "ls -lha", returnStdout: true)
+                echo sh (script: "ls -lha", returnStdout: true)
 
                 sh"""
                   echo Cloning Repo
