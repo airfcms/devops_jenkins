@@ -4,6 +4,11 @@ def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams= [:]
 
+    DOCKER_IMAGE = pipelineParams['dockerImage']
+    DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
+    DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
+    scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
@@ -11,12 +16,12 @@ def call(body) {
     pipeline {
 
        // environment{
-
-          String DOCKER_IMAGE = pipelineParams['dockerImage']
+          /*
+          DOCKER_IMAGE = pipelineParams['dockerImage']
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
           DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
           scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-
+          */
       //  }
 
         agent any
