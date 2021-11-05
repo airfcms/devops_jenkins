@@ -44,13 +44,9 @@ def call(body) {
                 //testing
                 //echo $DOCKER_CREDENTIALS_ID
                 echo 'Testing docker run from artifactory -- Success'
-
+                ls
 
                 sh"""
-                  pwd
-                  ls -lha
-                  ls -lha ..
-                  pwd
                   echo Cloning Repo
                   git clone https://github.com/airfcms/hello_world.git
                   mkdir hello_world/build
