@@ -83,7 +83,7 @@ def call(body) {
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "build/hello*",
+                                            "pattern": "/hello*",
                                             "target": "build-repo/"
                                             }
                                          ]
