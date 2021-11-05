@@ -66,7 +66,7 @@ def call(body) {
                 sh"""
                   ls -lha
                   pwd
-                  curl '${passwordTesting}}' -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
+                  curl '$passwordTesting' -T hello_world http://40.67.228.51:8082/artifactory/build-repo/hello_world
                 """
               }
             }
