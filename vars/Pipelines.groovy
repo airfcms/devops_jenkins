@@ -12,7 +12,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    echo 'teste'
+    echo pipelineParams['dockerImage']
     pipeline {
 
         environment{
