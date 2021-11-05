@@ -19,7 +19,7 @@ def call(body) {
         environment{
 
           DOCKER_IMAGE = """
-                            ${sh(returnStdout: true, script: "echo pipelineParams['dockerImage']")}
+                            ${sh(returnStdout: true, script: "echo ${pipelineParams['dockerImage']}")}
                           """
           /*
           DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
