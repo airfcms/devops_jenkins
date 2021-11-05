@@ -47,7 +47,10 @@ def call(body) {
 
 
                 sh"""
+                  pwd
                   ls -lha
+                  ls -lha ..
+                  pwd
                   echo Cloning Repo
                   git clone https://github.com/airfcms/hello_world.git
                   mkdir hello_world/build
