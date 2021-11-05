@@ -64,6 +64,7 @@ def call(body) {
               steps{
                 sh"""
                   ls -lha
+                  pwd
                 """
               }
             }
