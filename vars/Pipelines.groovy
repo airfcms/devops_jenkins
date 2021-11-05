@@ -87,8 +87,7 @@ def call(body) {
                                             "target": "build-repo/"
                                             }
                                          ]
-                                }''',
-                      buildName: 'Hello_World'
+                                }'''
                 )
 
                 rtPublishBuildInfo (
