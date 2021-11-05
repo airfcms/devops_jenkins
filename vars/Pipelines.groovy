@@ -83,8 +83,8 @@ def call(body) {
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "hello_world",
-                                            "target": "artifactory/build-repo"
+                                            "pattern": "hello*",
+                                            "target": "artifactory/build-repo/"
                                             }
                                          ]
                                 }''',
