@@ -44,7 +44,7 @@ def call(body) {
                 echo 'Testing docker run from artifactory -- Success'
                 echo sh (script: "ls -lha", returnStdout: true)
                 sh 'printenv'
-                sh 'echo ${scm.getUserRemoteConfig()}'
+                sh 'echo ${scmUrl}'
                 sh 'sudo rm -rf ${WORKSPACE}/'
 
                 sh"""
