@@ -31,7 +31,7 @@ def call(body) {
                 docker {
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
-                  registryCredentialsId credentials('JFrog_Artifactory_Docker_Registry') //DOCKER_REG_ARTIFACTORY_TOKEN
+                  registryCredentialsId pipelinesParams['dockerRegistryCredentialsId'] //DOCKER_REG_ARTIFACTORY_TOKEN
 
                   reuseNode true
                 }
