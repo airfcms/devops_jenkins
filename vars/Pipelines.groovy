@@ -31,7 +31,6 @@ def call(body) {
             stage('build') {
               agent{
                 docker {
-deleteDir()
                   image 'csw-docker-registry/csw-airfcms-ubuntu' //DOCKER_IMAGE
                   registryUrl 'https://airfcms.jfrog.io/' //DOCKER_REG_ARTIFACTORY
                   registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
@@ -48,6 +47,7 @@ deleteDir()
 
 
                 sh"""
+                  ls -lha
                   echo Cloning Repo
                   git clone https://github.com/airfcms/hello_world.git
                   mkdir hello_world/build
