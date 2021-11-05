@@ -4,7 +4,7 @@ def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams = [:]
 
-    DOCKER_IMAGE = pipelineParams['dockerImage']
+    String DOCKER_IMAGE = pipelineParams['dockerImage']
     DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
     DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
