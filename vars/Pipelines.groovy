@@ -15,30 +15,28 @@ def call(body) {
     body()
 
     pipeline {
+          environment{
 
+            DOCKER_IMAGE = """
+                            ${sh(returnStdout: true, script: "echo ${pipelineParams['dockerImage']}")}
+                          """ //For some reason this is null but it echo's the right string
+             /*
+            DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
+            DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
+            scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+            */
+            DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
+
+            }
 
         agent any
           stages {
             stage('build') {
-              environment{
-
-          DOCKER_IMAGE = """
-                            ${sh(returnStdout: true, script: "echo ${pipelineParams['dockerImage']}")}
-                          """
-          /*
-          DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
-          DOCKER_REG_ARTIFACTORY_TOKEN = pipelineParams['dockerRegistryUrl']
-          scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-          */
-          DOCKER_CREDENTIALS_ID = credentials('JFrog_Artifactory_Docker_Registry')
-
-        }
-
               agent{
                 docker {
-                  image /*'csw-docker-registry/csw-airfcms-ubuntu'*/ DOCKER_IMAGE.trim()
+                  image 'csw-docker-registry/csw-airfcms-ubuntu'
                   registryUrl 'https://airfcms.jfrog.io/'
-                  registryCredentialsId 'docker-registry' //DOCKER_REG_ARTIFACTORY_TOKEN
+                  registryCredentialsId 'docker-registry'
 
                   reuseNode true
                 }
@@ -62,12 +60,13 @@ def call(body) {
             //Not the stage Várzea asked stage(???)
             //For testing purposes
             //Push the artifact to Azure Artifactory Generic registry
-            /*stage('deploy') {
+            stage('deploy') {
               steps{
-               echo scmUrl
-               echo scm.getUserRemoteConfigs()
+                sh"""
+                  ls -lha
+                """
               }
-            }*/
+            }
           }
 
 
