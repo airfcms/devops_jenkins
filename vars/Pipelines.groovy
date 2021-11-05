@@ -40,16 +40,12 @@ def call(body) {
               }
               steps {
                 //Link can't be literally here #########
-
-                echo 'Testing docker run from artifactory -- Success'
-                echo sh (script: "ls -lha", returnStdout: true)
-                sh 'env'
-                sh 'echo ${scmUrl}'
-                sh 'rm -rf ${WORKSPACE}/*'
+                sh 'env' //To check available global variables
+                sh 'rm -rf ${WORKSPACE}/*' //Work around because of deleteDir() and cleanWS() jenkins bugs
 
                 sh"""
                   echo Cloning Repo
-                  git clone https://github.com/airfcms/hello_world.git
+                  git clone ${scmUrl}
                   mkdir hello_world/build
                   cd hello_world/build
                   cmake ..
