@@ -28,7 +28,7 @@ def call(body) {
                 sh 'env | sort' //To check available global variables
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
-                sh 'rm -rf ${WORKSPACE}/*'
+                sh 'rm -rfv ${WORKSPACE}/*'
 
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
