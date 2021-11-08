@@ -77,8 +77,8 @@ def call(body) {
       echo ${WORKSPACE}
       pwd
       ls -lh
-      ls -lh ..
-      rm -rf /opt/jenkins/small-agent/workspace/*
+      ls -lh /opt/jenkins/small-agent/
+     
     """
                // clean_workspace_WorkAround(WORKSPACE)
               }
