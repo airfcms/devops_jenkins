@@ -28,7 +28,7 @@ def call(body) {
                 sh 'env | sort' //To check available global variables
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
-                sh 'rm -rfv ${WORKSPACE}/*'
+                sh 'rm -rf ${WORKSPACE}/*'
 
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
@@ -47,9 +47,6 @@ def call(body) {
 
             }
             stage('hw/sw integration testing') {
-
-            }
-            stage('static analysis') {
 
             }
             */
@@ -71,6 +68,19 @@ def call(body) {
                 )
               }
             } //stage(deploy) closed bracket
+            stage('static analysis') {
+                script {
+                  def scannerHome = tool 'SonarQubeScanner'
+                }
+                steps {
+                  withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                  }
+                  timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                  }
+                }
+            }
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
