@@ -78,9 +78,9 @@ def call(body) {
       pwd
       ls -lh
       ls -lh ..
-      rm -rf ${workspace}
+      
     """
-                clean_workspace_WorkAround(WORKSPACE)
+               // clean_workspace_WorkAround(WORKSPACE)
               }
           }//post body closed bracket
         } //pipeline body closed bracket
