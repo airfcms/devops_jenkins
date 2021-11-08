@@ -8,26 +8,31 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
+    scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+
     pipeline {
+      /*
           environment{
             REPOSITORY_NAME = pipelineParams['repositoryName']
             BUILD_DIRECTORY = pipelineParams['cmakeBuildDir']
             }
-
+      */
         agent any
           stages {
             stage('build') {
               agent{
+                /*
                 environment{
                   DOCKER_IMAGE = pipelineParams['dockerImage']
                   DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
-                  SCM_URL = scm.getUserRemoteConfigs()[0].getUrl()
+                  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
                 }
+                */
                 docker {
                   reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
 
-                  image env.DOCKER_IMAGE
-                  registryUrl env.DOCKER_REG_ARTIFACTORY
+                  image pipelineParams['dockerImage']
+                  registryUrl pipelineParams['dockerRegistryUrl']
                 }
               }
               steps {
@@ -36,10 +41,10 @@ def call(body) {
 
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
-                  git clone ${env.SCM_URL}
-                  cmake -S ${env.REPOSITORY_NAME} -B ${env.BUILD_DIRECTORY}
-                  make -C ${env.BUILD_DIRECTORY}
-                  ./${env.BUILD_DIRECTORY}/${env.REPOSITORY_NAME}
+                  git clone ${scmUrl}
+                  cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
+                  make -C ${pipelineParams['cmakeBuildDir']}
+                  ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName'}
                  """
              }
             } //stage(build) closed bracket
@@ -58,27 +63,29 @@ def call(body) {
             }
             */
             stage('deploy') { //It seems that the docker image is remove before this stage !!IMPORTANT!!
+            /*
               environment{
                 GENERIC_REGISTRY_ID = pipelineParams['artifactoryGenericRegistry_ID']
                 REGISTRY_MAIN_DIRECTORY = 'build-repo'
                 ARTIFACT_NAME = env.REPOSITORY_NAME
               }
+            */
               steps{
 
                 rtUpload(
-                      serverId: env.GENERIC_REGISTRY_ID,
+                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "*/${env.ARTIFACT_NAME}",
-                                            "target": "${env.REGISTRY_MAIN_DIRECTORY}/"
+                                            "pattern": "*/${pipelineParams['repositoryName']}",
+                                            "target": "build-repo/"
                                             }
                                          ]
                                 }'''
                 )
 
                 rtPublishBuildInfo ( //Send notification and prevents an error.
-                    serverId: env.GENERIC_REGISTRY_ID
+                    serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
               }
             } //stage(deploy) closed bracket
@@ -86,7 +93,7 @@ def call(body) {
           post {
               always{
                 sh 'echo In post block -> Clean Workspace'
-                clean_workspace_WorkAround(env.WORKSPACE)
+                clean_workspace_WorkAround(WORKSPACE)
               }
           }//post body closed bracket
         } //pipeline body closed bracket
