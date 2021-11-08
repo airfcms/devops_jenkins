@@ -69,7 +69,7 @@ def call(body) {
               }
             } //stage(deploy) closed bracket
             stage('static analysis') {
-                script {
+                {
                   def scannerHome = tool 'SonarQubeScanner'
                 }
                 steps {
