@@ -44,7 +44,7 @@ def call(body) {
                   git clone ${scmUrl}
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
-                  ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName'}
+                  ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
              }
             } //stage(build) closed bracket
