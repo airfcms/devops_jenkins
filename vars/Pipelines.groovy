@@ -9,7 +9,7 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-    scannerHome = tool 'SonarQubeScanner'
+    //scannerHome = tool 'SonarQubeScanner'
 
     pipeline {
         agent any
