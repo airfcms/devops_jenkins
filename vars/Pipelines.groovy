@@ -9,12 +9,10 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+    scannerHome = tool 'SonarQubeScanner'
 
     pipeline {
         agent any
-         environment{
-          docker_image = pipelineParams['dockerImage']
-         }
           stages {
             stage('build') {
               agent{
@@ -72,12 +70,9 @@ def call(body) {
               }
             } //stage(deploy) closed bracket
             stage('static analysis') {
-                environment {
-                  scannerHome = tool 'SonarQubeScanner'
-                }
                 steps {
                   withSonarQubeEnv('sonarqube') {
-                    sh "${env.scannerHome}/bin/sonar-scanner"
+                    sh "${scannerHome}/bin/sonar-scanner"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
