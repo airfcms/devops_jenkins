@@ -9,17 +9,14 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-    scannerHome = tool 'sonnar_scanner'
 
     pipeline {
         agent any
           stages {
             stage('build') {
               agent{
-
                 docker {
                   reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
-
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                 }
@@ -72,6 +69,7 @@ def call(body) {
             stage('static analysis') {
                 steps {
                   withSonarQubeEnv('sonarqube') {
+                    def scannerHome = tool 'sonnar_scanner'
                     sh "${scannerHome}/bin/sonar-scanner"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
