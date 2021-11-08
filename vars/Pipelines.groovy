@@ -71,7 +71,7 @@ def call(body) {
                   scannerHome = tool 'sonnar_scanner'
                 }
                 steps {
-                  withSonarQubeEnv('sonarqube') {
+                  withSonarQubeEnv('sonarqube_airfcms') {
                     sh "${scannerHome}/bin/sonar-scanner"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
