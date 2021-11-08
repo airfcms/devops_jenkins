@@ -69,12 +69,12 @@ def call(body) {
               }
             } //stage(deploy) closed bracket
             stage('static analysis') {
-                {
-                  def scannerHome = tool 'SonarQubeScanner'
+                environment {
+                  scannerHome = tool 'SonarQubeScanner'
                 }
                 steps {
                   withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
+                    sh "${env.scannerHome}/bin/sonar-scanner"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
