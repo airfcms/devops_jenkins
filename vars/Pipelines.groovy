@@ -79,6 +79,6 @@ def call(body) {
 } //def body closed bracket
 
 def clean_workspace_WorkAround(String workspace){
-    sh 
+    
     sh 'rm -rf ${workspace}' //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
 }
