@@ -19,8 +19,8 @@ def call(body) {
                 docker {
                   reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
 
-                  image pipelineParams['dockerImage']
-                  registryUrl pipelineParams['dockerRegistryUrl']
+                  image 'csw-docker-registry/csw-airfcms-ubuntu'
+                  registryUrl 'https://airfcms.jfrog.io/'
                 }
               }
               steps {
@@ -79,6 +79,6 @@ def call(body) {
 } //def body closed bracket
 
 def clean_workspace_WorkAround(String workspace){
-    
+
     sh 'rm -rf ${workspace}' //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
 }
