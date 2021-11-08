@@ -72,8 +72,7 @@ def call(body) {
                 }
                 steps {
                   withSonarQubeEnv('sonarqube_airfcms') {
-                    //curiosity
-                    println "curiosity ->  $scannerHome"
+                    //-X is enabled to get more information in console output (jenkins)
                     sh "${scannerHome}/bin/sonar-scanner -X"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
