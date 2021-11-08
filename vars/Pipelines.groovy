@@ -27,6 +27,9 @@ def call(body) {
                 //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
 
+                //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
+                sh 'rm -rf ${WORKSPACE}/*'
+
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
@@ -69,33 +72,7 @@ def call(body) {
               }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
-          post {
-              always{
-                sh 'echo In post block -> Clean Workspace'
-                sh """
-      echo ${workspace}
-      echo ${WORKSPACE}
-      pwd
-      ls -lh
-      ls -lh /opt/jenkins/small-agent/
-     
-    """
-               // clean_workspace_WorkAround(WORKSPACE)
-              }
-          }//post body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
 
-//Work around because the declarative sintax bugs with deleteDir() and cleanWS()
-def clean_workspace_WorkAround(String workspace){
 
-    sh """
-      echo ${workspace}
-      echo ${WORKSPACE}
-      pwd
-      ls -lh
-      ls -lh ..
-      rm -rf ${workspace}
-    """
-
-}
