@@ -11,23 +11,11 @@ def call(body) {
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 
     pipeline {
-      /*
-          environment{
-            REPOSITORY_NAME = pipelineParams['repositoryName']
-            BUILD_DIRECTORY = pipelineParams['cmakeBuildDir']
-            }
-      */
         agent any
           stages {
             stage('build') {
               agent{
-                /*
-                environment{
-                  DOCKER_IMAGE = pipelineParams['dockerImage']
-                  DOCKER_REG_ARTIFACTORY = pipelineParams['dockerRegistryUrl']
-                  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-                }
-                */
+
                 docker {
                   reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
 
@@ -63,15 +51,7 @@ def call(body) {
             }
             */
             stage('deploy') { //It seems that the docker image is remove before this stage !!IMPORTANT!!
-            /*
-              environment{
-                GENERIC_REGISTRY_ID = pipelineParams['artifactoryGenericRegistry_ID']
-                REGISTRY_MAIN_DIRECTORY = 'build-repo'
-                ARTIFACT_NAME = env.REPOSITORY_NAME
-              }
-            */
               steps{
-
                 rtUpload(
                       serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                       spec: '''{
@@ -83,7 +63,6 @@ def call(body) {
                                          ]
                                 }'''
                 )
-
                 rtPublishBuildInfo ( //Send notification and prevents an error.
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
@@ -92,6 +71,9 @@ def call(body) {
           } //stages body closed bracket
           post {
               always{
+                sh 'ls -lh'
+                sh 'ls -lh ..'
+                sh 'ls -lh ../..'
                 sh 'echo In post block -> Clean Workspace'
                 clean_workspace_WorkAround(WORKSPACE)
               }
