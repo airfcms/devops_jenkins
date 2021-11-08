@@ -11,10 +11,10 @@ def call(body) {
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 
     pipeline {
-      environment{
-        docker_image = pipelineParams['dockerImage']
-      }
         agent any
+         environment{
+          docker_image = pipelineParams['dockerImage']
+         }
           stages {
             stage('build') {
               agent{
