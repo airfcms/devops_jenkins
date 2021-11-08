@@ -1,4 +1,4 @@
-//Cleaning is needed and Integration with SonnarQube
+//Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
 def call(body) {
     // evaluate the body block, and collect configuration into the objectdef
@@ -42,10 +42,21 @@ def call(body) {
                   ./${env.BUILD_DIRECTORY}/${env.REPOSITORY_NAME}
                  """
              }
+            } //stage(build) closed bracket
+            /*
+            stage('unit testing'){
+
             }
-            //Not the stage Várzea asked stage(???)
-            //For testing purposes
-            //Push the artifact to Azure Artifactory Generic registry
+            stage('sw integration testing') {
+
+            }
+            stage('hw/sw integration testing') {
+
+            }
+            stage('static analysis') {
+
+            }
+            */
             stage('deploy') { //It seems that the docker image is remove before this stage !!IMPORTANT!!
               environment{
                 GENERIC_REGISTRY_ID = pipelineParams['artifactoryGenericRegistry_ID']
