@@ -10,8 +10,8 @@ def call(body) {
 
     pipeline {
           environment{
-            REPOSITORY_NAME= pipelineParams['repositoryName']
-            BUILD_DIRECTORY= pipelineParams['cmakeBuildDir']
+            REPOSITORY_NAME = pipelineParams['repositoryName']
+            BUILD_DIRECTORY = pipelineParams['cmakeBuildDir']
             }
 
         agent any
