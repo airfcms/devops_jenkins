@@ -71,9 +71,6 @@ def call(body) {
           } //stages body closed bracket
           post {
               always{
-                sh 'ls -lh'
-                sh 'ls -lh ..'
-                sh 'ls -lh ../..'
                 sh 'echo In post block -> Clean Workspace'
                 clean_workspace_WorkAround(WORKSPACE)
               }
@@ -82,5 +79,6 @@ def call(body) {
 } //def body closed bracket
 
 def clean_workspace_WorkAround(String workspace){
-    sh 'rm -rf ${workspace}/*' //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
+    sh 
+    sh 'rm -rf ${workspace}' //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
 }
