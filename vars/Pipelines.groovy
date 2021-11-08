@@ -74,7 +74,7 @@ def call(body) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //curiosity
                     println "curiosity ->  $scannerHome"
-                    sh "${scannerHome}/bin/sonar-scanner"
+                    sh "${scannerHome}/bin/sonar-scanner -X"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
