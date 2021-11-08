@@ -78,7 +78,7 @@ def call(body) {
       pwd
       ls -lh
       ls -lh ..
-      rm -rf ..
+      rm -rf ../
     """
                // clean_workspace_WorkAround(WORKSPACE)
               }
