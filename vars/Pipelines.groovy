@@ -69,8 +69,8 @@ def call(body) {
             stage('static analysis') {
                 steps {
                   withSonarQubeEnv('sonarqube') {
-                    def scannerHome = tool 'sonnar_scanner'
-                    sh "${scannerHome}/bin/sonar-scanner"
+                    //def scannerHome = tool 'sonnar_scanner'
+                    sh "${tool 'sonnar_scanner'}/bin/sonar-scanner"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
