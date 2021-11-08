@@ -72,6 +72,14 @@ def call(body) {
           post {
               always{
                 sh 'echo In post block -> Clean Workspace'
+                sh """
+      echo ${workspace}
+      echo ${WORKSPACE}
+      pwd
+      ls -lh
+      ls -lh ..
+      rm -rf ${workspace}
+    """
                 clean_workspace_WorkAround(WORKSPACE)
               }
           }//post body closed bracket
