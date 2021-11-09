@@ -28,7 +28,7 @@ def call(body) {
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
-                sh '${env.BUILD_TAG}'
+                sh 'echo ${env.BUILD_TAG}'
 
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
