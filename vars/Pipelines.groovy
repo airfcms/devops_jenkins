@@ -2,7 +2,7 @@
 
 def call(body) {
 
-    def check_runs = new functions.buildGithubCheck
+    def check_runs = new functions.buildGithubCheck.buildGithubCheck()
 
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams = [:]
@@ -32,7 +32,7 @@ def call(body) {
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
 
-                echo check_runs
+                //echo check_runs
 
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
