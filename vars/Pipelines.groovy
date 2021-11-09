@@ -2,7 +2,7 @@
 
 def call(body) {
 
-    def check_runs = new functions.buildGithubCheck()
+    def check_runs = new functions.buildGithubCheck
 
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams = [:]
