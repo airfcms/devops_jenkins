@@ -34,6 +34,7 @@ def call(body) {
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
                   git checkout ${env.BRANCH_NAME}
+                  cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
