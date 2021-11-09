@@ -49,10 +49,10 @@ def call(body) {
 
             }
             */
-            stage('deploy') { //It seems that the docker image is remove before this stage !!IMPORTANT!!
+            stage('deploy') {
               steps{
                  rtServer (
-                    id: 'artifactory_generic_repository',
+                    id: pipelineParams['artifactoryGenericRegistry_ID'],
                     url: 'http://40.67.228.51:8082/artifactory',
                     credentialsId: 'artifact_registry'
                 )
@@ -61,13 +61,13 @@ def call(body) {
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "*/${pipelineParams['repositoryName']}",
+                                            "pattern": "*/hello_world",
                                             "target": "build-repo/"
                                             }
                                          ]
                                 }'''
                 )
-                rtPublishBuildInfo ( //Send notification and prevents an error.
+                rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
               }
