@@ -32,6 +32,7 @@ def call(body) {
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
+                  cd ${pipelineParams['repositoryName']}
                   git checkout ${env.BRANCH_NAME}
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
