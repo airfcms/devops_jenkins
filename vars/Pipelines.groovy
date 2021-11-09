@@ -28,7 +28,7 @@ def call(body) {
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
-
+                echo scmUrl
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
