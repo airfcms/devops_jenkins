@@ -19,7 +19,7 @@ def call(body) {
                   reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
-                  credentialsId: 'docker_registry'
+                  registryCredentialsId 'docker_registry'
                 }
               }
               steps {
