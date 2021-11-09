@@ -61,7 +61,7 @@ def call(body) {
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "*/hello_world",
+                                            "pattern": "*/pipelineParams['repositoryName']",
                                             "target": "build-repo/"
                                             }
                                          ]
