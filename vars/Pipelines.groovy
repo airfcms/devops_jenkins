@@ -51,6 +51,11 @@ def call(body) {
             */
             stage('deploy') { //It seems that the docker image is remove before this stage !!IMPORTANT!!
               steps{
+                 rtServer (
+                    id: 'artifactory_generic_repository',
+                    url: 'http://40.67.228.51:8082/artifactory',
+                    credentialsId: 'artifact_registry'
+                )
                 rtUpload(
                       serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                       spec: '''{
