@@ -2,7 +2,7 @@
 
 def call(body) {
 
-    //def check_runs = load 'buildGithubCheck.groovy'
+    def check_runs = load 'buildGithubCheck.groovy'
 
     // evaluate the body block, and collect configuration into the objectdef
     pipelineParams = [:]
