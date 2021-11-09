@@ -9,7 +9,6 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-    def repo_name = pipelineParams['repositoryName']
 
     pipeline {
         agent any
@@ -59,14 +58,14 @@ def call(body) {
                 )
                 rtUpload(
                       serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                      spec: '''{
+                      spec: """{
                                 "files": [
                                            {
-                                            "pattern": "*/{repo_name}",
+                                            "pattern": "*/${pipelineParams['repositoryName']}",
                                             "target": "build-repo/"
                                             }
                                          ]
-                                }'''
+                                }"""
                 )
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
