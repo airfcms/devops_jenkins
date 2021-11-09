@@ -74,7 +74,7 @@ def call(body) {
                 steps {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
-                    sh "${scannerHome}/bin/sonar-scanner -X"
+                    sh "cd ${WORKSPACE}; ${scannerHome}/bin/sonar-scanner -X"
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
