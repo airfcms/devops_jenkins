@@ -9,6 +9,7 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+    def repo_name = pipelineParams['repositoryName']
 
     pipeline {
         agent any
@@ -61,7 +62,7 @@ def call(body) {
                       spec: '''{
                                 "files": [
                                            {
-                                            "pattern": "*/pipelineParams['repositoryName']",
+                                            "pattern": "*/${repo_name}",
                                             "target": "build-repo/"
                                             }
                                          ]
