@@ -33,7 +33,7 @@ def call(body) {
                 script {
                   // https://medium.com/ni-tech-talk/custom-github-checks-with-jenkins-pipeline-ed1d1c94d99f
                   //get credential into privateKey
-                  withCredentials([sshUserPrivateKey(credentialsId: 'github_ssh_jenkins', keyFileVariable: 'privateKey', passphraseVariable: '', usernameVariable: '')]) {
+                  withCredentials([sshUserPrivateKey(credentialsId: 'github_ssh_jenkins', keyFileVariable: 'privateKey', passphraseVariable: '', usernameVariable: 'RicardoFARosa')]) {
                     try {
                         //Link can't be literally here #########
                         sh(script: "env | sort", returnStdout: true) //To check available global variables
