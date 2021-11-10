@@ -1,3 +1,6 @@
+//define the object for the buildGitHubCheckScript
+def check_runs = new com.criticalsoftware.automation.buildGithubCheckScript()
+
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
 def call(body) {
@@ -12,6 +15,7 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+    //repoName = scmUrl.tokenize('/').last().split("\\.")[0] //https://stackoverflow.com/questions/45684941/how-to-get-repo-name-in-jenkins-pipeline
 
     pipeline {
         agent any
@@ -26,22 +30,34 @@ def call(body) {
                 }
               }
               steps {
-                //Link can't be literally here #########
-                sh 'env | sort' //To check available global variables
+                // https://medium.com/ni-tech-talk/custom-github-checks-with-jenkins-pipeline-ed1d1c94d99f
+                //get credential into privateKey
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-airfcms', keyFileVariable: 'privateKey', passphraseVariable: '', usernameVariable: '')]) {
+                  try {
+                      //Link can't be literally here #########
+                      sh 'env | sort' //To check available global variables
 
-                //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
-                sh 'rm -rf ${WORKSPACE}/*'
+                      //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
+                      sh 'rm -rf ${WORKSPACE}/*'
 
-                sh"""
-                  echo Cloning Repository in Docker Image Workspace
-                  git clone ${scmUrl}
-                  cd ${pipelineParams['repositoryName']}
-                  git checkout ${env.BRANCH_NAME}
-                  cd ..
-                  cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
-                  make -C ${pipelineParams['cmakeBuildDir']}
-                  ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
-                 """
+                      sh"""
+                        echo Cloning Repository in Docker Image Workspace
+                        git clone ${scmUrl}
+                        cd ${pipelineParams['repositoryName']}
+                        git checkout ${env.BRANCH_NAME}
+                        cd ..
+                        cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
+                        make -C ${pipelineParams['cmakeBuildDir']}
+                        ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
+                      """
+
+                      //send the result
+                      check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'success', "build")
+                  } catch(Exception e) {
+                        check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'failure', "build")
+                        echo "Exception: ${e}"
+                    }
+                } 
              }
             } //stage(build) closed bracket
             /*
