@@ -30,33 +30,35 @@ def call(body) {
                 }
               }
               steps {
-                // https://medium.com/ni-tech-talk/custom-github-checks-with-jenkins-pipeline-ed1d1c94d99f
-                //get credential into privateKey
-                withCredentials([sshUserPrivateKey(credentialsId: 'github-airfcms', keyFileVariable: 'privateKey', passphraseVariable: '', usernameVariable: '')]) {
-                  try {
-                      //Link can't be literally here #########
-                      sh 'env | sort' //To check available global variables
+                script {
+                  // https://medium.com/ni-tech-talk/custom-github-checks-with-jenkins-pipeline-ed1d1c94d99f
+                  //get credential into privateKey
+                  withCredentials([sshUserPrivateKey(credentialsId: 'github-airfcms', keyFileVariable: 'privateKey', passphraseVariable: '', usernameVariable: '')]) {
+                    try {
+                        //Link can't be literally here #########
+                        sh(script: "env | sort", returnStdout: true) //To check available global variables
 
-                      //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
-                      sh 'rm -rf ${WORKSPACE}/*'
+                        //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
+                        sh(script: "rm -rf ${WORKSPACE}/*", returnStdout: true)
 
-                      sh"""
-                        echo Cloning Repository in Docker Image Workspace
-                        git clone ${scmUrl}
-                        cd ${pipelineParams['repositoryName']}
-                        git checkout ${env.BRANCH_NAME}
-                        cd ..
-                        cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
-                        make -C ${pipelineParams['cmakeBuildDir']}
-                        ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
-                      """
+                        sh(script:"""
+                          echo Cloning Repository in Docker Image Workspace
+                          git clone ${scmUrl}
+                          cd ${pipelineParams['repositoryName']}
+                          git checkout ${env.BRANCH_NAME}
+                          cd ..
+                          cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
+                          make -C ${pipelineParams['cmakeBuildDir']}
+                          ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
+                        """, returnStdout: true)
 
-                      //send the result
-                      check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'success', "build")
-                  } catch(Exception e) {
-                        check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'failure', "build")
-                        echo "Exception: ${e}"
-                    }
+                        //send the result
+                        check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'success', "build")
+                    } catch(Exception e) {
+                          check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'failure', "build")
+                          echo "Exception: ${e}"
+                      }
+                  }
                 } 
              }
             } //stage(build) closed bracket
