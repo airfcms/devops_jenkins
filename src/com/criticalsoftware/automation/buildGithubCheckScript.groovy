@@ -19,7 +19,7 @@ import org.apache.commons.codec.binary.Base64
 import org.codehaus.groovy.runtime.GStringImpl
 
 APP_ID = '149633'
-INSTALLATION_ID = '20507971'
+INSTALLATION_ID = '0712bf2051f22c4bf3d4'
 ORGANIZATION_NAME = airfcms
 
 // Custom HTTP request method
