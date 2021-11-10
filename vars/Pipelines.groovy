@@ -1,6 +1,3 @@
-@Library('buildGithubCheckScript')
-import com.criticalsoftware.automation.buildGitHubCheckScript
-
 //define the object for the buildGitHubCheckScript
 def check_runs = new com.criticalsoftware.automation.buildGithubCheckScript()
 
