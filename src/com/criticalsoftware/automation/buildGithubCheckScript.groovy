@@ -20,7 +20,7 @@ import org.codehaus.groovy.runtime.GStringImpl
 
 APP_ID = '149633'
 INSTALLATION_ID = '0712bf2051f22c4bf3d4'
-ORGANIZATION_NAME = airfcms
+ORGANIZATION_NAME = 'airfcms'
 
 // Custom HTTP request method
 def setRequestMethod( HttpURLConnection c,  String requestMethod) {
@@ -56,7 +56,7 @@ def getPreviousCheckNameRunID(repository, commitID, token, checkName) {
         return check_run_id
     } catch(Exception e){
         error 'Failed to retrieve the check id'
-    }           
+    }
 }
 
 def setCheckName(repository, checkName, status, previousDay, requestMethod, commitID=null, check_run_id=null) {
@@ -84,7 +84,7 @@ def setCheckName(repository, checkName, status, previousDay, requestMethod, comm
     } catch(Exception e){
         echo "Exception: ${e}"
         error "Failed to create a check run"
-    }   
+    }
 }
 
 def getRSAPrivateKey(privateKey) {
@@ -114,7 +114,7 @@ def accessTime() {
     } catch(Exception e){
         echo "Exception: ${e}"
         error "Generated current time failed"
-    }    
+    }
 }
 
 def validateAuth(jsonWebToken) {
@@ -126,7 +126,7 @@ def validateAuth(jsonWebToken) {
     } catch(Exception e){
         echo "Exception: ${e}"
         error "Authentication request failed"
-    }           
+    }
 }
 
 def getToken(jsonWebToken) {
@@ -138,7 +138,7 @@ def getToken(jsonWebToken) {
         def responseText = httpConn.getInputStream().getText()
         def slurper = new JsonSlurper()
         def resultMap = slurper.parseText(responseText)
-        def token = resultMap["token"]        
+        def token = resultMap["token"]
         return token
     } catch(Exception e){
         echo "Exception: ${e}"
@@ -167,14 +167,14 @@ def getJsonWebToken(privateKey) {
 def buildGithubCheck(repository, commitID, privateKey, status, checkName) {
     def currentTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'")
     def checkName_run_id
-  
+
     jsonWebToken = getJsonWebToken(privateKey)
     getStatusCode = validateAuth(jsonWebToken)
     if (!(getStatusCode in [200,201])) {
         error "Authentication request failed, status code: ${getStatusCode}"
     }
     token = getToken(jsonWebToken)
-  
+
     try {
         checkName_run_id = getPreviousCheckNameRunID(repository, commitID, token, checkName)
     } catch(Exception e) {
