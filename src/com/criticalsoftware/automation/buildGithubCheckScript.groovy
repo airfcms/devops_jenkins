@@ -19,7 +19,7 @@ import org.apache.commons.codec.binary.Base64
 import org.codehaus.groovy.runtime.GStringImpl
 
 /* APP_ID = '149633'
-INSTALLATION_ID = '0712bf2051f22c4bf3d4'
+INSTALLATION_ID = '20507971'
 ORGANIZATION_NAME = 'airfcms' */
 
 // Custom HTTP request method
@@ -131,7 +131,7 @@ def validateAuth(jsonWebToken) {
 
 def getToken(jsonWebToken) {
     try {
-        def httpConn = new URL("https://api.github.com/app/installations/0712bf2051f22c4bf3d4/access_tokens").openConnection();
+        def httpConn = new URL("https://api.github.com/app/installations/20507971/access_tokens").openConnection();
         httpConn.setRequestProperty( 'Authorization', "Bearer ${jsonWebToken}" )
         httpConn.setRequestProperty( 'Accept', 'application/vnd.github.machine-man-preview+json' )
         httpConn.setRequestMethod("POST");
