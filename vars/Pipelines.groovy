@@ -39,6 +39,12 @@ def call(body) {
                   make -C ${pipelineParams['cmakeBuildDir']}
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
+                 
+                 publishChecks name: 'build', title: 'build step', summary: 'build pipeline check',
+    text: 'you can publish checks in pipeline script',
+    detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
+    actions: [[label:'an-user-request-action', description:'actions allow users to request pre-defined behaviours', identifier:'an unique identifier']]
+
              }
             } //stage(build) closed bracket
             /*
