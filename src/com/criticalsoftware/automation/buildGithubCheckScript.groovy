@@ -16,6 +16,8 @@ import java.util.Base64.Decoder
 import org.apache.commons.codec.binary.Base64
 import org.codehaus.groovy.runtime.GStringImpl
 
+package com.criticalsoftware.automation
+
 APP_ID = '149633'
 INSTALLATION_ID = '20507971'
 ORGANIZATION_NAME = airfcms
