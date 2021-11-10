@@ -18,9 +18,9 @@ import java.util.Base64.Decoder
 import org.apache.commons.codec.binary.Base64
 import org.codehaus.groovy.runtime.GStringImpl
 
-def APP_ID = '149633'
-def INSTALLATION_ID = '0712bf2051f22c4bf3d4'
-def ORGANIZATION_NAME = 'airfcms'
+/* APP_ID = '149633'
+INSTALLATION_ID = '0712bf2051f22c4bf3d4'
+ORGANIZATION_NAME = 'airfcms' */
 
 // Custom HTTP request method
 def setRequestMethod( HttpURLConnection c,  String requestMethod) {
@@ -43,7 +43,7 @@ def setRequestMethod( HttpURLConnection c,  String requestMethod) {
 
 def getPreviousCheckNameRunID(repository, commitID, token, checkName) {
     try {
-        def httpConn = new URL("https://api.github.com/repos/${ORGANIZATION_NAME}/${repository}/commits/${commitID}/check-runs").openConnection();
+        def httpConn = new URL("https://api.github.com/repos/airfcms/${repository}/commits/${commitID}/check-runs").openConnection();
         httpConn.setDoOutput(true)
         httpConn.setRequestProperty( 'Authorization', "token ${token}" )
         httpConn.setRequestProperty( 'Accept', 'application/vnd.github.antiope-preview+json' )
@@ -63,7 +63,7 @@ def setCheckName(repository, checkName, status, previousDay, requestMethod, comm
     try {
         def jsonCheckRun = new groovy.json.JsonBuilder()
         updateCheckRun = ["name":"${checkName}", "status": "in_progress", "conclusion":"${status}", "completed_at": "${previousDay}"]
-        def url = "https://api.github.com/repos/${ORGANIZATION_NAME}/${repository}/check-runs"
+        def url = "https://api.github.com/repos/airfcms/${repository}/check-runs"
 
         if (requestMethod == "POST") {
             updateCheckRun["head_sha"] = "${commitID}"
@@ -131,7 +131,7 @@ def validateAuth(jsonWebToken) {
 
 def getToken(jsonWebToken) {
     try {
-        def httpConn = new URL("https://api.github.com/app/installations/${INSTALLATION_ID}/access_tokens").openConnection();
+        def httpConn = new URL("https://api.github.com/app/installations/0712bf2051f22c4bf3d4/access_tokens").openConnection();
         httpConn.setRequestProperty( 'Authorization', "Bearer ${jsonWebToken}" )
         httpConn.setRequestProperty( 'Accept', 'application/vnd.github.machine-man-preview+json' )
         httpConn.setRequestMethod("POST");
@@ -155,7 +155,7 @@ def getJsonWebToken(privateKey) {
         .signWith(RS256, privateCrtKey)
         .setExpiration(time['expirationTime'])
         .setIssuedAt(time['iat'])
-        .setIssuer(APP_ID)
+        .setIssuer('149633')
         .compact()
         return jsonWebToken
     } catch(Exception e){
