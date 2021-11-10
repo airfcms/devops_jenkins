@@ -166,6 +166,7 @@ def getJsonWebToken(privateKey) {
 
 def buildGithubCheck(repository, commitID, privateKey, status, checkName) {
     def currentTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    def previousDay = currentTime - 1
     def checkName_run_id
 
     jsonWebToken = getJsonWebToken(privateKey)
