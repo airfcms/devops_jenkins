@@ -1,5 +1,5 @@
 //define the object for the buildGitHubCheckScript
-def check_runs = new com.criticalsoftware.automation.buildGithubCheckScript()
+//def check_runs = new com.criticalsoftware.automation.buildGithubCheckScript()
 
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
@@ -53,9 +53,9 @@ def call(body) {
                         """, returnStdout: true)
 
                         //send the result
-                        check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'success', "build")
+                        //check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'success', "build")
                     } catch(Exception e) {
-                          check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'failure', "build")
+                          //check_runs.buildGithubCheck("${pipelineParams['repositoryName']}", '${GIT_COMMIT}', privateKey, 'failure', "build")
                           echo "Exception: ${e}"
                       }
                   }
