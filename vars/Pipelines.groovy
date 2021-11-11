@@ -1,6 +1,6 @@
 import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
-import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
+io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
@@ -13,7 +13,7 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-	ChecksPublisher publisher = ChecksPublisherFactory.fromRun(run);
+	ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
     pipeline {
         agent any
