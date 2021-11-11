@@ -52,17 +52,18 @@ def call(body) {
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
 				 
-				 publishChecks name: 'example'
+				 publishChecks name: 'Build'
              }
             } //stage(build) closed bracket
             /*
             stage('unit testing'){
-
+				 publishChecks name: 'Unit Testing'
             }
             stage('sw integration testing') {
-
+			 publishChecks name: 'Integration Testing'
             }
             stage('hw/sw integration testing') {
+			 publishChecks name: 'HW/SW Integration Testing'
 
             }
             */
@@ -102,6 +103,7 @@ def call(body) {
                     waitForQualityGate abortPipeline: true
                   }
                 }
+				publishChecks name: 'Deployed'
             }
           } //stages body closed bracket
         } //pipeline body closed bracket
