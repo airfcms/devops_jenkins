@@ -57,14 +57,19 @@ def call(body) {
             } //stage(build) closed bracket
             /*
             stage('unit testing'){
+			  steps {
 				 publishChecks name: 'Unit Testing'
+			  }
             }
             stage('sw integration testing') {
-			 publishChecks name: 'Integration Testing'
+			  steps {
+				publishChecks name: 'Integration Testing'
+			 }
             }
             stage('hw/sw integration testing') {
-			 publishChecks name: 'HW/SW Integration Testing'
-
+			  steps {
+			  	publishChecks name: 'HW/SW Integration Testing'
+			  }
             }
             */
             stage('deploy') {
@@ -88,6 +93,8 @@ def call(body) {
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
+				
+				publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
             stage('static analysis') {
@@ -103,7 +110,7 @@ def call(body) {
                     waitForQualityGate abortPipeline: true
                   }
                 }
-				publishChecks name: 'Deployed'
+				publishChecks name: 'Static Analysis'
             }
           } //stages body closed bracket
         } //pipeline body closed bracket
