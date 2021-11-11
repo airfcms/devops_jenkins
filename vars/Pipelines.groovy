@@ -18,7 +18,7 @@ def call(body) {
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 	
 	if (env.CHANGE_ID) {
-		INFERRED_BRANCH_NAME = env.CHANGED_BRANCH
+		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
 	
     pipeline {
