@@ -1,3 +1,4 @@
+import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.api.ChecksPublisherFactory;
 
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
