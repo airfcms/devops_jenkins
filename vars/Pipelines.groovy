@@ -1,3 +1,4 @@
+import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.api.ChecksPublisherFactory;
 
@@ -12,7 +13,6 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-	ChecksPublisher publisher = ChecksPublisherFactory.fromRun(run);
 
     pipeline {
         agent any
@@ -27,6 +27,8 @@ def call(body) {
                 }
               }
               steps {
+			  	ChecksPublisher publisher = ChecksPublisherFactory.fromRun(run);
+
                 //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
 
