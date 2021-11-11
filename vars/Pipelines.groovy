@@ -109,8 +109,8 @@ def call(body) {
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                   }
+				  publishChecks name: 'Static Analysis'
                 }
-				publishChecks name: 'Static Analysis'
             }
           } //stages body closed bracket
         } //pipeline body closed bracket
