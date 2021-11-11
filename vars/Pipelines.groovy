@@ -15,10 +15,10 @@ def call(body) {
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
-	INFERRED_BRANCH_NAME = ${env.BRANCH_NAME}
+	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 	
 	if (env.CHANGE_ID) {
-		INFERRED_BRANCH_NAME = ${env.CHANGED_BRANCH}
+		INFERRED_BRANCH_NAME = env.CHANGED_BRANCH
 	}
 	
     pipeline {
