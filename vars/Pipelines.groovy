@@ -13,7 +13,7 @@ def call(body) {
     body()
 
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-	ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
+	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
     pipeline {
         agent any
