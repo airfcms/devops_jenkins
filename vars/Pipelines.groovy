@@ -52,7 +52,7 @@ def call(body) {
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
 				 
-				 publishChecks name: 'example']
+				 publishChecks name: 'example'
              }
             } //stage(build) closed bracket
             /*
