@@ -1,5 +1,4 @@
 import io.jenkins.plugins.checks.api.ChecksDetails;
-import io.jenkins.plugins.checks.api.ChecksDetailsBuilder;
 
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
