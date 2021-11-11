@@ -39,10 +39,11 @@ def call(body) {
                   make -C ${pipelineParams['cmakeBuildDir']}
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
-             }
-			 withChecks('MyCheck') {
+				 
+				withChecks('MyCheck') {
 	
-			 }
+				}
+             }
             } //stage(build) closed bracket
             /*
             stage('unit testing'){
