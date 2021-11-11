@@ -15,6 +15,12 @@ def call(body) {
     scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
+	INFERRED_BRANCH_NAME = ${env.BRANCH_NAME}
+	
+	if (env.CHANGE_ID) {
+		INFERRED_BRANCH_NAME = ${env.CHANGED_BRANCH}
+	}
+	
     pipeline {
         agent any
           stages {
@@ -38,7 +44,8 @@ def call(body) {
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
-                  git checkout ${env.BRANCH_NAME}
+				  
+                  git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
