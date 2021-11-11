@@ -1,6 +1,6 @@
 import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
-io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
+import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
