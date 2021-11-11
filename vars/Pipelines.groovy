@@ -1,5 +1,3 @@
-import io.jenkins.plugins.checks.api.ChecksDetails;
-
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
 def call(body) {
@@ -42,15 +40,7 @@ def call(body) {
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
 				 
-				withChecks('MyCheck') {
-					ChecksDetails details = new ChecksDetailsBuilder()
-						.withName("Jenkins CI")
-						.withStatus(ChecksStatus.COMPLETED)
-						.withConclusion(ChecksConclusion.SUCCESS)
-						.withDetailsURL(DisplayURLProvider.get().getRunURL(run))
-						.withCompletedAt(LocalDateTime.now(ZoneOffset.UTC))
-						.build();
-				}
+				 publishChecks name: 'example', title: 'Pipeline Check', summary: 'check through pipeline', text: 'you can publish checks in pipeline script', detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage', actions: [[label:'an-user-request-action', description:'actions allow users to request pre-defined behaviours', identifier:'an unique identifier']]
              }
             } //stage(build) closed bracket
             /*
