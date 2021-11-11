@@ -40,6 +40,9 @@ def call(body) {
                   ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
              }
+			 withChecks('MyCheck') {
+	
+			 }
             } //stage(build) closed bracket
             /*
             stage('unit testing'){
