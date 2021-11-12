@@ -49,7 +49,6 @@ def call(body) {
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
-                  ./${pipelineParams['cmakeBuildDir']}/${pipelineParams['repositoryName']}
                  """
 				 
 				 publishChecks name: 'Build'
