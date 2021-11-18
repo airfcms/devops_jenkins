@@ -44,17 +44,8 @@ def call(body) {
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
-		  ls 
-		  ls ..
-		  ls ../..
-		  ls ../../..
-		  ls ../../../..
-		  ls ../../../../..
-		  ls ../../../../../..
 		  ls ../../../../../../bin
 		  ls ../../../../../../usr/*
-		  ls /*
-		  find / -name clang-tidy -type f
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
