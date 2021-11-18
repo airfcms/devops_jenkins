@@ -46,9 +46,11 @@ def call(body) {
                   cd ${pipelineParams['repositoryName']}
 		  ls 
 		  ls ..
-		  ls ../
-		  ls ../../
-		  ls ../../../
+		  ls ../..
+		  ls ../../..
+		  ls ../../../..
+		  ls ../../../../..
+		  ls ../../../../../..
 		  find / -name clang-tidy
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
