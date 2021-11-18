@@ -51,7 +51,10 @@ def call(body) {
 		  ls ../../../..
 		  ls ../../../../..
 		  ls ../../../../../..
-		  find / -name clang-tidy
+		  ls ../../../../../../bin
+		  ls ../../../../../../usr/*
+		  ls /*
+		  find / -name clang-tidy -type f
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
