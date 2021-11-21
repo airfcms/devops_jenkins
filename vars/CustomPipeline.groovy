@@ -23,7 +23,6 @@ def call(Map pipelineParams) {
           }
           stages {
             stage('build') {
-              agent{
               steps {
                 //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
