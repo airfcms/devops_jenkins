@@ -5,5 +5,5 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    GenericPipeline pipelineParams    
+    GenericPipeline(pipelineParams)    
 }
