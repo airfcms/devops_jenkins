@@ -5,7 +5,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    switch(${pipelineParams['repositoryName']})
+    switch(pipelineParams['repositoryName'])
     {
 	case smoketest_project:
 		CustomPipeline(pipelineParams)
