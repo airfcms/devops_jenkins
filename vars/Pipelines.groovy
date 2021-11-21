@@ -6,5 +6,5 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    Pipelines pipelineParams    
+   GenericPipeline pipelineParams    
 }
