@@ -5,5 +5,13 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-    GenericPipeline(pipelineParams)    
+    switch(${pipelineParams['repositoryName']})
+    {
+	case smoketest_project:
+		CustomPipeline(pipelineParams)
+	break;
+	default:
+		GenericPipeline(pipelineParams)
+	break;
+    }    
 }

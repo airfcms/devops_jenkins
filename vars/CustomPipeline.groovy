@@ -48,6 +48,10 @@ def call(Map pipelineParams) {
             } //stage(build) closed bracket
             stage('unit testing'){
 			  steps {
+				sh"""
+				   cd ${pipelineParams['cmakeBuildDir']}/tests
+			           ctest -R unitTests
+				"""
 				publishChecks name: 'Unit Testing'
 			  }
             }
@@ -91,6 +95,9 @@ def call(Map pipelineParams) {
                   scannerHome = tool 'sonnar_scanner'
                 }
                 steps {
+		  sh"""
+			ctest -R "codeCoverage|cppcheckAnalysis"
+		  """
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
