@@ -16,7 +16,8 @@ def call(Map pipelineParams) {
     pipeline {
          agent{
                 docker {
-                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is re>                  image pipelineParams['dockerImage']
+                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is re>                  
+                  image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
                 }
