@@ -7,7 +7,7 @@ def call(body) {
     body()
     switch(pipelineParams['repositoryName'])
     {
-	case smoketest_project:
+	case "smoketest_project":
 		CustomPipeline(pipelineParams)
 	break;
 	default:
