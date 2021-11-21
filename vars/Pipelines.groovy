@@ -5,7 +5,5 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-   echo "HERE"
-   GenericPipeline pipelineParams
-   echo "HERE1"    
+    GenericPipeline pipelineParams    
 }

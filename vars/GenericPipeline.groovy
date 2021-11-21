@@ -5,7 +5,8 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 //Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 
 def call(pipelineParams) {
-    scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+   echo "CALLED ################"
+   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
