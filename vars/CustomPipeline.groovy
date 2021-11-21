@@ -14,17 +14,16 @@ def call(Map pipelineParams) {
 	}
 	
     pipeline {
-        agent any
-          stages {
-            stage('build') {
-              agent{
+         agent{
                 docker {
-                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
-                  image pipelineParams['dockerImage']
+                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is re>                  image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
                 }
-              }
+          }
+          stages {
+            stage('build') {
+              agent{
               steps {
                 //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
