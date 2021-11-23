@@ -126,9 +126,10 @@ def call(Map pipelineParams) {
                         println matcher.groupCount()
                         println matcher
 */
-                       (line =~ artifactoryRegexLink_Pattern).each {match, one ->
+                       (line =~ artifactoryRegexLink_Pattern).each {match, one, two ->
                           println match
                           println one
+                          println two
                        }
 
 
