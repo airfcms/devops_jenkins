@@ -6,6 +6,7 @@ def call(Map pipelineParams) {
 
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
+  artifactoryRegexLink = ~"^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$"
 
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
@@ -92,9 +93,6 @@ def call(Map pipelineParams) {
                 }
             } //stage(static analysis) closed bracket
             stage('deploy') {
-
-
-
               steps{
 
                  rtServer (
@@ -116,11 +114,17 @@ def call(Map pipelineParams) {
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
+
              script {
                      for(String line in currentBuild.getRawBuild().getLog(10)){
-                       println line
+                        println line
+                        if (artifactoryRegexLink == line)
+                        {
+                          println "RESULTOU"
+                        }
                      }
               }
+
 			  	      publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
