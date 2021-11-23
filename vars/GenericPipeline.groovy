@@ -118,6 +118,7 @@ def call(Map pipelineParams) {
                     for(String line : bRun.getRawBuild().getLog(100)){
                         echo line
                     }
+             }
 			  	      publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
