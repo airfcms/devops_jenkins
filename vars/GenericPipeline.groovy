@@ -1,12 +1,13 @@
 import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
+import java.util.regex.Pattern
 
 def call(Map pipelineParams) {
 
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
-  artifactoryRegexLink = ~'^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$'
+  def artifactoryRegexLink_Pattern = Pattern.compile('^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$')
 
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
@@ -118,7 +119,7 @@ def call(Map pipelineParams) {
              script {
                      for(String line in currentBuild.getRawBuild().getLog(10)){
                         println line
-                        if (artifactoryRegexLink == line)
+                        if (artifactoryRegexLink_Pattern == line)
                         {
                           println "RESULTOU"
                         }
