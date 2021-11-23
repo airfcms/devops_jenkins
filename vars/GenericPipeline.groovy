@@ -120,15 +120,17 @@ def call(Map pipelineParams) {
              script {
                      for(String line in currentBuild.getRawBuild().getLog(10)){
 
-                        def matcher = line =~ artifactoryRegexLink_Pattern
-
+                        //def matcher = line =~ artifactoryRegexLink_Pattern
+/*
                         println matcher.hasGroup()
                         println matcher.groupCount()
                         println matcher
+*/
+                       (line =~ artifactoryRegexLink_Pattern).each {match, one ->
+                          println match
+                          println one
+                       }
 
-                        if(matcher.find()){
-                          println matcher.find()
-                        }
 
                      }
               }
