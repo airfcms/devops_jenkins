@@ -113,6 +113,9 @@ def call(Map pipelineParams) {
                 )
                 //manager.logContains('*Browse it in Artifactory*')
              script {
+                    if (manager.logContains('*Browse it in Artifactory*')) {
+                        error("Build failed because of this and that..")
+                    }
                     def bRun = build 'deploy'
                     echo 'last 100 lines of BuildB'
                     for(String line : bRun.getRawBuild().getLog(100)){
