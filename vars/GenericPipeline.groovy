@@ -117,7 +117,7 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
              script {
-                     for(String line : currentBuild.getRawBuild().getLog(10)){
+                     for(String line in currentBuild.getRawBuild().getLog(10)){
                        println line
                      }
               }
