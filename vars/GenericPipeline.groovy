@@ -123,9 +123,9 @@ def call(Map pipelineParams) {
                         def matcher = line =~ artifactoryRegexLink_Pattern
                         println matcher.hasGroup()
                         println matcher.groupCount()
-                        println matcher[0][1]
-                        if(matcher.matches()){
-                          println matcher.group("Group 1")
+                        println matcher.group(1)
+                        if(matcher.find()){
+                          println matcher.find()
                         }
 
                      }
