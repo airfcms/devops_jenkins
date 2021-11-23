@@ -118,11 +118,6 @@ def call(Map pipelineParams) {
              script {
                     echo currentBuild.getLog(100)
 
-                    def bRun = build 'deploy'
-                    echo 'last 100 lines of BuildB'
-                    for(String line : bRun.getRawBuild().getLog(100)){
-                        echo line
-                    }
              }
 			  	      publishChecks name: 'Deployment'
               }
