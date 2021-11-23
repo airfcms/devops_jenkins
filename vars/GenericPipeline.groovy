@@ -2,31 +2,32 @@ import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
-//Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 def call(Map pipelineParams) {
-   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
+
+  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+  sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
-	
-	if (env.CHANGE_ID) {
+
+	if (env.CHANGE_ID)
+  {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
-	
+
     pipeline {
         agent any
           stages {
             stage('build') {
               agent{
                 docker {
-                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is removed when the building stage is finished. Need to check why!!! <---------------
+                  reuseNode true
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
                 }
               }
               steps {
-                //Link can't be literally here #########
+
                 sh 'env | sort' //To check available global variables
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
@@ -42,24 +43,24 @@ def call(Map pipelineParams) {
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
-				 
-				 publishChecks name: 'Build'
+
+				        publishChecks name: 'Build'
              }
             } //stage(build) closed bracket
             stage('unit testing'){
-			  steps {
-				publishChecks name: 'Unit Testing'
-			  }
+			        steps {
+				        publishChecks name: 'Unit Testing'
+			        }
             }
             stage('sw integration testing') {
-			  steps {
-				publishChecks name: 'Integration Testing'
-			 }
+			        steps {
+				        publishChecks name: 'Integration Testing'
+			        }
             }
             stage('hw/sw integration testing') {
-			  steps {
-			        publishChecks name: 'HW/SW Integration Testing'
-			  }
+			        steps {
+			          publishChecks name: 'HW/SW Integration Testing'
+			        }
             }
             stage('deploy') {
               steps{
@@ -82,7 +83,7 @@ def call(Map pipelineParams) {
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
-				
+
 				publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
@@ -94,11 +95,14 @@ def call(Map pipelineParams) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                    println ${env} //to see if i have the SonarHost link to use instead of writing in a variable
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                   }
-				  publishChecks name: 'Static Analysis'
+
+				          publishChecks name: 'Static Analysis',
+                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
                 }
             }
           } //stages body closed bracket
