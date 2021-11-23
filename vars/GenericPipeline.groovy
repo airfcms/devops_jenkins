@@ -28,7 +28,8 @@ def call(Map pipelineParams) {
               }
               steps {
 				        publishChecks name: 'Build',
-                              status: 'IN_PROGRESS'
+                              text: 'testing -> manual status: in progress',
+                              status: 'in_progress'
 
                 sh 'env | sort' //To check available global variables
 
@@ -47,7 +48,7 @@ def call(Map pipelineParams) {
                  """
                 sh 'sleep 60'
 				        publishChecks name: 'Build',
-                              status: 'COMPLETED'
+                              status: "completed"
              }
             } //stage(build) closed bracket
             stage('unit testing'){
@@ -96,7 +97,8 @@ def call(Map pipelineParams) {
                 }
                 steps {
 				          publishChecks name: 'Static Analysis',
-                                status: 'IN_PROGRESS'
+                                text: 'testing -> manual status: in progress',
+                                status: 'in_progress'
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
@@ -109,7 +111,7 @@ def call(Map pipelineParams) {
                   sh 'sleep 60'
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'COMPLETED',
+                                status: 'none',
                                 detailsURL: sonarReportLink + pipelineParams['repositoryName']
                 }
             }
