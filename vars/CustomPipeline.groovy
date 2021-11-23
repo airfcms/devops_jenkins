@@ -43,8 +43,9 @@ def call(Map pipelineParams) {
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
 
-				 publishChecks name: 'Build'
-             }
+				        publishChecks name: 'Build',
+                              status: 'COMPLETED'
+              }
             } //stage(build) closed bracket
             stage('unit testing'){
 			  steps {
@@ -65,6 +66,30 @@ def call(Map pipelineParams) {
 			        publishChecks name: 'HW/SW Integration Testing'
 			  }
             }
+            stage('static analysis') {
+                environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
+                steps {
+                  publishChecks name: 'Static Analysis',
+                              text: 'testing -> manual status: in progress',
+                              status: 'IN_PROGRESS'
+		  sh"""
+			ctest -R "codeCoverage|cppcheckAnalysis"
+		  """
+                  withSonarQubeEnv('sonarqube_airfcms') {
+                    //-X is enabled to get more information in console output (jenkins)
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                  }
+                  timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                  }
+				  publishChecks name: 'Static Analysis',
+                                text: 'To view the SonarQube report please access it clicking the link below',
+                                status: 'COMPLETED',
+                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
+                }
+            }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
                  rtServer (
@@ -90,30 +115,6 @@ def call(Map pipelineParams) {
 				publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
-            stage('static analysis') {
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
-                steps {
-                  publishChecks name: 'Static Analysis',
-                              text: 'testing -> manual status: in progress',
-                              status: 'COMPLETED'
-		  sh"""
-			ctest -R "codeCoverage|cppcheckAnalysis"
-		  """
-                  withSonarQubeEnv('sonarqube_airfcms') {
-                    //-X is enabled to get more information in console output (jenkins)
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                  }
-                  timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                  }
-				  publishChecks name: 'Static Analysis',
-                                text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'COMPLETED',
-                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
-                }
-            }
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket

@@ -46,7 +46,7 @@ def call(Map pipelineParams) {
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
-                sh 'sleep 60'
+                //sh 'sleep 60' //For testing but couldn't see the changes...
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
              }
@@ -66,6 +66,30 @@ def call(Map pipelineParams) {
 			          publishChecks name: 'HW/SW Integration Testing'
 			        }
             }
+            stage('static analysis') {
+                environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
+                steps {
+				          publishChecks name: 'Static Analysis',
+                                text: 'testing -> manual status: in progress',
+                                status: 'IN_PROGRESS'
+
+                  withSonarQubeEnv('sonarqube_airfcms') {
+                    //-X is enabled to get more information in console output (jenkins)
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable
+                  }
+                  timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                  }
+                  //sh 'sleep 60' //For testing but couldn't see the changes...
+				          publishChecks name: 'Static Analysis',
+                                text: 'To view the SonarQube report please access it clicking the link below',
+                                status: 'COMPLETED',
+                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
+                }
+            } //stage(static analysis) closed bracket
             stage('deploy') {
               steps{
                  rtServer (
@@ -91,30 +115,6 @@ def call(Map pipelineParams) {
 			  	      publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
-            stage('static analysis') {
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
-                steps {
-				          publishChecks name: 'Static Analysis',
-                                text: 'testing -> manual status: in progress',
-                                status: 'IN_PROGRESS'
-
-                  withSonarQubeEnv('sonarqube_airfcms') {
-                    //-X is enabled to get more information in console output (jenkins)
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable
-                  }
-                  timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                  }
-                  sh 'sleep 60'
-				          publishChecks name: 'Static Analysis',
-                                text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'COMPLETED',
-                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
-                }
-            }
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
