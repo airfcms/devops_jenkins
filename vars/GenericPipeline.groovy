@@ -124,7 +124,7 @@ def call(Map pipelineParams) {
 
                         println matcher.hasGroup()
                         println matcher.groupCount()
-                        println matcher[0]
+                        println matcher
 
                         if(matcher.find()){
                           println matcher.find()
