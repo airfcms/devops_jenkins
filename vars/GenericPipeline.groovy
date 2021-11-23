@@ -116,7 +116,7 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
              script {
-                    echo currentBuild.getRcurrentBuild.getRawBuild().getLog(2000)
+                    echo currentBuild.getRawBuild().getLog(2000)
               }
 			  	      publishChecks name: 'Deployment'
               }
