@@ -111,12 +111,9 @@ def call(Map pipelineParams) {
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
-
+manager.logContains('*Browse it in Artifactory*')
 			  	      publishChecks name: 'Deployment'
               }
-               if (manager.logContains('*Browse it in Artifactory*')) {
-                  error("Build failed because of this and that..")
-                }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
