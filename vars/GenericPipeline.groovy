@@ -111,7 +111,7 @@ def call(Map pipelineParams) {
                   sh 'sleep 60'
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'NONE',
+                                status: 'COMPLETED',
                                 detailsURL: sonarReportLink + pipelineParams['repositoryName']
                 }
             }
