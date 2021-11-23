@@ -7,7 +7,7 @@ def call(Map pipelineParams) {
 
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
-  artifactoryRegexLink_Pattern = ~'^Build\ssuccessfully\sdeployed|.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$'
+  def artifactoryRegexLink_Pattern = Pattern.compile('^Build\ssuccessfully\sdeployed|.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$')
 
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
