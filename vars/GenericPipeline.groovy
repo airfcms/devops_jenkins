@@ -91,7 +91,11 @@ def call(Map pipelineParams) {
                 }
             } //stage(static analysis) closed bracket
             stage('deploy') {
+
+
+
               steps{
+
                  rtServer (
                     id: pipelineParams['artifactoryGenericRegistry_ID'],
                     url: 'http://40.67.228.51:8082/artifactory',
@@ -111,11 +115,9 @@ def call(Map pipelineParams) {
                 rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
-                //manager.logContains('*Browse it in Artifactory*')
              script {
-                    if (manager.logContains('*Browse it in Artifactory*')) {
-                        error("Build failed because of this and that..")
-                    }
+                    echo currentBuild.getLog(100)
+
                     def bRun = build 'deploy'
                     echo 'last 100 lines of BuildB'
                     for(String line : bRun.getRawBuild().getLog(100)){
