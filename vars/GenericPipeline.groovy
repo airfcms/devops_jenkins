@@ -45,7 +45,7 @@ def call(Map pipelineParams) {
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
-
+                sh 'sleep 60'
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
              }
@@ -106,7 +106,7 @@ def call(Map pipelineParams) {
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                   }
-
+                  sh 'sleep 60'
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
