@@ -112,7 +112,8 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
                 //manager.logContains('*Browse it in Artifactory*')
-                def bRun = build 'anotherJob'
+             script {
+                    def bRun = build 'anotherJob'
                     echo 'last 100 lines of BuildB'
                     for(String line : bRun.getRawBuild().getLog(100)){
                         echo line
