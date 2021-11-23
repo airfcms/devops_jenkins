@@ -27,6 +27,8 @@ def call(Map pipelineParams) {
                 }
               }
               steps {
+				        publishChecks name: 'Build',
+                              status: 'IN_PROGRESS'
 
                 sh 'env | sort' //To check available global variables
 
@@ -44,7 +46,8 @@ def call(Map pipelineParams) {
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
 
-				        publishChecks name: 'Build'
+				        publishChecks name: 'Build',
+                              status: 'COMPLETED'
              }
             } //stage(build) closed bracket
             stage('unit testing'){
@@ -84,7 +87,7 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
 
-				publishChecks name: 'Deployment'
+			  	      publishChecks name: 'Deployment'
               }
             } //stage(deploy) closed bracket
             stage('static analysis') {
@@ -92,6 +95,9 @@ def call(Map pipelineParams) {
                   scannerHome = tool 'sonnar_scanner'
                 }
                 steps {
+				          publishChecks name: 'Static Analysis',
+                                status: 'IN_PROGRESS'
+
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
@@ -102,6 +108,8 @@ def call(Map pipelineParams) {
                   }
 
 				          publishChecks name: 'Static Analysis',
+                                text: 'To view the SonarQube report please access it clicking the link below',
+                                status: 'COMPLETED',
                                 detailsURL: sonarReportLink + pipelineParams['repositoryName']
                 }
             }
