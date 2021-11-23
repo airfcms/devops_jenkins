@@ -7,6 +7,8 @@ def call(Map pipelineParams) {
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
 
+  def test_GetArtifactoryBuildLink = ""
+
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
 	if (env.CHANGE_ID)
@@ -78,7 +80,7 @@ def call(Map pipelineParams) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable
+                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
@@ -108,7 +110,7 @@ def call(Map pipelineParams) {
                                          ]
                                 }"""
                 )
-                rtPublishBuildInfo (
+                test_GetArtifactoryBuildLink = rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
 
