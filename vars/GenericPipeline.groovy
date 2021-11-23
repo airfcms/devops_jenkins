@@ -29,7 +29,7 @@ def call(Map pipelineParams) {
               steps {
 				        publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
-                              status: 'in_progress'
+                              status: 'IN_PROGRESS'
 
                 sh 'env | sort' //To check available global variables
 
@@ -48,7 +48,7 @@ def call(Map pipelineParams) {
                  """
                 sh 'sleep 60'
 				        publishChecks name: 'Build',
-                              status: 'completed'
+                              status: 'COMPLETED'
              }
             } //stage(build) closed bracket
             stage('unit testing'){
