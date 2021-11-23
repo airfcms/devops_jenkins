@@ -95,7 +95,7 @@ def call(Map pipelineParams) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                    println ${env} //to see if i have the SonarHost link to use instead of writing in a variable
+                    println "${env}" //to see if i have the SonarHost link to use instead of writing in a variable
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
