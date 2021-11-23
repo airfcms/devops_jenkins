@@ -7,6 +7,7 @@ def call(Map pipelineParams) {
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
 
+
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
 	if (env.CHANGE_ID)
@@ -116,7 +117,9 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
              script {
-                    echo currentBuild.getRawBuild().getLog(10)
+                     foreach(String line : currentBuild.getRawBuild().getLog(10)){
+                       println line
+                     }
               }
 			  	      publishChecks name: 'Deployment'
               }
