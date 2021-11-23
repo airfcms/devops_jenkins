@@ -48,7 +48,7 @@ def call(Map pipelineParams) {
                  """
                 sh 'sleep 60'
 				        publishChecks name: 'Build',
-                              status: "completed"
+                              status: 'completed'
              }
             } //stage(build) closed bracket
             stage('unit testing'){
@@ -98,7 +98,7 @@ def call(Map pipelineParams) {
                 steps {
 				          publishChecks name: 'Static Analysis',
                                 text: 'testing -> manual status: in progress',
-                                status: 'in_progress'
+                                status: 'IN_PROGRESS'
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
@@ -111,7 +111,7 @@ def call(Map pipelineParams) {
                   sh 'sleep 60'
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'none',
+                                status: 'NONE',
                                 detailsURL: sonarReportLink + pipelineParams['repositoryName']
                 }
             }
