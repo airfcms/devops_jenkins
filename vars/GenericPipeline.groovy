@@ -9,7 +9,7 @@ def call(Map pipelineParams) {
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
   artifactoryRegexLink_Pattern = ~'^Build\\ssuccessfully\\sdeployed.\\sBrowse\\sit\\sin\\sArtifactory\\sunder\\s(.*)$'
   //def artifactoryRegexLink_Pattern = '.*Browse it in Artifactory under.*'
-  def matcher = ""
+  
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
