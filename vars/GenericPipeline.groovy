@@ -93,13 +93,15 @@ def call(Map pipelineParams) {
             } //stage(static analysis) closed bracket
             stage('deploy') {
               steps{
-
-                 rtServer (
+                  publishChecks name: 'Deployment',
+                                text: 'testing -> manual status: in progress',
+                                status: 'IN_PROGRESS'
+                  rtServer (
                     id: pipelineParams['artifactoryGenericRegistry_ID'],
                     url: 'http://40.67.228.51:8082/artifactory',
                     credentialsId: 'artifact_registry'
-                )
-                rtUpload(
+                  )
+                  rtUpload(
                       serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                       spec: """{
                                 "files": [
@@ -109,30 +111,28 @@ def call(Map pipelineParams) {
                                             }
                                          ]
                                 }"""
-                )
-                rtPublishBuildInfo (
+                  )
+                  rtPublishBuildInfo (
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
-                )
+                  )
 
              script {
-  		     def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
-		     def matcher = null
+  		                artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
 
-                     for(String line in currentBuild.getRawBuild().getLog(10)){
+                      for(String line in currentBuild.getRawBuild().getLog(10)){
 
-			matcher = line =~ artifactoryRegexLink_Pattern
-			
-			if (matcher.matches())
-			{
-			  println matcher[0][1]
-			  artifactoryLink = matcher[0][1]
-			  println artifactoryLink 
-			}
-
-                     }
+                  			matcher = line =~ artifactoryRegexLink_Pattern
+                  			if (matcher.matches())
+                  			{
+                  			  artifactoryLink = matcher[0][1]
+                  			}
+                      }
               }
 
 			  	      publishChecks name: 'Deployment'
+                              text: 'To view the artifact please access it clicking the link below',
+                              status: 'COMPLETED',
+                              detailsURL: artifactoryLink
               }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
