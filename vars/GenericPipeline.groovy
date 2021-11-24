@@ -98,7 +98,7 @@ def call(Map pipelineParams) {
                                   status: 'IN_PROGRESS'
                     rtServer (
                         id: pipelineParams['artifactoryGenericRegistry_ID'],
-                        url: 'http://40.67.228.51:8082/artifactory',
+                        url: pipelineParams['artifactoryGenericRegistry_URL'] + "/artifactory",
                         credentialsId: 'artifact_registry'
                     )
                     rtUpload(
@@ -117,19 +117,19 @@ def call(Map pipelineParams) {
                     )
 
                     script {
-  		                def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
+  		                //def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
+                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>$pipelineParams['artifactoryGenericRegistry_URL'].*$pipelineParams['repositoryName'].*$env.BRANCH_NAME.*$env.BUILD_NUMBER.\d+.*)/
 		                  def matcher = null
 
                       for(String line in currentBuild.getRawBuild().getLog(10)){
 
-                  			matcher = line =~ artifactoryRegexLink_Pattern
-
-                  			if (matcher.matches())
+                  			//matcher = line =~ artifactoryRegexLink_Pattern
+                  			if ((matcher = line =~ artifactoryRegexLink_Pattern).matches() && matcher.hasGroup())
                   			{
-                  			  artifactoryLink = matcher[0][1]
+                  			  artifactoryLink = matcher.group("link")
                   			}
-
                       }
+                      artifactoryLink == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
                     }
 
 			  	          publishChecks name: 'Deployment',
