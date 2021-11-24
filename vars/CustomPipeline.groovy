@@ -3,9 +3,11 @@ import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 def call(Map pipelineParams) {
-   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
-   String artifactoryLink = ""
+  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+
+  sonarDashboard = "/dashboard?id="
+  sonarReportLink = ""
+  String artifactoryLink = ""
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
@@ -84,6 +86,9 @@ def call(Map pipelineParams) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                    script {
+                      sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
+                    }
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
@@ -91,22 +96,22 @@ def call(Map pipelineParams) {
 				  publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
-                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
+                                detailsURL: sonarReportLink
                 }
             }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
-                 publishChecks name: 'Deployment',
+                    publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
                                   status: 'IN_PROGRESS'
-                 rtServer (
-                    id: pipelineParams['artifactoryGenericRegistry_ID'],
-                    url: 'http://40.67.228.51:8082/artifactory',
-                    credentialsId: 'artifact_registry'
-                )
-                rtUpload(
-                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                      spec: """{
+                    rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                        credentialsId: 'artifact_registry'
+                    )
+                    rtUpload(
+                        serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                        spec: """{
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
@@ -114,32 +119,31 @@ def call(Map pipelineParams) {
                                             }
                                          ]
                                 }"""
-                )
-                rtPublishBuildInfo (
-                    serverId: pipelineParams['artifactoryGenericRegistry_ID']
-                )
+                    )
+                    rtPublishBuildInfo (
+                        serverId: pipelineParams['artifactoryGenericRegistry_ID']
+                    )
 
-                script {
-  		                def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
+                    script {
+                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>${pipelineParams['artifactoryGenericRegistry_URL']}.*${pipelineParams['repositoryName']}.*${env.BRANCH_NAME}.*${env.BUILD_NUMBER}.\d+.*)/
 		                  def matcher = null
 
                       for(String line in currentBuild.getRawBuild().getLog(10)){
 
                   			matcher = line =~ artifactoryRegexLink_Pattern
-
-                  			if (matcher.matches())
+                  			if (matcher.matches() && matcher.hasGroup())
                   			{
-                  			  artifactoryLink = matcher[0][1]
+                  			  artifactoryLink = matcher.group("link")
                   			}
-
                       }
+                      artifactoryLink == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
                     }
 
 			  	          publishChecks name: 'Deployment',
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
                                   detailsURL: artifactoryLink
-              }
+                }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket

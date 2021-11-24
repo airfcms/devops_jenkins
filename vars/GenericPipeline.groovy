@@ -32,7 +32,7 @@ def call(Map pipelineParams) {
               steps {
 				        publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
-                              status: 'NONE'
+                              status: 'IN_PROGRESS'
 
                 sh 'env | sort' //To check available global variables
 
@@ -82,17 +82,15 @@ def call(Map pipelineParams) {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-
                     script {
                       sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                     }
                   }
+
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                   }
-                  script {
-                      println sonarDashboard
-                  }
+
                   //sh 'sleep 60' //For testing but couldn't see the changes...
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
@@ -126,7 +124,6 @@ def call(Map pipelineParams) {
                     )
 
                     script {
-  		                //def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
                       def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>${pipelineParams['artifactoryGenericRegistry_URL']}.*${pipelineParams['repositoryName']}.*${env.BRANCH_NAME}.*${env.BUILD_NUMBER}.\d+.*)/
 		                  def matcher = null
 
