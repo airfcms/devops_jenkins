@@ -5,10 +5,10 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 def call(Map pipelineParams) {
 
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-  sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
-  String artifactoryLink = ""
 
   sonarDashboard = "/dashboard?id="
+  sonarReportLink = ""
+  String artifactoryLink = ""
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
@@ -82,10 +82,9 @@ def call(Map pipelineParams) {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    
+
                     script {
-                      println "HELLO WORLD"
-                      sonarDashboard = env.SONAR_HOST_URL
+                      sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                     }
                   }
                   timeout(time: 5, unit: 'MINUTES') {
@@ -98,7 +97,7 @@ def call(Map pipelineParams) {
 				          publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
-                                detailsURL: sonarReportLink + pipelineParams['repositoryName']
+                                detailsURL: sonarReportLink
                 }
             } //stage(static analysis) closed bracket
             stage('deploy') {
@@ -108,7 +107,7 @@ def call(Map pipelineParams) {
                                   status: 'IN_PROGRESS'
                     rtServer (
                         id: pipelineParams['artifactoryGenericRegistry_ID'],
-                        url: pipelineParams['artifactoryGenericRegistry_URL'] + "/artifactory",
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
                         credentialsId: 'artifact_registry'
                     )
                     rtUpload(
@@ -133,11 +132,10 @@ def call(Map pipelineParams) {
 
                       for(String line in currentBuild.getRawBuild().getLog(10)){
 
-                  			matcher = line =~ artifactoryRegexLink_Pattern
-                  			if (matcher.matches() && matcher.hasGroup())
+                  			//matcher = line =~ artifactoryRegexLink_Pattern
+                  			if ((matcher = line =~ artifactoryRegexLink_Pattern).matches() && matcher.hasGroup())
                   			{
                   			  artifactoryLink = matcher.group("link")
-                          println artifactoryLink
                   			}
                       }
                       artifactoryLink == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
