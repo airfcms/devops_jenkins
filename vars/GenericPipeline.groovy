@@ -8,6 +8,8 @@ def call(Map pipelineParams) {
   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
   String artifactoryLink = ""
 
+  sonarDashboard = "/dashboard?id="
+
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
 	if (env.CHANGE_ID)
@@ -80,9 +82,17 @@ def call(Map pipelineParams) {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
+                    sonarDashboard = env.SONAR_HOST_URL
+                    script {
+                      println "HELLO WORLD"
+                      sonarDashboard = env.SONAR_HOST_URL
+                    }
                   }
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
+                  }
+                  script {
+                      println sonarDashboard
                   }
                   //sh 'sleep 60' //For testing but couldn't see the changes...
 				          publishChecks name: 'Static Analysis',
