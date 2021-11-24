@@ -136,7 +136,7 @@ def call(Map pipelineParams) {
                   			  artifactoryLink = matcher.group("link")
                   			}
                       }
-                      artifactoryLink == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
+                      artifactoryLink.length() == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
                     }
 
 			  	          publishChecks name: 'Deployment',
