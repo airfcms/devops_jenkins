@@ -127,6 +127,7 @@ def call(Map pipelineParams) {
                   			if (matcher.matches() && matcher.hasGroup())
                   			{
                   			  artifactoryLink = matcher.group("link")
+                          println artifactoryLink
                   			}
                       }
                       artifactoryLink == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
