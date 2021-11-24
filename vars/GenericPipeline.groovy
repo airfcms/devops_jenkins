@@ -82,7 +82,7 @@ def call(Map pipelineParams) {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    sonarDashboard = env.SONAR_HOST_URL
+                    
                     script {
                       println "HELLO WORLD"
                       sonarDashboard = env.SONAR_HOST_URL
