@@ -118,7 +118,7 @@ def call(Map pipelineParams) {
 
                     script {
   		                //def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
-                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>$pipelineParams['artifactoryGenericRegistry_URL'].*$pipelineParams['repositoryName'].*$env.BRANCH_NAME.*$env.BUILD_NUMBER.\d+.*)/
+                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>$pipelineParams[artifactoryGenericRegistry_URL].*$pipelineParams[repositoryName].*$env.BRANCH_NAME.*$env.BUILD_NUMBER.\d+.*)/
 		                  def matcher = null
 
                       for(String line in currentBuild.getRawBuild().getLog(10)){
