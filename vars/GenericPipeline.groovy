@@ -93,15 +93,17 @@ def call(Map pipelineParams) {
             } //stage(static analysis) closed bracket
             stage('deploy') {
               steps{
-
-                 rtServer (
-                    id: pipelineParams['artifactoryGenericRegistry_ID'],
-                    url: 'http://40.67.228.51:8082/artifactory',
-                    credentialsId: 'artifact_registry'
-                )
-                rtUpload(
-                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                      spec: """{
+                    publishChecks name: 'Deployment',
+                                  text: 'testing -> manual status: in progress',
+                                  status: 'IN_PROGRESS'
+                    rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: 'http://40.67.228.51:8082/artifactory',
+                        credentialsId: 'artifact_registry'
+                    )
+                    rtUpload(
+                        serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                        spec: """{
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
@@ -109,31 +111,32 @@ def call(Map pipelineParams) {
                                             }
                                          ]
                                 }"""
-                )
-                rtPublishBuildInfo (
-                    serverId: pipelineParams['artifactoryGenericRegistry_ID']
-                )
+                    )
+                    rtPublishBuildInfo (
+                        serverId: pipelineParams['artifactoryGenericRegistry_ID']
+                    )
 
-             script {
+                    script {
   		                def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
 		                  def matcher = null
 
-                     for(String line in currentBuild.getRawBuild().getLog(10)){
+                      for(String line in currentBuild.getRawBuild().getLog(10)){
 
                   			matcher = line =~ artifactoryRegexLink_Pattern
 
                   			if (matcher.matches())
                   			{
-                  			  println matcher[0][1]
                   			  artifactoryLink = matcher[0][1]
-                  			  println artifactoryLink
                   			}
 
-                     }
-              }
+                      }
+                    }
 
-			  	      publishChecks name: 'Deployment'
-              }
+			  	          publishChecks name: 'Deployment',
+                                  text: 'To view the artifactory please access it clicking the link below',
+                                  status: 'COMPLETED',
+                                  detailsURL: artifactoryLink
+                }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
