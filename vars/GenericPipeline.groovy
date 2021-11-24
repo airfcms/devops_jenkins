@@ -129,10 +129,10 @@ def call(Map pipelineParams) {
                       }
               }
 
-			  	      publishChecks name: 'Deployment',
+			  	      publishChecks name: 'Deployment'/*,
                               text: 'To view the artifact please access it clicking the link below',
                               status: 'COMPLETED',
-                              detailsURL: artifactoryLink
+                              detailsURL: artifactoryLink*/
               }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
