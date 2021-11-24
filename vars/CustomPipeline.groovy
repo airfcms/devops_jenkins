@@ -4,6 +4,8 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 def call(Map pipelineParams) {
    scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+   sonarReportLink = "http://13.79.114.164:9000/dashboard?id="
+   String artifactoryLink = ""
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
@@ -74,9 +76,11 @@ def call(Map pipelineParams) {
                   publishChecks name: 'Static Analysis',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
+
 		  sh"""
 			ctest -R "codeCoverage|cppcheckAnalysis"
 		  """
+
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
@@ -92,6 +96,9 @@ def call(Map pipelineParams) {
             }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
+                 publishChecks name: 'Deployment',
+                                  text: 'testing -> manual status: in progress',
+                                  status: 'IN_PROGRESS'
                  rtServer (
                     id: pipelineParams['artifactoryGenericRegistry_ID'],
                     url: 'http://40.67.228.51:8082/artifactory',
@@ -112,7 +119,26 @@ def call(Map pipelineParams) {
                     serverId: pipelineParams['artifactoryGenericRegistry_ID']
                 )
 
-				publishChecks name: 'Deployment'
+                script {
+  		                def artifactoryRegexLink_Pattern = /^Build\ssuccessfully\sdeployed.\sBrowse\sit\sin\sArtifactory\sunder\s(.*)$/
+		                  def matcher = null
+
+                      for(String line in currentBuild.getRawBuild().getLog(10)){
+
+                  			matcher = line =~ artifactoryRegexLink_Pattern
+
+                  			if (matcher.matches())
+                  			{
+                  			  artifactoryLink = matcher[0][1]
+                  			}
+
+                      }
+                    }
+
+			  	          publishChecks name: 'Deployment',
+                                  text: 'To view the artifactory please access it clicking the link below',
+                                  status: 'COMPLETED',
+                                  detailsURL: artifactoryLink
               }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
