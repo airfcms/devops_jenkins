@@ -143,7 +143,7 @@ def call(Map pipelineParams) {
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
                                   detailsURL: artifactoryLink,
-                                  annotations: [[path : "src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
+                                  annotations: [[path : "hello_world/src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
                 }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
