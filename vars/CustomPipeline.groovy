@@ -142,7 +142,9 @@ def call(Map pipelineParams) {
 			  	          publishChecks name: 'Deployment',
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
-                                  detailsURL: artifactoryLink
+                                  detailsURL: artifactoryLink,
+                                  actions: [[label: 'test', identifier: 'http://www.google.com', description: 'learning this api']]
+
                 }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
