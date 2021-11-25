@@ -138,12 +138,12 @@ def call(Map pipelineParams) {
                       artifactoryLink.length() == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
                     }
                     //check were Jenkins are in the file system to see the path value in path at publishChecks call
-                    sh 'ls -la'
+                    //sh 'ls -la'
 			  	          publishChecks name: 'Deployment',
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
-                                  detailsURL: artifactoryLink,
-                                  annotations: [[path : "hello_world/src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
+                                  detailsURL: artifactoryLink//,
+                                  //annotations: [[path : "hello_world/src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
                 }
             } //stage(deploy) closed bracket
           } //stages body closed bracket
