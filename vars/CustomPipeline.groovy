@@ -52,9 +52,13 @@ def call(Map pipelineParams) {
               }
             } //stage(build) closed bracket
             stage('unit testing'){
-              if (pipelineParams['fullTestAutomation'] == false)
-              {
-                 input "All the tests complete?"
+              script{
+                if (pipelineParams['fullTestAutomation'] == false)
+                {
+                  input{
+                    message "All the tests complete?"
+                  }
+                }
               }
 			  steps {
 				sh"""
