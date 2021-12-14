@@ -52,6 +52,10 @@ def call(Map pipelineParams) {
               }
             } //stage(build) closed bracket
             stage('unit testing'){
+              if (pipelineParams['fullTestAutomation'] == false)
+              {
+                 input "All the tests complete?"
+              }
 			  steps {
 				sh"""
 				   cd ${pipelineParams['cmakeBuildDir']}/tests
@@ -144,6 +148,14 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
+            // stage(promote){
+            //   if (pipelineParams['fullTestAutomation'] == false)
+            //   {
+            //      input "All the tests complete?"
+            //   }
+
+
+            // } //stage(promote) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
