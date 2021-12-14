@@ -27,15 +27,6 @@ def call(Map pipelineParams) {
           stages {
             stage('build') {
               steps {
-
-                script{
-                  if (pipelineParams['fullTestAutomation'] == false)
-                  {
-                    currentBuild.result = 'ABORTED'
-                    return
-                  }
-                }
-
                 publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
@@ -60,6 +51,9 @@ def call(Map pipelineParams) {
                               status: 'COMPLETED'
               }
             } //stage(build) closed bracket
+            stage('Promotion'){
+              input 'Perform Unit tests?'
+            }
             stage('unit testing'){
               steps {
                 sh"""
