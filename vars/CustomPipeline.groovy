@@ -51,16 +51,16 @@ def call(Map pipelineParams) {
                               status: 'COMPLETED'
               }
             } //stage(build) closed bracket
-            stage('Promotion'){
-              steps{
-                script {
-                  if (pipelineParams['fullTestAutomation'] != false)
-                    {
-                    input message: "Proceed to unit testing?"
-                    }
-                }
-              }
-            }
+            // stage('Promotion'){
+            //   steps{
+            //     script {
+            //       if (pipelineParams['fullTestAutomation'] != false)
+            //         {
+            //         input message: "Proceed to unit testing?"
+            //         }
+            //     }
+            //   }
+            // }
             stage('unit testing'){
               steps {
                 sh"""
@@ -154,14 +154,29 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
-            // stage(promote){
-            //   if (pipelineParams['fullTestAutomation'] == false)
-            //   {
-            //      input "All the tests complete?"
-            //   }
+
+            stage(promote){
+              if (pipelineParams['fullTestAutomation'] == false)
+              {
+                rtAddInteractivePromotion (
+                  buildName: pipelineParams['repositoryName'],
+                  buildNumber: env.BUILD_ID,
+                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                  // Indicates whether to copy the files. Move is the default.
+                  copy: true
+                )
+              } else{
+                rtPromote (
+                  buildName: pipelineParams['repositoryName'],
+                  buildNumber: env.BUILD_ID,
+                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                  // Indicates whether to copy the files. Move is the default.
+                  copy: true
+                )
+              }
 
 
-            // } //stage(promote) closed bracket
+            } //stage(promote) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
