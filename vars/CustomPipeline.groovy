@@ -52,21 +52,21 @@ def call(Map pipelineParams) {
               }
             } //stage(build) closed bracket
             stage('unit testing'){
-              script{
-                if (pipelineParams['fullTestAutomation'] == false)
-                {
-                  input{
-                    message "All the tests complete?"
+              steps {
+                script{
+                  if (pipelineParams['fullTestAutomation'] == false)
+                  {
+                    input{
+                      message "All the tests complete?"
+                    }
                   }
                 }
-              }
-			  steps {
-				sh"""
-				   cd ${pipelineParams['cmakeBuildDir']}/tests
-			           ctest -R unitTests
-				"""
-				publishChecks name: 'Unit Testing'
-			  }
+                sh"""
+                  cd ${pipelineParams['cmakeBuildDir']}/tests
+                        ctest -R unitTests
+                """
+                publishChecks name: 'Unit Testing'
+                }
             }
             stage('sw integration testing') {
 			  steps {
