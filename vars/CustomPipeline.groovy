@@ -54,7 +54,7 @@ def call(Map pipelineParams) {
             stage('Promotion'){
               steps{
                 script {
-                  if (pipelineParams['fullTestAutomation'] == false)
+                  if (pipelineParams['fullTestAutomation'] != false)
                     {
                     input message: "Proceed to unit testing?"
                     }
