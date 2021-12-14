@@ -52,7 +52,8 @@ def call(Map pipelineParams) {
               }
             } //stage(build) closed bracket
             stage('Promotion'){
-              input 'Perform Unit tests?'
+              input(
+                message: 'Perform Unit tests?')
             }
             stage('unit testing'){
               steps {
