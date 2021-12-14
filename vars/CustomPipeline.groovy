@@ -51,16 +51,16 @@ def call(Map pipelineParams) {
                               status: 'COMPLETED'
               }
             } //stage(build) closed bracket
+
+            if (pipelineParams['fullTestAutomation'] == false)
+              {
+                input{
+                  message "All the tests complete?"
+                }
+              }
+
             stage('unit testing'){
               steps {
-                script{
-                  if (pipelineParams['fullTestAutomation'] == false)
-                  {
-                    input{
-                      message "All the tests complete?"
-                    }
-                  }
-                }
                 sh"""
                   cd ${pipelineParams['cmakeBuildDir']}/tests
                         ctest -R unitTests
