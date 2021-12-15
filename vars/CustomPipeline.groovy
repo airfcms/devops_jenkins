@@ -157,6 +157,11 @@ def call(Map pipelineParams) {
 
             stage(promote){
               steps{
+                rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                        credentialsId: 'artifact_registry'
+                    )
                 rtAddInteractivePromotion (
                   buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
                   buildNumber: env.BUILD_ID,
