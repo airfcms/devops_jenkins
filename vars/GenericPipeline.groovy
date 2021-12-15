@@ -147,10 +147,10 @@ def call(Map pipelineParams) {
                 }
             } //stage(deploy) closed bracket
             stage(promote){
-              if (pipelineParams['fullTestAutomation'] == false)
+              if (pipelineParams['fullTestAutomation'] == true)
               {
                 rtAddInteractivePromotion (
-                  buildName: 'pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}',
+                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   // Name of target repository in Artifactory
@@ -162,7 +162,7 @@ def call(Map pipelineParams) {
                 )
               } else{
                 rtPromote (
-                  buildName: 'pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}',
+                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   //If set, the promotion window will display this label instead of the build name and number.

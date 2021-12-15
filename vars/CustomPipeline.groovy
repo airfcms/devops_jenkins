@@ -159,7 +159,7 @@ def call(Map pipelineParams) {
               if (pipelineParams['fullTestAutomation'] == false)
               {
                 rtAddInteractivePromotion (
-                  buildName: 'pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}',
+                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   // Name of target repository in Artifactory
@@ -171,7 +171,7 @@ def call(Map pipelineParams) {
                 )
               } else{
                 rtPromote (
-                  buildName: 'pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}',
+                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   //If set, the promotion window will display this label instead of the build name and number.
