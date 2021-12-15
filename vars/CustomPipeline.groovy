@@ -157,36 +157,38 @@ def call(Map pipelineParams) {
 
             stage(promote){
               steps{
-                if (pipelineParams['fullTestAutomation'] == false)
-                {
-                  rtAddInteractivePromotion (
-                    buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
-                    buildNumber: env.BUILD_ID,
-                    serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                    // Name of target repository in Artifactory
-                    targetRepo: 'staging-repo',
-                    // Specifies the source repository for build artifacts.
-                    sourceRepo: 'build-repo',
-                    // Indicates whether to copy the files. Move is the default.
-                    copy: true
-                  )
-                } else{
-                  rtPromote (
-                    buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
-                    buildNumber: env.BUILD_ID,
-                    serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                    //If set, the promotion window will display this label instead of the build name and number.
-                    displayName: 'Promote me please',
-                    // Name of target repository in Artifactory
-                    targetRepo: 'staging-repo',
-                    // Comment and Status to be displayed in the Build History tab in Artifactory
-                    comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
-                    status: 'Released',
-                    // Specifies the source repository for build artifacts.
-                    sourceRepo: 'build-repo',
-                    // Indicates whether to copy the files. Move is the default.
-                    copy: true
-                  )
+                script {
+                  if (pipelineParams['fullTestAutomation'] == false)
+                  {
+                    rtAddInteractivePromotion (
+                      buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
+                      buildNumber: env.BUILD_ID,
+                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                      // Name of target repository in Artifactory
+                      targetRepo: 'staging-repo',
+                      // Specifies the source repository for build artifacts.
+                      sourceRepo: 'build-repo',
+                      // Indicates whether to copy the files. Move is the default.
+                      copy: true
+                    )
+                  } else{
+                    rtPromote (
+                      buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
+                      buildNumber: env.BUILD_ID,
+                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                      //If set, the promotion window will display this label instead of the build name and number.
+                      displayName: 'Promote me please',
+                      // Name of target repository in Artifactory
+                      targetRepo: 'staging-repo',
+                      // Comment and Status to be displayed in the Build History tab in Artifactory
+                      comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
+                      status: 'Released',
+                      // Specifies the source repository for build artifacts.
+                      sourceRepo: 'build-repo',
+                      // Indicates whether to copy the files. Move is the default.
+                      copy: true
+                    )
+                  }
                 }
               }
             } //stage(promote) closed bracket
