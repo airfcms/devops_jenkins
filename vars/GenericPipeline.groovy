@@ -154,7 +154,7 @@ def call(Map pipelineParams) {
                         credentialsId: 'artifact_registry'
                     )
                 rtPromote (
-                  buildName: pipelineParams['repositoryName'] + '::' + INFERRED_BRANCH_NAME,
+                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   // Name of target repository in Artifactory

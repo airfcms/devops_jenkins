@@ -163,7 +163,7 @@ def call(Map pipelineParams) {
                         credentialsId: 'artifact_registry'
                     )
                 rtAddInteractivePromotion (
-                  buildName: pipelineParams['repositoryName'] + '::' + INFERRED_BRANCH_NAME,
+                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   //If set, the promotion window will display this label instead of the build name and number.
