@@ -103,11 +103,11 @@ def call(Map pipelineParams) {
                     publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
                                   status: 'IN_PROGRESS'
-                    // rtServer (
-                    //     id: pipelineParams['artifactoryGenericRegistry_ID'],
-                    //     url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
-                    //     credentialsId: 'artifact_registry'
-                    // )
+                    rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                        credentialsId: 'artifact_registry'
+                    )
                     rtUpload(
                         serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                         spec: """{
@@ -148,22 +148,22 @@ def call(Map pipelineParams) {
             } //stage(deploy) closed bracket
             stage(promote){
               steps{
-                // rtServer (
-                //         id: pipelineParams['artifactoryGenericRegistry_ID'],
-                //         url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
-                //         credentialsId: 'artifact_registry'
-                //     )
+                rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                        credentialsId: 'artifact_registry'
+                    )
                 rtPromote (
-                  //buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
-                  //buildNumber: env.BUILD_ID,
+                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
+                  buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   // Name of target repository in Artifactory
                   targetRepo: 'staging-repo',
                   // Comment and Status to be displayed in the Build History tab in Artifactory
-                  //comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
-                  //status: 'Released',
+                  comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
+                  status: 'Released',
                   // Specifies the source repository for build artifacts.
-                  //sourceRepo: 'build-repo',
+                  sourceRepo: 'build-repo',
                   // Indicates whether to copy the files. Move is the default.
                   copy: true
                 )
