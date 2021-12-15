@@ -168,7 +168,7 @@ def call(Map pipelineParams) {
                   //If set, the promotion window will display this label instead of the build name and number.
                   displayName: 'Promote me please',
                   // Name of target repository in Artifactory
-                  targetRepo: 'staging-repo'
+                  targetRepo: 'staging-repo',
                   // Comment and Status to be displayed in the Build History tab in Artifactory
                   comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
                   status: 'Released',
