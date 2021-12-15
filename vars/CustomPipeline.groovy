@@ -159,7 +159,7 @@ def call(Map pipelineParams) {
               if (pipelineParams['fullTestAutomation'] == false)
               {
                 rtAddInteractivePromotion (
-                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
+                  buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   // Name of target repository in Artifactory
@@ -171,7 +171,7 @@ def call(Map pipelineParams) {
                 )
               } else{
                 rtPromote (
-                  buildName: "pipelineParams['repositoryName']::${INFERRED_BRANCH_NAME}",
+                  buildName: pipelineParams['repositoryName'] + '::' + ${INFERRED_BRANCH_NAME},
                   buildNumber: env.BUILD_ID,
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   //If set, the promotion window will display this label instead of the build name and number.
@@ -179,7 +179,7 @@ def call(Map pipelineParams) {
                   // Name of target repository in Artifactory
                   targetRepo: 'staging-repo'
                   // Comment and Status to be displayed in the Build History tab in Artifactory
-                  //comment: "Promoting env.BUILD_ID to Staging",
+                  comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
                   status: 'Released',
                   // Specifies the source repository for build artifacts.
                   sourceRepo: 'build-repo',
