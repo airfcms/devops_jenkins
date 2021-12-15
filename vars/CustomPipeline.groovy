@@ -179,7 +179,7 @@ def call(Map pipelineParams) {
                   // Name of target repository in Artifactory
                   targetRepo: 'staging-repo'
                   // Comment and Status to be displayed in the Build History tab in Artifactory
-                  comment: "Promoting env.BUILD_ID to Staging",
+                  //comment: "Promoting env.BUILD_ID to Staging",
                   status: 'Released',
                   // Specifies the source repository for build artifacts.
                   sourceRepo: 'build-repo',
