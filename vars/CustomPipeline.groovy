@@ -23,10 +23,10 @@ def call(Map pipelineParams) {
             stage('build') {
               agent{
                 docker {
-                  reuseNode true
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
+                  reuseNode true
                 }
               }
               steps {
