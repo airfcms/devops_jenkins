@@ -63,6 +63,13 @@ def call(Map pipelineParams) {
             //   }
             // }
             stage('unit testing'){
+              agent{
+                docker {
+                  image pipelineParams['dockerImage']
+                  registryUrl pipelineParams['dockerRegistryUrl']
+                  registryCredentialsId 'docker-registry'
+                  reuseNode true
+                }
               steps {
                 sh"""
                   cd ${pipelineParams['cmakeBuildDir']}/tests
