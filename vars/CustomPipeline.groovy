@@ -107,11 +107,7 @@ def call(Map pipelineParams) {
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
-                    sh """
-                    ls -la /opt/jenkins/small-agent/tools/hudson.plugins.sonar.SonarRunnerInstallation
-                    ls -la /opt/jenkins/small-agent/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonnar_scanner
-                    cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties
-                    """
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     script {
                       sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                     }
