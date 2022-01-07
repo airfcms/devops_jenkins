@@ -99,6 +99,8 @@ def call(Map pipelineParams) {
                     ctest -R "codeCoverage|cppcheckAnalysis"
                     ls -la
                     ls -la ..
+                    ls -la /opt/jenkins/small-agent/tools/hudson.plugins.sonar.SonarRunnerInstallation
+                    ls -la /opt/jenkins/small-agent/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonnar_scanner
                     pwd
                     """
 
