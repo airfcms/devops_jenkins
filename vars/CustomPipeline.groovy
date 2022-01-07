@@ -75,6 +75,7 @@ def call(Map pipelineParams) {
                 ls -la ..
                 pwd
                 echo ${WORKSPACE}
+                echo ${WORKSPACE}/${pipelineParams['repositoryName']}
                 """
                 junit skipPublishingChecks: true, testResults: "./${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
                 //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
