@@ -69,14 +69,6 @@ def call(Map pipelineParams) {
                 """
                 publishChecks name: 'Unit Testing'
 
-                sh """
-                cd ${pipelineParams['cmakeBuildDir']}
-                ls -la
-                ls -la ..
-                pwd
-                echo ${WORKSPACE}
-                echo ${WORKSPACE}/${pipelineParams['repositoryName']}
-                """
                 junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
                 //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
 
@@ -103,8 +95,8 @@ def call(Map pipelineParams) {
                               status: 'IN_PROGRESS'
 
 		  sh"""
-      cd tests
 			ctest -R "codeCoverage|cppcheckAnalysis"
+      ls -la
 		  """
 
                   withSonarQubeEnv('sonarqube_airfcms') {
@@ -122,10 +114,8 @@ def call(Map pipelineParams) {
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
 
-                  //Junit to publish the reports
-                sh 'cd ..'
-                junit skipPublishingChecks: true, testResults: 'gcovr-report.xml'
-                junit skipPublishingChecks: true, testResults: 'cppcheck-report.xml'
+                    //cobertura to publish the reports
+                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}gcovr-report.xml"
                 }
 
             }//stage(static analysis) closed bracket
