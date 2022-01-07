@@ -40,6 +40,7 @@ def call(Map pipelineParams) {
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
+
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
@@ -50,14 +51,29 @@ def call(Map pipelineParams) {
                               status: 'COMPLETED'
               }
             } //stage(build) closed bracket
+            // stage('Promotion'){
+            //   steps{
+            //     script {
+            //       if (pipelineParams['fullTestAutomation'] != false)
+            //         {
+            //         input message: "Proceed to unit testing?"
+            //         }
+            //     }
+            //   }
+            // }
             stage('unit testing'){
-			  steps {
-				sh"""
-				   cd ${pipelineParams['cmakeBuildDir']}/tests
-			           ctest -R unitTests
-				"""
-				publishChecks name: 'Unit Testing'
-			  }
+              steps {
+                sh"""
+                  cd ${pipelineParams['cmakeBuildDir']}/tests
+                        ctest -R unitTests
+                """
+                publishChecks name: 'Unit Testing'
+
+                junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
+                //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
+
+                }
+
             }
             stage('sw integration testing') {
 			  steps {
@@ -78,12 +94,17 @@ def call(Map pipelineParams) {
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
-		  sh"""
-			ctest -R "codeCoverage|cppcheckAnalysis"
-		  """
+                    sh"""
+                    cd ${pipelineParams['cmakeBuildDir']}/tests
+                    ctest -R "codeCoverage|cppcheckAnalysis"
+                    """
+
+                    //cobertura to publish the reports
+                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
+                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
                     sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     script {
                       sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
@@ -96,7 +117,9 @@ def call(Map pipelineParams) {
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
+
                 }
+
             }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
@@ -143,6 +166,31 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
+
+            stage(promote){
+              steps{
+                rtServer (
+                        id: pipelineParams['artifactoryGenericRegistry_ID'],
+                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                        credentialsId: 'artifact_registry'
+                    )
+                rtAddInteractivePromotion (
+                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
+                  buildNumber: env.BUILD_ID,
+                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                  //If set, the promotion window will display this label instead of the build name and number.
+                  displayName: 'Promote me please',
+                  // Name of target repository in Artifactory
+                  targetRepo: 'staging-repo',
+                  // Specifies the source repository for build artifacts.
+                  sourceRepo: 'build-repo',
+                  // Indicates whether to copy the files. Move is the default.
+                  copy: true
+                )
+              }
+            } //stage(promote) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
+
+
