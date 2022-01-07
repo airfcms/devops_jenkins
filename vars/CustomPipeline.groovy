@@ -98,6 +98,7 @@ def call(Map pipelineParams) {
                     cd ${pipelineParams['cmakeBuildDir']}/tests
                     ctest -R "codeCoverage|cppcheckAnalysis"
                     ls -la
+                    ls -la ..
                     """
 
                     //cobertura to publish the reports
