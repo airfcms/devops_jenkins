@@ -96,16 +96,18 @@ def call(Map pipelineParams) {
             }
             stage('static analysis') {
               agent{
+                environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
                 docker {
                   image pipelineParams['dockerImage']
+                  args '-v $HOME/sonar:${scannerHome}/bin'
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
                   reuseNode true
                 }
           }
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
+                
                 steps {
                   publishChecks name: 'Static Analysis',
                               text: 'testing -> manual status: in progress',
@@ -122,7 +124,7 @@ def call(Map pipelineParams) {
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; .${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; sonar/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     script {
                       sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                     }
