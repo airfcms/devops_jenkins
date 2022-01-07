@@ -99,6 +99,7 @@ def call(Map pipelineParams) {
                     ctest -R "codeCoverage|cppcheckAnalysis"
                     ls -la
                     ls -la ..
+                    pwd
                     """
 
                     //cobertura to publish the reports
