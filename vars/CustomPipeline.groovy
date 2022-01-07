@@ -94,11 +94,14 @@ def call(Map pipelineParams) {
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
-		  sh"""
-      cd ${pipelineParams['cmakeBuildDir']}/tests
-			ctest -R "codeCoverage|cppcheckAnalysis"
-      ls -la
-		  """
+                    sh"""
+                    cd ${pipelineParams['cmakeBuildDir']}/tests
+                    ctest -R "codeCoverage|cppcheckAnalysis"
+                    ls -la
+                    """
+
+                    //cobertura to publish the reports
+                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}gcovr-report.xml"
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
@@ -115,8 +118,6 @@ def call(Map pipelineParams) {
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
 
-                    //cobertura to publish the reports
-                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}gcovr-report.xml"
                 }
 
             }//stage(static analysis) closed bracket
