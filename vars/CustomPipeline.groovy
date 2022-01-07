@@ -3,7 +3,6 @@ import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 def call(Map pipelineParams) {
-
   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 
   sonarDashboard = "/dashboard?id="
@@ -12,13 +11,12 @@ def call(Map pipelineParams) {
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
-	if (env.CHANGE_ID)
-  {
+	if (env.CHANGE_ID) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
 
     pipeline {
-        agent any
+         agent any
           stages {
             stage('build') {
               agent{
@@ -28,12 +26,12 @@ def call(Map pipelineParams) {
                   registryCredentialsId 'docker-registry'
                   reuseNode true
                 }
-              }
+          }
               steps {
-				        publishChecks name: 'Build',
+                publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
-
+                //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
@@ -49,55 +47,81 @@ def call(Map pipelineParams) {
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
-                //sh 'sleep 60' //For testing but couldn't see the changes...
+
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
-             }
+              }
             } //stage(build) closed bracket
+            // stage('Promotion'){
+            //   steps{
+            //     script {
+            //       if (pipelineParams['fullTestAutomation'] != false)
+            //         {
+            //         input message: "Proceed to unit testing?"
+            //         }
+            //     }
+            //   }
+            // }
             stage('unit testing'){
-			        steps {
-				        publishChecks name: 'Unit Testing'
-			        }
+              steps {
+                sh"""
+                  cd ${pipelineParams['cmakeBuildDir']}/tests
+                        ctest -R unitTests
+                """
+                publishChecks name: 'Unit Testing'
+
+                junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
+                //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
+
+                }
+
             }
             stage('sw integration testing') {
-			        steps {
-				        publishChecks name: 'Integration Testing'
-			        }
+			  steps {
+				publishChecks name: 'Integration Testing'
+			 }
             }
             stage('hw/sw integration testing') {
-			        steps {
-			          publishChecks name: 'HW/SW Integration Testing'
-			        }
+			  steps {
+			        publishChecks name: 'HW/SW Integration Testing'
+			  }
             }
             stage('static analysis') {
                 environment {
                   scannerHome = tool 'sonnar_scanner'
                 }
                 steps {
-				          publishChecks name: 'Static Analysis',
-                                text: 'testing -> manual status: in progress',
-                                status: 'IN_PROGRESS'
+                  publishChecks name: 'Static Analysis',
+                              text: 'testing -> manual status: in progress',
+                              status: 'IN_PROGRESS'
+
+                    sh"""
+                    cd ${pipelineParams['cmakeBuildDir']}/tests
+                    ctest -R "codeCoverage|cppcheckAnalysis"
+                    """
+
+                    //cobertura to publish the reports
+                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
                     sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; .${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
                     script {
                       sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                     }
                   }
-
                   timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                   }
-
-                  //sh 'sleep 60' //For testing but couldn't see the changes...
-				          publishChecks name: 'Static Analysis',
+				  publishChecks name: 'Static Analysis',
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
+
                 }
-            } //stage(static analysis) closed bracket
+
+            }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
                     publishChecks name: 'Deployment',
@@ -137,15 +161,13 @@ def call(Map pipelineParams) {
                       }
                       artifactoryLink.length() == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
                     }
-                    //check were Jenkins are in the file system to see the path value in path at publishChecks call
-                    //sh 'ls -la'
 			  	          publishChecks name: 'Deployment',
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
-                                  detailsURL: artifactoryLink//,
-                                  //annotations: [[path : "hello_world/src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
+                                  detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
+
             stage(promote){
               steps{
                 rtServer (
@@ -153,20 +175,6 @@ def call(Map pipelineParams) {
                         url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
                         credentialsId: 'artifact_registry'
                     )
-                // rtPromote (
-                //   buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
-                //   buildNumber: env.BUILD_ID,
-                //   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                //   // Name of target repository in Artifactory
-                //   targetRepo: 'staging-repo',
-                //   // Comment and Status to be displayed in the Build History tab in Artifactory
-                //   comment: 'Promoting ' + env.BUILD_ID + ' to Staging',
-                //   status: 'Released',
-                //   // Specifies the source repository for build artifacts.
-                //   sourceRepo: 'build-repo',
-                //   // Indicates whether to copy the files. Move is the default.
-                //   copy: true
-                // )
                 rtAddInteractivePromotion (
                   buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
                   buildNumber: env.BUILD_ID,
