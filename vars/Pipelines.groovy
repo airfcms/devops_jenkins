@@ -8,7 +8,7 @@ def call(body) {
     switch(pipelineParams['repositoryName'])
     {
 	case "smoketest_project":
-		CustomPipeline(pipelineParams)
+		GenericPipeline(pipelineParams)
 	break;
 	default:
 		GenericPipeline(pipelineParams)
