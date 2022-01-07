@@ -61,7 +61,7 @@ def call(Map pipelineParams) {
             //     }
             //   }
             // }
-            /* stage('unit testing'){
+            stage('unit testing'){
               steps {
                 sh"""
                   cd ${pipelineParams['cmakeBuildDir']}/tests
@@ -75,7 +75,7 @@ def call(Map pipelineParams) {
 
                 }
 
-            } */
+            }
             stage('sw integration testing') {
 			  steps {
 				publishChecks name: 'Integration Testing'
@@ -96,6 +96,7 @@ def call(Map pipelineParams) {
                               status: 'IN_PROGRESS'
 
 		  sh"""
+      cd tests
 			ctest -R "codeCoverage|cppcheckAnalysis"
 		  """
 
@@ -115,9 +116,7 @@ def call(Map pipelineParams) {
                                 detailsURL: sonarReportLink
 
                   //Junit to publish the reports
-                sh"""
-                cd "${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}"
-                """
+                sh 'cd ..'
                 junit skipPublishingChecks: true, testResults: 'gcovr-report.xml'
                 junit skipPublishingChecks: true, testResults: 'cppcheck-report.xml'
                 }
