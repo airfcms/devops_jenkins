@@ -95,6 +95,7 @@ def call(Map pipelineParams) {
                               status: 'IN_PROGRESS'
 
 		  sh"""
+      cd ${pipelineParams['cmakeBuildDir']}/tests
 			ctest -R "codeCoverage|cppcheckAnalysis"
       ls -la
 		  """
