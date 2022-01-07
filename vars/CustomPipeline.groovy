@@ -87,7 +87,7 @@ def call(Map pipelineParams) {
             }
             stage('static analysis') {
                 environment {
-                  scannerHome = tool 'sonar_scanner'
+                  scannerHome = tool 'sonnar_scanner'
                 }
                 steps {
                   publishChecks name: 'Static Analysis',
