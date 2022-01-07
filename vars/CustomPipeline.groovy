@@ -70,6 +70,7 @@ def call(Map pipelineParams) {
                   registryCredentialsId 'docker-registry'
                   reuseNode true
                 }
+          }
               steps {
                 sh"""
                   cd ${pipelineParams['cmakeBuildDir']}/tests
