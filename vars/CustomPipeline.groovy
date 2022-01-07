@@ -95,10 +95,10 @@ def call(Map pipelineParams) {
 			  }
             }
             stage('static analysis') {
-              agent{
-                environment {
+              environment {
                   scannerHome = tool 'sonnar_scanner'
                 }
+              agent{
                 docker {
                   image pipelineParams['dockerImage']
                   args '-v $HOME/sonar:${scannerHome}/bin'
