@@ -16,10 +16,7 @@ def call(Map pipelineParams) {
 	}
 
     pipeline {
-      agent any
-         stages {
-            stage('build') {
-              agent{
+         agent{
                 docker {
                   reuseNode true
                   image pipelineParams['dockerImage']
@@ -27,6 +24,8 @@ def call(Map pipelineParams) {
                   registryCredentialsId 'docker-registry'
                 }
           }
+          stages {
+            stage('build') {
               steps {
                 publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
