@@ -73,7 +73,7 @@ def call(Map pipelineParams) {
                 cd ${pipelineParams['cmakeBuildDir']}
                 ls -la
                 """
-                junit skipPublishingChecks: true, testResults: 'gtest-report.xml'
+                junit skipPublishingChecks: true, testResults: "./${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
                 //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
 
                 }
