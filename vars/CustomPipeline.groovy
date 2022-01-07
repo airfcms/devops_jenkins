@@ -69,8 +69,8 @@ def call(Map pipelineParams) {
                 """
                 publishChecks name: 'Unit Testing'
 
-                sh 'cd ..'
-                junit skipPublishingChecks: true, testResults: 'gtest-report.xml'
+                sh 'ls -la ..'
+                junit skipPublishingChecks: true, testResults: '${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}/gtest-report.xml'
                 //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
 
                 }
