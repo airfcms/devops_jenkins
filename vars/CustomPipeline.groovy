@@ -113,12 +113,12 @@ def call(Map pipelineParams) {
                                 text: 'To view the SonarQube report please access it clicking the link below',
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
-                }
 
-                //Junit to publish the reports
+                  //Junit to publish the reports
                 sh 'cd ${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}'
                 junit skipPublishingChecks: true, testResults: 'gcovr-report.xml'
                 junit skipPublishingChecks: true, testResults: 'cppcheck-report.xml'
+                }
 
             }//stage(static analysis) closed bracket
             stage('deploy') {
