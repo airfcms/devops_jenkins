@@ -15,11 +15,12 @@ def call(Map pipelineParams) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
 
-  environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
+
     pipeline {
          agent any
+           environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
           stages {
             stage('build') {
               agent{
