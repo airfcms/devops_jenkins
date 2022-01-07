@@ -61,7 +61,7 @@ def call(Map pipelineParams) {
             //     }
             //   }
             // }
-            stage('unit testing'){
+            /* stage('unit testing'){
               steps {
                 sh"""
                   cd ${pipelineParams['cmakeBuildDir']}/tests
@@ -71,11 +71,11 @@ def call(Map pipelineParams) {
 
                 sh 'cd ..'
                 junit skipPublishingChecks: true, testResults: 'gtest-report.xml'
-                junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
+                //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
 
                 }
 
-            }
+            } */
             stage('sw integration testing') {
 			  steps {
 				publishChecks name: 'Integration Testing'
@@ -114,6 +114,12 @@ def call(Map pipelineParams) {
                                 status: 'COMPLETED',
                                 detailsURL: sonarReportLink
                 }
+
+                //Junit to publish the reports
+                sh 'cd ${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}'
+                junit skipPublishingChecks: true, testResults: 'gcovr-report.xml'
+                junit skipPublishingChecks: true, testResults: 'cppcheck-report.xml'
+
             }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
