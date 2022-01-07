@@ -115,7 +115,9 @@ def call(Map pipelineParams) {
                                 detailsURL: sonarReportLink
 
                   //Junit to publish the reports
-                sh 'cd ${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}'
+                sh"""
+                cd "${WORKSPACE}/${pipelineParams['repositoryName']}/${pipelineParams['cmakeBuildDir']}"
+                """
                 junit skipPublishingChecks: true, testResults: 'gcovr-report.xml'
                 junit skipPublishingChecks: true, testResults: 'cppcheck-report.xml'
                 }
