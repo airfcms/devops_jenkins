@@ -2,23 +2,21 @@ import hudson.model.Run;
 import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
+//Cleaning is needed(Testing in needed -> Env.variables) and Integration with SonnarQube
 def call(Map pipelineParams) {
-  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-
-  sonarDashboard = "/dashboard?id="
-  sonarReportLink = ""
-  String artifactoryLink = ""
+   scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+	//ChecksPublisher publisher = GitHubChecksPublisherFactory.fromRun(run);
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
-
+	
 	if (env.CHANGE_ID) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
-
+	
     pipeline {
          agent{
                 docker {
-                  reuseNode true
+                  reuseNode true //Don't see the difference on::off ### From the consoleOutput it seems the image is re>                  
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
@@ -27,9 +25,6 @@ def call(Map pipelineParams) {
           stages {
             stage('build') {
               steps {
-                publishChecks name: 'Build',
-                              text: 'testing -> manual status: in progress',
-                              status: 'IN_PROGRESS'
                 //Link can't be literally here #########
                 sh 'env | sort' //To check available global variables
 
@@ -40,40 +35,23 @@ def call(Map pipelineParams) {
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
-
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
-
-				        publishChecks name: 'Build',
-                              status: 'COMPLETED'
-              }
+				 
+				 publishChecks name: 'Build'
+             }
             } //stage(build) closed bracket
-            // stage('Promotion'){
-            //   steps{
-            //     script {
-            //       if (pipelineParams['fullTestAutomation'] != false)
-            //         {
-            //         input message: "Proceed to unit testing?"
-            //         }
-            //     }
-            //   }
-            // }
             stage('unit testing'){
-              steps {
-                sh"""
-                  cd ${pipelineParams['cmakeBuildDir']}/tests
-                        ctest -R unitTests
-                """
-                publishChecks name: 'Unit Testing'
-
-                junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
-                //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
-
-                }
-
+			  steps {
+				sh"""
+				   cd ${pipelineParams['cmakeBuildDir']}/tests
+			           ctest -R unitTests
+				"""
+				publishChecks name: 'Unit Testing'
+			  }
             }
             stage('sw integration testing') {
 			  steps {
@@ -85,55 +63,16 @@ def call(Map pipelineParams) {
 			        publishChecks name: 'HW/SW Integration Testing'
 			  }
             }
-            stage('static analysis') {
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
-                steps {
-                  publishChecks name: 'Static Analysis',
-                              text: 'testing -> manual status: in progress',
-                              status: 'IN_PROGRESS'
-
-                    sh"""
-                    cd ${pipelineParams['cmakeBuildDir']}/tests
-                    ctest -R "codeCoverage|cppcheckAnalysis"
-                    """
-
-                    //cobertura to publish the reports
-                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
-
-                  withSonarQubeEnv('sonarqube_airfcms') {
-                    //-X is enabled to get more information in console output (jenkins)
-                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                    script {
-                      sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
-                    }
-                  }
-                  timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                  }
-				  publishChecks name: 'Static Analysis',
-                                text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'COMPLETED',
-                                detailsURL: sonarReportLink
-
-                }
-
-            }//stage(static analysis) closed bracket
             stage('deploy') {
               steps{
-                    publishChecks name: 'Deployment',
-                                  text: 'testing -> manual status: in progress',
-                                  status: 'IN_PROGRESS'
-                    rtServer (
-                        id: pipelineParams['artifactoryGenericRegistry_ID'],
-                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
-                        credentialsId: 'artifact_registry'
-                    )
-                    rtUpload(
-                        serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                        spec: """{
+                 rtServer (
+                    id: pipelineParams['artifactoryGenericRegistry_ID'],
+                    url: 'http://40.67.228.51:8082/artifactory',
+                    credentialsId: 'artifact_registry'
+                )
+                rtUpload(
+                      serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                      spec: """{
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
@@ -141,56 +80,32 @@ def call(Map pipelineParams) {
                                             }
                                          ]
                                 }"""
-                    )
-                    rtPublishBuildInfo (
-                        serverId: pipelineParams['artifactoryGenericRegistry_ID']
-                    )
-
-                    script {
-                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>${pipelineParams['artifactoryGenericRegistry_URL']}.*${pipelineParams['repositoryName']}.*${env.BRANCH_NAME}.*${env.BUILD_NUMBER}.\d+.*)/
-		                  def matcher = null
-
-                      for(String line in currentBuild.getRawBuild().getLog(10)){
-
-                  			matcher = line =~ artifactoryRegexLink_Pattern
-                  			if (matcher.matches() && matcher.hasGroup())
-                  			{
-                  			  artifactoryLink = matcher.group("link")
-                  			}
-                      }
-                      artifactoryLink.length() == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
-                    }
-			  	          publishChecks name: 'Deployment',
-                                  text: 'To view the artifactory please access it clicking the link below',
-                                  status: 'COMPLETED',
-                                  detailsURL: artifactoryLink
-                }
-            } //stage(deploy) closed bracket
-
-            stage(promote){
-              steps{
-                rtServer (
-                        id: pipelineParams['artifactoryGenericRegistry_ID'],
-                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
-                        credentialsId: 'artifact_registry'
-                    )
-                rtAddInteractivePromotion (
-                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
-                  buildNumber: env.BUILD_ID,
-                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                  //If set, the promotion window will display this label instead of the build name and number.
-                  displayName: 'Promote me please',
-                  // Name of target repository in Artifactory
-                  targetRepo: 'staging-repo',
-                  // Specifies the source repository for build artifacts.
-                  sourceRepo: 'build-repo',
-                  // Indicates whether to copy the files. Move is the default.
-                  copy: true
                 )
+                rtPublishBuildInfo (
+                    serverId: pipelineParams['artifactoryGenericRegistry_ID']
+                )
+				
+				publishChecks name: 'Deployment'
               }
-            } //stage(promote) closed bracket
+            } //stage(deploy) closed bracket
+            stage('static analysis') {
+                environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
+                steps {
+		  sh"""
+			ctest -R "codeCoverage|cppcheckAnalysis"
+		  """
+                  withSonarQubeEnv('sonarqube_airfcms') {
+                    //-X is enabled to get more information in console output (jenkins)
+                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                  }
+                  timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                  }
+				  publishChecks name: 'Static Analysis'
+                }
+            }
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
-
-
