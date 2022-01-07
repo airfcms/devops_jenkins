@@ -97,7 +97,6 @@ def call(Map pipelineParams) {
                     sh"""
                     cd ${pipelineParams['cmakeBuildDir']}/tests
                     ctest -R "codeCoverage|cppcheckAnalysis"
-                    ls -la /opt/jenkins/small-agent/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonnar_scanner/bin/sonar-scanner
                     """
 
                     //cobertura to publish the reports
