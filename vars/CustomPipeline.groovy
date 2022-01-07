@@ -103,7 +103,7 @@ def call(Map pipelineParams) {
                     """
 
                     //cobertura to publish the reports
-                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}gcovr-report.xml"
+                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
 
                   withSonarQubeEnv('sonarqube_airfcms') {
                     //-X is enabled to get more information in console output (jenkins)
