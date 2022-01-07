@@ -103,7 +103,7 @@ def call(Map pipelineParams) {
               agent{
                 docker {
                   image pipelineParams['dockerImage']
-                  args '-v ${scannerHome}/bin:/opt/sonar'
+                  args '-v /opt/sonar:${scannerHome}/bin'
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
                   reuseNode true
