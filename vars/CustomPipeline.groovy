@@ -68,7 +68,13 @@ def call(Map pipelineParams) {
                         ctest -R unitTests
                 """
                 publishChecks name: 'Unit Testing'
+
+                sh 'cd ..'
+                junit skipPublishingChecks: true, testResults: 'gtest-report.xml'
+                junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
+
                 }
+
             }
             stage('sw integration testing') {
 			  steps {
