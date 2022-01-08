@@ -15,10 +15,6 @@ def call(Map pipelineParams) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
 
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
-
     pipeline {
          agent any
           stages {
@@ -99,6 +95,9 @@ def call(Map pipelineParams) {
 			  }
             }
             stage('static analysis') {
+	      environment {
+                  scannerHome = tool 'sonnar_scanner'
+              }
               agent{
                 docker {
                   image pipelineParams['dockerImage']
