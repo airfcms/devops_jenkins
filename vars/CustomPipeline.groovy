@@ -104,7 +104,7 @@ def call(Map pipelineParams) {
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
-                  args "-v ${scannerHome}/bin:${scannerHome}/bin
+                  args "-v ${scannerHome}/bin:${scannerHome}/bin"
 		  reuseNode true
                 }
               }
