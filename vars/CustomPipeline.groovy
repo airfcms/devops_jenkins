@@ -16,6 +16,9 @@ def call(Map pipelineParams) {
 	}
 
     pipeline {
+         environment {
+             scannerHome = tool 'sonnar_scanner'
+         }
          agent any
           stages {
             stage('build') {
@@ -95,9 +98,6 @@ def call(Map pipelineParams) {
 			  }
             }
             stage('static analysis') {
-	      environment {
-                  scannerHome = tool 'sonnar_scanner'
-              }
               agent{
                 docker {
                   image pipelineParams['dockerImage']
