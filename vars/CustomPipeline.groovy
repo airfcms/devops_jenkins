@@ -75,10 +75,15 @@ def call(Map pipelineParams) {
                 }
               }
               steps {
+                // sh"""
+                //   cd ${pipelineParams['cmakeBuildDir']}/tests
+                //         ctest -R unitTests
+                // """
+
                  sh"""
                    cd ${pipelineParams['cmakeBuildDir']}/tests
-                         ctest -R unitTests
-                 """
+                         ctest
+                """
                 publishChecks name: 'Unit Testing'
 
                 junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
@@ -98,24 +103,24 @@ def call(Map pipelineParams) {
 			  }
             }
             stage('static analysis') {
-              agent{
-                docker {
-                  image pipelineParams['dockerImage']
-                  registryUrl pipelineParams['dockerRegistryUrl']
-                  registryCredentialsId 'docker-registry'
-                  args "-v ${scannerHome}:${scannerHome}"
-		  reuseNode true
-                }
-              }
+              //agent{
+              //  docker {
+              //    image pipelineParams['dockerImage']
+              //    registryUrl pipelineParams['dockerRegistryUrl']
+              //    registryCredentialsId 'docker-registry'
+              //    args "-v ${scannerHome}:${scannerHome}"
+	      //	  reuseNode true
+              //  }
+              //}
                 steps {
                   publishChecks name: 'Static Analysis',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
-                    sh"""
-                     cd ${pipelineParams['cmakeBuildDir']}/tests
-                     ctest -R "codeCoverage|cppcheckAnalysis"
-                    """
+                    //sh"""
+                    // cd ${pipelineParams['cmakeBuildDir']}/tests
+                    //  ctest -R "codeCoverage|cppcheckAnalysis"
+                    //"""
 
                     //cobertura to publish the reports
                     cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
