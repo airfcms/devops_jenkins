@@ -26,7 +26,7 @@ def call(Map pipelineParams) {
                   registryCredentialsId 'docker-registry'
                   reuseNode true
                 }
-          }
+              }
               steps {
                 publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
@@ -70,7 +70,7 @@ def call(Map pipelineParams) {
                   registryCredentialsId 'docker-registry'
                   reuseNode true
                 }
-          }
+              }
               steps {
                  sh"""
                    cd ${pipelineParams['cmakeBuildDir']}/tests
@@ -95,6 +95,14 @@ def call(Map pipelineParams) {
 			  }
             }
             stage('static analysis') {
+              agent{
+                docker {
+                  image pipelineParams['dockerImage']
+                  registryUrl pipelineParams['dockerRegistryUrl']
+                  registryCredentialsId 'docker-registry'
+                  reuseNode true
+                }
+              }
                 environment {
                   scannerHome = tool 'sonnar_scanner'
                 }
