@@ -15,6 +15,10 @@ def call(Map pipelineParams) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
 	}
 
+                environment {
+                  scannerHome = tool 'sonnar_scanner'
+                }
+
     pipeline {
          agent any
           stages {
@@ -100,12 +104,10 @@ def call(Map pipelineParams) {
                   image pipelineParams['dockerImage']
                   registryUrl pipelineParams['dockerRegistryUrl']
                   registryCredentialsId 'docker-registry'
-                  reuseNode true
+                  args "-v ${scannerHome}/bin:${scannerHome}/bin
+		  reuseNode true
                 }
               }
-                environment {
-                  scannerHome = tool 'sonnar_scanner'
-                }
                 steps {
                   publishChecks name: 'Static Analysis',
                               text: 'testing -> manual status: in progress',
