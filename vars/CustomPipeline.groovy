@@ -25,10 +25,10 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                   genericVariables: [
-                    [key: 'ref', value: '$.ref']
+                    [key: 'Priority', value: '$.Priority']
                   ],
 
-                  causeString: 'Triggered on $ref',
+                  causeString: 'Triggered on $Priority',
 
                   token: 'smoketest_project',
                   tokenCredentialId: '',
@@ -36,7 +36,10 @@ def call(Map pipelineParams) {
                   printContributedVariables: true,
                   printPostContent: true,
 
-                  silentResponse: false
+                  silentResponse: false,
+
+                  regexpFilterText: '$Priority',
+                  regexpFilterExpression: 'Medium'
                   )
                 }
           stages {
