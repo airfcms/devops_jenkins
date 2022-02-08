@@ -25,7 +25,7 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                   genericVariables: [
-                    [key: 'fixVersions', value: '$issue.fields.fixVersions[0].name']
+                    [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name']
                   ],
 
                   causeString: 'Triggered on $fixVersions',
