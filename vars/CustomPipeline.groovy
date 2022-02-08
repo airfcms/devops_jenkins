@@ -25,10 +25,10 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                   genericVariables: [
-                    [key: 'Priority', value: '$.Priority']
+                    [key: 'fixVersions', value: '$issue.fields.fixVersions[0].name']
                   ],
 
-                  causeString: 'Triggered on $Priority',
+                  causeString: 'Triggered on $fixVersions',
 
                   token: 'smoketest_project',
                   tokenCredentialId: '',
@@ -36,7 +36,10 @@ def call(Map pipelineParams) {
                   printContributedVariables: true,
                   printPostContent: true,
 
-                  silentResponse: false
+                  silentResponse: false,
+
+                  regexpFilterText: 'feature/$fixVersions',
+                  regexpFilterExpression: INFERRED_BRANCH_NAME
                   )
                 }
           stages {
