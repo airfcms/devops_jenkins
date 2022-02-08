@@ -20,27 +20,6 @@ def call(Map pipelineParams) {
              scannerHome = tool 'sonnar_scanner'
          }
          agent any
-         //release/fixversion
-          triggers {
-                  GenericTrigger(
-                  genericVariables: [
-                    [key: 'ref', value: '$.ref']
-                  ],
-
-                  causeString: 'Triggered on $ref',
-
-                  token: pipelineParams['repositoryName'],
-                  tokenCredentialId: '',
-
-                  printContributedVariables: true,
-                  printPostContent: true,
-
-                  silentResponse: false,
-
-                  regexpFilterText: '$ref',
-                  regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
-                  )
-                }
           stages {
             stage('build') {
               agent{
@@ -52,7 +31,6 @@ def call(Map pipelineParams) {
                 }
               }
               steps {
-                sh "echo >>>$ref"
                 publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
