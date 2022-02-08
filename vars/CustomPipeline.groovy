@@ -10,6 +10,7 @@ def call(Map pipelineParams) {
   String artifactoryLink = ""
 
 	INFERRED_BRANCH_NAME = env.BRANCH_NAME
+  REF = ""
 
 	if (env.CHANGE_ID) {
 		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
@@ -52,7 +53,6 @@ def call(Map pipelineParams) {
                 }
               }
               steps {
-                sh "echo >>>$ref"
                 publishChecks name: 'Build',
                               text: 'testing -> manual status: in progress',
                               status: 'IN_PROGRESS'
