@@ -36,10 +36,7 @@ def call(Map pipelineParams) {
                   printContributedVariables: true,
                   printPostContent: true,
 
-                  silentResponse: false,
-
-                  regexpFilterText: '$Priority',
-                  regexpFilterExpression: 'Medium'
+                  silentResponse: false
                   )
                 }
           stages {
