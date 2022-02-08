@@ -36,10 +36,7 @@ def call(Map pipelineParams) {
                   printContributedVariables: true,
                   printPostContent: true,
 
-                  silentResponse: false,
-
-                  regexpFilterText: 'feature/$fixVersions',
-                  regexpFilterExpression: INFERRED_BRANCH_NAME
+                  silentResponse: false
                   )
                 }
           stages {
