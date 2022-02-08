@@ -36,10 +36,7 @@ def call(Map pipelineParams) {
                   printContributedVariables: true,
                   printPostContent: true,
 
-                  silentResponse: false,
-
-                  regexpFilterText: '$ref',
-                  regexpFilterExpression: 'refs/heads/Development'
+                  silentResponse: false
                   )
                 }
           stages {
