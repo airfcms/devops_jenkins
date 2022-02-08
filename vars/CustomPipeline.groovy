@@ -30,7 +30,7 @@ def call(Map pipelineParams) {
 
                   causeString: 'Triggered on $ref',
 
-                  token: pipelineParams['repositoryName'],
+                  token: 'smoketest_project',
                   tokenCredentialId: '',
 
                   printContributedVariables: true,
