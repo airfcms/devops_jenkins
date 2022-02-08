@@ -39,7 +39,7 @@ def call(Map pipelineParams) {
                   silentResponse: false,
 
                   regexpFilterText: '$ref',
-                  regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+                  regexpFilterExpression: 'refs/heads/Development'
                   )
                 }
           stages {
