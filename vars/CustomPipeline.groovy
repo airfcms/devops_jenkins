@@ -24,25 +24,58 @@ def call(Map pipelineParams) {
          //release/fixversion
           triggers {
                   GenericTrigger(
-                  genericVariables: [
-                    [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name']
-                  ],
+                    genericVariables: [
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
+                      [key: 'buildID', value: '$.issue.fields.customfield_10700']
+                    ],
 
-                  causeString: 'Triggered on $fixVersions',
+                    causeString: 'Triggered on $fixVersions',
 
-                  token: 'smoketest_project',
-                  tokenCredentialId: '',
+                    token: pipelineParams['repositoryName'],
+                    tokenCredentialId: '',
 
-                  printContributedVariables: true,
-                  printPostContent: true,
+                    printContributedVariables: true,
+                    printPostContent: true,
 
-                  silentResponse: false,
+                    silentResponse: false,
 
-                  regexpFilterText: 'feature/$fixVersions',
-                  regexpFilterExpression: INFERRED_BRANCH_NAME
+                    regexpFilterText: 'feature/$fixVersions',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME
                   )
                 }
           stages {
+            stage ('init'){
+              steps {
+                sh "echo $buildID"
+              }
+              // needs to get the jira status name for the case selector
+              // Set deployment REPO_PATH
+              // script {
+              //     def branch_dir
+              //     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
+              //     switch (env.DEPLOYMENT) {
+              //         case 'staging':
+              //             env.REPO_PATH = "staging-repo"
+              //             break
+              //         case 'qa':
+              //             env.REPO_PATH = "qa-repo"
+              //             break
+              //         case 'release':
+              //             env.REPO_PATH = "release-repo"
+              //             break
+              //         default:
+              //             branch_dir = 'development'
+              //             env.REPO_PATH = "build-repo"
+              //             break
+              //     }
+              // }
+
+              //define buildID if exists
+              script {
+                  
+              }
+
+            }
             stage('build') {
               agent{
                 docker {
