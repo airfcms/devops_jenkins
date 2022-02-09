@@ -102,8 +102,7 @@ def call(Map pipelineParams) {
 
             }
             stage('build') {
-              when { expression { env.BUILDID == 0 }
-              }
+              when { expression { env.BUILDID != 0 } }//skip build stage if build ID defined in Jira
               agent{
                 docker {
                   image pipelineParams['dockerImage']
