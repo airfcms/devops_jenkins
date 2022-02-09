@@ -26,7 +26,8 @@ def call(Map pipelineParams) {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
-                      [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'] //defined default value so it does not fail
+                      [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
+                      [key: 'deployment', value: '$.issue.fields.status.name']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -56,11 +57,12 @@ def call(Map pipelineParams) {
                     if (buildID == '0') {
                       println(">>> BuildID not defined!!!")
                     } else {
+
                       println(">>>"+buildID)
                     }
                   }catch(Exception e) {
                     println("Exception: ${e}")
-                    println(">>> BuildID not defined!!!")
+                    println("BuildID not defined!!!")
                     def buildID = 0
                   }
                     //         {
@@ -71,25 +73,22 @@ def call(Map pipelineParams) {
               
                 // needs to get the jira status name for the case selector
                 // Set deployment REPO_PATH
-                // script {
-                //     def branch_dir
-                //     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
-                //     switch (env.DEPLOYMENT) {
-                //         case 'staging':
-                //             env.REPO_PATH = "staging-repo"
-                //             break
-                //         case 'qa':
-                //             env.REPO_PATH = "qa-repo"
-                //             break
-                //         case 'release':
-                //             env.REPO_PATH = "release-repo"
-                //             break
-                //         default:
-                //             branch_dir = 'development'
-                //             env.REPO_PATH = "build-repo"
-                //             break
-                //     }
-                // }
+                script {
+                    switch (deployment) {
+                        case 'staging':
+                            env.REPO_PATH = "staging-repo"
+                            break
+                        case 'qa':
+                            env.REPO_PATH = "qa-repo"
+                            break
+                        case 'release':
+                            env.REPO_PATH = "release-repo"
+                            break
+                        default:
+                            env.REPO_PATH = "build-repo"
+                            break
+                    }
+                }
               }
 
             }
@@ -233,7 +232,7 @@ def call(Map pipelineParams) {
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
-                                            "target": "build-repo/"
+                                            "target": "build-repo/${pipelineParams['repositoryName']/${INFERRED_BRANCH_NAME}/$env.BUILD_ID"
                                             }
                                          ]
                                 }"""
