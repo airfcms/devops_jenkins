@@ -69,11 +69,6 @@ def call(Map pipelineParams) {
                 //             break
                 //     }
                 // }
-
-                //define buildID if exists
-                script {
-                    
-                }
               }
 
             }
