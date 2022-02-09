@@ -250,7 +250,7 @@ def call(Map pipelineParams) {
                                             }
                                          ]
                                 }""",
-                        buildName: pipelineParams['repositoryName']
+                        buildName: pipelineParams['repositoryName'],
                         buildNumber: env.BUILD_ID
                     )
                     rtPublishBuildInfo (
