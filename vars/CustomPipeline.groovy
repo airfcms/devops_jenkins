@@ -48,7 +48,7 @@ def call(Map pipelineParams) {
               steps {
                 sh 'env | sort'
                 script{
-                  if ($buildID) {
+                  if (buildID) {
                     println(buildID)
                   }
                     //         {
