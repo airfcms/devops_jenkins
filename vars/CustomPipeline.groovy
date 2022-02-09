@@ -26,7 +26,7 @@ def call(Map pipelineParams) {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
-                      [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0']
+                      [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'] //defined default value so it does not fail
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -52,10 +52,11 @@ def call(Map pipelineParams) {
 
                 sh 'env | sort'
                 script{
-                  if (buildID != '0') {
-                    println(">>>"+buildID)
-                  } else {
+                  if (!buildID || buildID == '0') {
                     println(">>> BuildID not defined!!!")
+                  } else {
+                    println(">>>"+buildID)
+                    
                   }
                     //         {
                     //         input message: "Proceed to unit testing?"
