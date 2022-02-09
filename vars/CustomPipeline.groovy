@@ -73,22 +73,22 @@ def call(Map pipelineParams) {
               
                 // needs to get the jira status name for the case selector
                 // Set deployment REPO_PATH
-                script {
-                    switch (deployment) {
-                        case 'staging':
-                            env.REPO_PATH = "staging-repo"
-                            break
-                        case 'qa':
-                            env.REPO_PATH = "qa-repo"
-                            break
-                        case 'release':
-                            env.REPO_PATH = "release-repo"
-                            break
-                        default:
-                            env.REPO_PATH = "build-repo"
-                            break
-                    }
-                }
+                // script {
+                //     switch (deployment) {
+                //         case 'staging':
+                //             env.REPO_PATH = "staging-repo"
+                //             break
+                //         case 'qa':
+                //             env.REPO_PATH = "qa-repo"
+                //             break
+                //         case 'release':
+                //             env.REPO_PATH = "release-repo"
+                //             break
+                //         default:
+                //             env.REPO_PATH = "build-repo"
+                //             break
+                //     }
+                // }
               }
 
             }
