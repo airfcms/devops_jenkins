@@ -54,7 +54,7 @@ def call(Map pipelineParams) {
                 sh 'env | sort'
                 script{
                   try{
-                    if (buildID == '0') {
+                    if (buildID == '0') { //default
                       println(">>> BuildID not defined!!!")
                     } else {
 
@@ -91,14 +91,19 @@ def call(Map pipelineParams) {
                             break
                     }
                   } catch(Exception e){
+                      println("Deployment type not defined!!! Either manual or git trigger. Setting default 'development' deployment")
                       def deployment = 'development'
                       env.REPO_PATH = "build-repo"
                   }
                 }
+
               }
 
             }
             stage('build') {
+              when (buildID == 0) {
+                echo 'Build ID defined. Skiping.'
+              }
               agent{
                 docker {
                   image pipelineParams['dockerImage']
