@@ -46,7 +46,15 @@ def call(Map pipelineParams) {
           stages {
             stage('init') {
               steps {
-                sh "echo $buildID"
+                script{
+                  if ($buildID) {
+                    println(buildID)
+                  }
+                    //         {
+                    //         input message: "Proceed to unit testing?"
+                    //         }
+                }
+                //sh "echo $buildID"
               
                 // needs to get the jira status name for the case selector
                 // Set deployment REPO_PATH
