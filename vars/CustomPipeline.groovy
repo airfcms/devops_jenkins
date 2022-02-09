@@ -25,12 +25,13 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                     genericVariables: [
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name']
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
+                      [key: 'buildID', value: '$.issue.fields.customfield_10700']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
 
-                    token: 'smoketest_project',
+                    token: pipelineParams['repositoryName'],
                     tokenCredentialId: '',
 
                     printContributedVariables: true,
@@ -45,7 +46,7 @@ def call(Map pipelineParams) {
           stages {
             stage('init') {
               steps {
-                sh "echo $fixVersions"
+                sh "echo $buildID"
               
                 // needs to get the jira status name for the case selector
                 // Set deployment REPO_PATH
