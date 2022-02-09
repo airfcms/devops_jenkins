@@ -148,6 +148,7 @@ def call(Map pipelineParams) {
             //   }
             // }
             stage('unit testing'){
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               agent{
                 docker {
                   image pipelineParams['dockerImage']
@@ -171,18 +172,20 @@ def call(Map pipelineParams) {
                 junit skipPublishingChecks: true, testResults: "**/${pipelineParams['cmakeBuildDir']}/gtest-report.xml"
                 //junit skipPublishingChecks: true, testResults: 'valgrind-report.xml'
 
-                }
+              }
 
-            }
+            }//stage(unit testing) closed bracket
             stage('sw integration testing') {
-			  steps {
-				publishChecks name: 'Integration Testing'
-			 }
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              steps {
+              publishChecks name: 'Integration Testing'
+              }
             }
             stage('hw/sw integration testing') {
-			  steps {
-			        publishChecks name: 'HW/SW Integration Testing'
-			  }
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              steps {
+                    publishChecks name: 'HW/SW Integration Testing'
+              }
             }
             stage('static analysis') {
               //agent{
@@ -194,36 +197,36 @@ def call(Map pipelineParams) {
 	      //	  reuseNode true
               //  }
               //}
-                steps {
-                  publishChecks name: 'Static Analysis',
-                              text: 'testing -> manual status: in progress',
-                              status: 'IN_PROGRESS'
+              steps {
+                publishChecks name: 'Static Analysis',
+                            text: 'testing -> manual status: in progress',
+                            status: 'IN_PROGRESS'
 
-                    //sh"""
-                    // cd ${pipelineParams['cmakeBuildDir']}/tests
-                    //  ctest -R "codeCoverage|cppcheckAnalysis"
-                    //"""
+                  //sh"""
+                  // cd ${pipelineParams['cmakeBuildDir']}/tests
+                  //  ctest -R "codeCoverage|cppcheckAnalysis"
+                  //"""
 
-                    //cobertura to publish the reports
-                    cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
+                //cobertura to publish the reports
+                cobertura coberturaReportFile: "**/${pipelineParams['cmakeBuildDir']}/gcovr-report.xml"
 
-                  withSonarQubeEnv('sonarqube_airfcms') {
-                    //-X is enabled to get more information in console output (jenkins)
-                    sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
-                    sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
-                    script {
-                      sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
-                    }
+                withSonarQubeEnv('sonarqube_airfcms') {
+                  //-X is enabled to get more information in console output (jenkins)
+                  sh 'env' //to see if i have the SonarHost link to use instead of writing in a variable - env.SONAR_xx check jenkinsLog
+                  sh "cd ${WORKSPACE}/${pipelineParams['repositoryName']}; ${scannerHome}/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties"
+                  script {
+                    sonarReportLink = env.SONAR_HOST_URL + sonarDashboard + pipelineParams['repositoryName']
                   }
-                  timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                  }
-				  publishChecks name: 'Static Analysis',
-                                text: 'To view the SonarQube report please access it clicking the link below',
-                                status: 'COMPLETED',
-                                detailsURL: sonarReportLink
-
                 }
+                timeout(time: 5, unit: 'MINUTES') {
+                  waitForQualityGate abortPipeline: true
+                }
+                publishChecks name: 'Static Analysis',
+                              text: 'To view the SonarQube report please access it clicking the link below',
+                              status: 'COMPLETED',
+                              detailsURL: sonarReportLink
+
+              }
 
             }//stage(static analysis) closed bracket
             stage('deploy') {
