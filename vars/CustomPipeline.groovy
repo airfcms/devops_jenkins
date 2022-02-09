@@ -232,7 +232,7 @@ def call(Map pipelineParams) {
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
-                                            "target": "build-repo/${pipelineParams['repositoryName']}/$env.BUILD_ID/"
+                                            "target": "build-repo/${pipelineParams['repositoryName']}/"
                                             }
                                          ]
                                 }"""
@@ -261,29 +261,6 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
-
-            stage(promote){
-              steps{
-                rtServer (
-                        id: pipelineParams['artifactoryGenericRegistry_ID'],
-                        url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
-                        credentialsId: 'artifact_registry'
-                    )
-                rtAddInteractivePromotion (
-                  buildName: pipelineParams['repositoryName'] + ' :: ' + INFERRED_BRANCH_NAME,
-                  buildNumber: env.BUILD_ID,
-                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
-                  //If set, the promotion window will display this label instead of the build name and number.
-                  displayName: 'Promote me please',
-                  // Name of target repository in Artifactory
-                  targetRepo: 'staging-repo',
-                  // Specifies the source repository for build artifacts.
-                  sourceRepo: 'build-repo',
-                  // Indicates whether to copy the files. Move is the default.
-                  copy: true
-                )
-              }
-            } //stage(promote) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
