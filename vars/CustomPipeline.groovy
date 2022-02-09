@@ -46,6 +46,7 @@ def call(Map pipelineParams) {
           stages {
             stage('init') {
               steps {
+                sh 'env | sort'
                 script{
                   if ($buildID) {
                     println(buildID)
