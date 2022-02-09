@@ -232,7 +232,7 @@ def call(Map pipelineParams) {
                                 "files": [
                                            {
                                             "pattern": "*/${pipelineParams['repositoryName']}",
-                                            "target": "build-repo/${pipelineParams['repositoryName']/${INFERRED_BRANCH_NAME}/$env.BUILD_ID"
+                                            "target": "build-repo/${pipelineParams['repositoryName']}/${INFERRED_BRANCH_NAME}/$env.BUILD_ID"
                                             }
                                          ]
                                 }"""
