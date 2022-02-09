@@ -52,11 +52,16 @@ def call(Map pipelineParams) {
 
                 sh 'env | sort'
                 script{
-                  if (!buildID || buildID == '0') {
+                  try{
+                    if (buildID == '0') {
+                      println(">>> BuildID not defined!!!")
+                    } else {
+                      println(">>>"+buildID)
+                    }
+                  }catch(Exception e) {
+                    println("Exception: ${e}")
                     println(">>> BuildID not defined!!!")
-                  } else {
-                    println(">>>"+buildID)
-                    
+                    def buildID = 0
                   }
                     //         {
                     //         input message: "Proceed to unit testing?"
