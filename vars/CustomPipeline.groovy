@@ -31,7 +31,7 @@ def call(Map pipelineParams) {
 
                     causeString: 'Triggered on $fixVersions',
 
-                    token: pipelineParams['repositoryName'],
+                    token: 'smoketest_project',
                     tokenCredentialId: '',
 
                     printContributedVariables: true,
