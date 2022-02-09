@@ -52,6 +52,7 @@ def call(Map pipelineParams) {
 
 
                 sh 'env | sort'
+                //verify the buildID field and set env variable
                 script{
                   try{
                     if (buildID == '0') { //default
@@ -74,7 +75,6 @@ def call(Map pipelineParams) {
               
                 //needs to get the jira status name for the case selector
                 //Set deployment REPO_PATH
-                
                 script {
                   try{
                     switch (deployment) {
@@ -188,6 +188,7 @@ def call(Map pipelineParams) {
               }
             }
             stage('static analysis') {
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               //agent{
               //  docker {
               //    image pipelineParams['dockerImage']
