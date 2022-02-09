@@ -25,8 +25,7 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                     genericVariables: [
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
-                      [key: 'buildID', value: '$.issue.fields.customfield_10700']
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -46,7 +45,7 @@ def call(Map pipelineParams) {
           stages {
             stage('init') {
               steps {
-                sh "echo $buildID"
+                sh "echo $fixVersions"
               
                 // needs to get the jira status name for the case selector
                 // Set deployment REPO_PATH
