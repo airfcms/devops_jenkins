@@ -101,8 +101,7 @@ def call(Map pipelineParams) {
 
             }
             stage('build') {
-              when (buildID == 0) {
-                println('Build ID defined. Skiping.')
+              when { expression { buildID == 0 }
               }
               agent{
                 docker {
