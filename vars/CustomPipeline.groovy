@@ -64,7 +64,7 @@ def call(Map pipelineParams) {
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("BuildID not defined!!!")
-                    env.BUILDID = 0
+                    env.BUILDID = '0'
                   }
                     //         {
                     //         input message: "Proceed to unit testing?"
@@ -102,7 +102,7 @@ def call(Map pipelineParams) {
 
             }
             stage('build') {
-              when { expression { env.BUILDID != 0 } }//skip build stage if build ID defined in Jira
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               agent{
                 docker {
                   image pipelineParams['dockerImage']
