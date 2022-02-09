@@ -249,9 +249,7 @@ def call(Map pipelineParams) {
                                             "target": "${env.REPO_PATH}/"
                                             }
                                          ]
-                                }""",
-                        buildName: pipelineParams['repositoryName'],
-                        buildNumber: env.BUILD_ID
+                                }"""
                     )
                     rtPublishBuildInfo (
                         serverId: pipelineParams['artifactoryGenericRegistry_ID']
