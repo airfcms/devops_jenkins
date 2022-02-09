@@ -44,35 +44,36 @@ def call(Map pipelineParams) {
                   )
                 }
           stages {
-            stage ('init'){
+            stage('init') {
               steps {
                 sh "echo $buildID"
-              }
-              // needs to get the jira status name for the case selector
-              // Set deployment REPO_PATH
-              // script {
-              //     def branch_dir
-              //     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
-              //     switch (env.DEPLOYMENT) {
-              //         case 'staging':
-              //             env.REPO_PATH = "staging-repo"
-              //             break
-              //         case 'qa':
-              //             env.REPO_PATH = "qa-repo"
-              //             break
-              //         case 'release':
-              //             env.REPO_PATH = "release-repo"
-              //             break
-              //         default:
-              //             branch_dir = 'development'
-              //             env.REPO_PATH = "build-repo"
-              //             break
-              //     }
-              // }
+              
+                // needs to get the jira status name for the case selector
+                // Set deployment REPO_PATH
+                // script {
+                //     def branch_dir
+                //     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
+                //     switch (env.DEPLOYMENT) {
+                //         case 'staging':
+                //             env.REPO_PATH = "staging-repo"
+                //             break
+                //         case 'qa':
+                //             env.REPO_PATH = "qa-repo"
+                //             break
+                //         case 'release':
+                //             env.REPO_PATH = "release-repo"
+                //             break
+                //         default:
+                //             branch_dir = 'development'
+                //             env.REPO_PATH = "build-repo"
+                //             break
+                //     }
+                // }
 
-              //define buildID if exists
-              script {
-                  
+                //define buildID if exists
+                script {
+                    
+                }
               }
 
             }
