@@ -60,12 +60,12 @@ def call(Map pipelineParams) {
 
                       println(">>>"+buildID)
                     }
+                    env.BUILDID = buildID
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("BuildID not defined!!!")
-                    def buildID = 0
+                    env.BUILDID = 0
                   }
-                  env.buildID=buildID
                     //         {
                     //         input message: "Proceed to unit testing?"
                     //         }
@@ -102,7 +102,7 @@ def call(Map pipelineParams) {
 
             }
             stage('build') {
-              when { expression { env.buildID == 0 }
+              when { expression { env.BUILDID == 0 }
               }
               agent{
                 docker {
