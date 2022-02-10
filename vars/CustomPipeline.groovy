@@ -67,11 +67,7 @@ def call(Map pipelineParams) {
                     println("BuildID not defined!!!")
                     env.BUILDID = '0'
                   }
-                    //         {
-                    //         input message: "Proceed to unit testing?"
-                    //         }
                 }
-                //sh "echo $buildID"
               
                 //needs to get the jira status name for the case selector
                 //Set deployment REPO_PATH
@@ -231,6 +227,7 @@ def call(Map pipelineParams) {
 
             }//stage(static analysis) closed bracket
             stage('deploy') {
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               steps{
                     publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
@@ -275,6 +272,39 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
             } //stage(deploy) closed bracket
+            stage(promote) {
+              when { expression { env.BUILDID != '0' } }//skip build stage if build ID defined in Jira
+              
+              publishChecks name: 'Promoting',
+                                  text: 'testing -> manual status: in progress',
+                                  status: 'IN_PROGRESS'
+              rtServer (
+                  id: pipelineParams['artifactoryGenericRegistry_ID'],
+                  url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
+                  credentialsId: 'artifact_registry'
+              )
+              rtDownload(
+                serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                //buildName: 'holyFrog', not necessary as the build name is the same
+                buildNumber: env.BUILDID
+              )
+              sh 'ls -la'
+              rtUpload(
+                  serverId: pipelineParams['artifactoryGenericRegistry_ID'],
+                  spec: """{
+                          "files": [
+                                      {
+                                      "pattern": "*/${pipelineParams['repositoryName']}",
+                                      "target": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILD_ID}/"
+                                      }
+                                    ]
+                          }"""
+              )
+              publishChecks name: 'Promoting',
+                                  text: 'To view the artifactory please access it clicking the link below',
+                                  status: 'COMPLETED',
+                                  detailsURL: artifactoryLink
+            } //stage(promote) closed bracket
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
