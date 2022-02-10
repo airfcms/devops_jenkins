@@ -278,6 +278,7 @@ def call(Map pipelineParams) {
                 publishChecks name: 'Promoting',
                                     text: 'testing -> manual status: in progress',
                                     status: 'IN_PROGRESS'
+                sh 'ls -la'
                 rtServer (
                     id: pipelineParams['artifactoryGenericRegistry_ID'],
                     url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
