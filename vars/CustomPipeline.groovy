@@ -287,8 +287,16 @@ def call(Map pipelineParams) {
                 rtDownload(
                   serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                   //buildName: 'holyFrog', not necessary as the build name is the same
-                  buildNumber: env.BUILDID
+                  spec: """{
+                        "files": [
+                          {
+                            "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                            "target": "${env.BUILDID}/"
+                          }
+                        ]
+                  }"""
                 )
+                sh 'ls -la ../'
                 sh 'ls -la'
                 rtUpload(
                     serverId: pipelineParams['artifactoryGenericRegistry_ID'],
