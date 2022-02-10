@@ -296,7 +296,7 @@ def call(Map pipelineParams) {
                         ]
                   }"""
                 )
-                sh 'ls -la ../'
+                sh 'ls -la 64/'
                 sh 'ls -la'
                 rtUpload(
                     serverId: pipelineParams['artifactoryGenericRegistry_ID'],
