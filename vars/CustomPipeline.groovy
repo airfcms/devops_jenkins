@@ -303,7 +303,7 @@ def call(Map pipelineParams) {
                     spec: """{
                             "files": [
                                         {
-                                        "pattern": "*/${pipelineParams['repositoryName']}",
+                                        "pattern": "${env.BUILDID}/*",
                                         "target": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILD_ID}/"
                                         }
                                       ]
