@@ -142,6 +142,34 @@ def call(Map pipelineParams) {
                   }
                 }
 
+                // Check if build exists
+                script{
+
+                  def branchUrl = ${pipelineParams['repositoryName']} + "%20::%20"
+                  def buildInfoName = ${pipelineParams['repositoryName']} + " :: "
+
+                  if (INFERRED_BRANCH_NAME.contains("/")){
+                    branchUrl += INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
+                    buildInfoName += INFERRED_BRANCH_NAME.replaceAll("/"," :: ")
+                  } else{
+                    branchUrl += INFERRED_BRANCH_NAME
+                    buildInfoName += INFERRED_BRANCH_NAME
+                  }
+
+                  curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branchUrl}/${env.BUILDID}"
+
+                  def buildInfoString = sh(
+                        script: curlstr,
+                        returnStdout: true
+                  ).trim()
+
+                  if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\""))
+                    {
+                      println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
+                    }
+
+                }
+
                 sh 'env | sort'
 
               }
@@ -280,26 +308,6 @@ def call(Map pipelineParams) {
               //when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               
               steps{
-
-                    script{
-
-                      def branch_url = ""
-
-                      if (INFERRED_BRANCH_NAME.contains("/")){
-                        branch_url = "%20::%20" + INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
-                      } else{
-                        branch_url = "%20::%20" + INFERRED_BRANCH_NAME
-                      }
-
-                      curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILDID}"
- 
-                      def buildInfoString = sh(
-                            script: curlstr,
-                            returnStdout: true
-                      ).trim()
-
-                      println(">>> BUILD_INFO >>>>> "+buildInfoString.buildInfo.number)
-                    }
 
                     publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
