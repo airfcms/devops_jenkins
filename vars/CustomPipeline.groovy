@@ -138,16 +138,16 @@ def call(Map pipelineParams) {
                     }
                   } catch(Exception e){
                       println("Status has not changed!!! Either manual or git trigger. Setting default 'development' deployment")
-                      def changelogStatus = false
+                      env.BUILDID = '0'
                   }
                 }
 
                 // Check if build exists
                 script{
-println("HERE111")
+                  
                   def branchUrl = pipelineParams['repositoryName'] + "%20::%20"
                   def buildInfoName = pipelineParams['repositoryName'] + " :: "
-                  println("HERE222")
+                  
                   if (INFERRED_BRANCH_NAME.contains("/")){
                     branchUrl += INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
                     buildInfoName += INFERRED_BRANCH_NAME.replaceAll("/"," :: ")
@@ -166,6 +166,7 @@ println("HERE111")
                   if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\""))
                     {
                       println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
+                      env.BUILDID = '0'
                     }
 
                 }
@@ -305,7 +306,7 @@ println("HERE111")
 
             }//stage(static analysis) closed bracket
             stage('deploy') {
-              //when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               
               steps{
 
@@ -373,7 +374,7 @@ println("HERE111")
                   spec: """{
                         "files": [
                           {
-                            "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                            "pattern": "${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
                             "target": "${env.BUILDID}/"
                           }
                         ]
