@@ -302,7 +302,7 @@ def call(Map pipelineParams) {
 
                       sleep(2)
 
-                      println(">>> BUILD_INFO >>>>> "+buildInfo.getArtifacts().size())
+                      println(">>> BUILD_INFO >>>>> "+buildInfo)
                     }
 
                     publishChecks name: 'Deployment',
