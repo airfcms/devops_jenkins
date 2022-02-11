@@ -298,7 +298,7 @@ def call(Map pipelineParams) {
                             returnStdout: true
                       ).trim()
 
-                      println(">>> BUILD_INFO >>>>> "+buildInfoString)
+                      println(">>> BUILD_INFO >>>>> "+buildInfoString.buildInfo.number)
                     }
 
                     publishChecks name: 'Deployment',
