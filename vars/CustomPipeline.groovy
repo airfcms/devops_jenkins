@@ -279,26 +279,27 @@ def call(Map pipelineParams) {
             stage('deploy') {
               //when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               
-              script{
-
-                def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID']
-                server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
-                server.credentialsId = 'artifact_registry'
-                
-                def downloadSpec = """{
-                                        "files": [
-                                          {
-                                            "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
-                                            "target": "${env.BUILDID}/"
-                                          }
-                                        ]
-                                      }"""
-                
-                def buildInfo1 = server.download downloadSpec
-                println(">>> >>>> >>>>> "+buildInfo1)
-              }
-
               steps{
+
+                    script{
+
+                      def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID']
+                      server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
+                      server.credentialsId = 'artifact_registry'
+                      
+                      def downloadSpec = """{
+                                              "files": [
+                                                {
+                                                  "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                                                  "target": "${env.BUILDID}/"
+                                                }
+                                              ]
+                                            }"""
+                      
+                      def buildInfo1 = server.download downloadSpec
+                      println(">>> >>>> >>>>> "+buildInfo1)
+                    }
+
                     publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
                                   status: 'IN_PROGRESS'
