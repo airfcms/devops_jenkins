@@ -291,7 +291,7 @@ def call(Map pipelineParams) {
                         branch_url = "%20::%20" + INFERRED_BRANCH_NAME
                       }
 
-                      curlstr = "curl -k -X GET http://${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILD_ID}"
+                      curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILDID}"
  
                       def buildInfoString = sh(
                             script: curlstr,
