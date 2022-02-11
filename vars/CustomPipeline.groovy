@@ -171,6 +171,7 @@ def call(Map pipelineParams) {
                   if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\""))
                     {
                       println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
+                    }else {
                       env.BUILDID = '0'
                     }
 
