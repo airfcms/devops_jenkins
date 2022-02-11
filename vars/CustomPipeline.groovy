@@ -156,7 +156,7 @@ println("HERE111")
                     buildInfoName += INFERRED_BRANCH_NAME
                   }
 
-                  curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branchUrl}/${env.BUILDID}"
+                  curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${branchUrl}/${env.BUILDID}"
 
                   def buildInfoString = sh(
                         script: curlstr,
