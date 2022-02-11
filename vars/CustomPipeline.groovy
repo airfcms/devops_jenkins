@@ -296,7 +296,7 @@ def call(Map pipelineParams) {
                                               ]
                                             }"""
                       
-                      def buildInfo = server.download downloadSpec
+                      def buildInfo = server.download spec: downloadSpec
                       println(">>> BUILD_INFO >>>>> "+buildInfo.getArtifacts().size())
                     }
 
