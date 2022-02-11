@@ -283,24 +283,19 @@ def call(Map pipelineParams) {
 
                     script{
 
-                      def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID']
-                      server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
-                      server.credentialsId = 'artifact_registry'
-                      
-                      println("### ${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/")
+                      if (INFERRED_BRANCH_NAME.contains("/"){
+                        def branch_url = "%20::%20" + INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
+                      } else {
+                        def branch_url = "%20::%20" + INFERRED_BRANCH_NAME
+                      }
 
-                      def downloadSpec = """{
-                                              "files": [
-                                                {
-                                                  "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
-                                                  "target": "${env.BUILDID}/"
-                                                }
-                                              ]
-                                            }"""
-                      
-                      def buildInfo = server.download spec: downloadSpec, failNoOp: true
+                      curlstr = "curl -k -X GET http://${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILD_ID}"
 
-                      sleep(2)
+                      def buildInfoString = sh(
+                            script: curlstr,
+                            returnStdout: true
+                      ).trim()
+                      buildInfo = (new JsonSlurperClassic().parseText(buildInfoString))
 
                       println(">>> BUILD_INFO >>>>> "+buildInfo)
                     }
