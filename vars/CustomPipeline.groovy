@@ -281,7 +281,9 @@ def call(Map pipelineParams) {
               
               script{
 
-                def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID'] url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory", credentialsId: 'artifact_registry'
+                def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID']
+                server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
+                server.credentialsId = 'artifact_registry'
                 
                 def downloadSpec = """{
                                         "files": [
