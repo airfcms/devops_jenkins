@@ -287,14 +287,14 @@ def call(Map pipelineParams) {
                       server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
                       server.credentialsId = 'artifact_registry'
                       
-                      def downloadSpec = """{
-                                              "files": [
-                                                {
-                                                  "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
-                                                  "target": "${env.BUILDID}/"
-                                                }
-                                              ]
-                                            }"""
+                      // def downloadSpec = """{
+                      //                         "files": [
+                      //                           {
+                      //                             "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                      //                             "target": "${env.BUILDID}/"
+                      //                           }
+                      //                         ]
+                      //                       }"""
                       
                       def buildInfo1 = server.download downloadSpec
                       println(">>> BUILD_INFO >>>>> "+buildInfo1.getArtifacts().size())
