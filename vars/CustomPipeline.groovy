@@ -84,7 +84,7 @@ def call(Map pipelineParams) {
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("BuildID not defined!!! Might be triggered manually or by commit.")
-                    buildID = '0'
+                    def buildID = '0'
                   }
                   // set env variable to the value of buildID
                   env.BUILDID = buildID
