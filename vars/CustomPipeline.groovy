@@ -25,9 +25,11 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                     genericVariables: [
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name', defaultValue: '0'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
-                      [key: 'deployment', value: '$.issue.fields.status.name']
+                      [key: 'deployment', value: '$.issue.fields.status.name'],
+                      [key: 'changelogStatus', value: '$.issue.fields.changelog.items.field'], //if status we use the below ones
+                      [key: 'fromWorkflow', value: '$.issue.fields.changelog.items.fromString']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -50,28 +52,50 @@ def call(Map pipelineParams) {
                 //check trigger type
                 //check if buildID exists
 
-
-                sh 'env | sort'
-                //verify the buildID field and set env variable
+                // version definition
+                // If defined in the Jira issue and passed the trigger, it comes from the genericVatriables
+                // If not, it will be calculated
                 script{
                   try{
-                    if (buildID == '0') { //default
-                      println(">>> BuildID not defined!!!")
-                    } else {
+                      env.FIX_VERSIONS = fixversions //passed the trigger and was defined in the Jira issue
+                  }catch(Exception e) {
 
-                      println(">>>"+buildID)
+                    println(">>> Fix version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
+                    
+                    fixversions = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*$)/) ///^((feature|release)\/)(.*)$/
+                    if (fixversions){
+                      env.FIX_VERSIONS = fixVersions[0].last() //version ID from the branch name with prefix feature/
+                    } else{
+                      println("not a valid branch name")
+                      env.FIX_VERSIONS = env.BUILD_ID //set fix version to Branch id
                     }
-                    env.BUILDID = buildID
+
+                  }
+
+                }
+
+                //verify the buildID field and set env variable
+                script{
+
+                  try{
+                    if (buildID == '0') { //default
+                      println(">>> BuildID not defined!!! Going to build...")
+                    }
                   }catch(Exception e) {
                     println("Exception: ${e}")
-                    println("BuildID not defined!!!")
-                    env.BUILDID = '0'
+                    println("BuildID not defined!!! Might be triggered manually or by commit.")
+                    buildID = '0'
                   }
+                  // set env variable to the value of buildID
+                  env.BUILDID = buildID
+
                 }
               
                 //needs to get the jira status name for the case selector
                 //Set deployment REPO_PATH
                 script {
+                  
+                  env.REPO_PATH = "build-repo"
                   try{
                     switch (deployment) {
                         case 'staging':
@@ -90,9 +114,35 @@ def call(Map pipelineParams) {
                   } catch(Exception e){
                       println("Deployment type not defined!!! Either manual or git trigger. Setting default 'development' deployment")
                       def deployment = 'development'
-                      env.REPO_PATH = "build-repo"
                   }
                 }
+
+                //Set origin repo if issue changed status
+                script {
+                  try{
+                    if (changelogStatus == "status") {
+                      switch (fromWorkflow) {
+                          case 'staging':
+                              env.ORIG_REPO_PATH = "staging-repo"
+                              break
+                          case 'qa':
+                              env.ORIG_REPO_PATH = "qa-repo"
+                              break
+                          case 'release':
+                              env.ORIG_REPO_PATH = "release-repo"
+                              break
+                          default:
+                              env.ORIG_REPO_PATH = "build-repo"
+                              break
+                      }
+                    }
+                  } catch(Exception e){
+                      println("Status has not changed!!! Either manual or git trigger. Setting default 'development' deployment")
+                      def changelogStatus = false
+                  }
+                }
+
+                sh 'env | sort'
 
               }
 
@@ -227,11 +277,29 @@ def call(Map pipelineParams) {
 
             }//stage(static analysis) closed bracket
             stage('deploy') {
-              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              //when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              
+              script{
+                def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID'] url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory" credentialsId: credentialsId: 'artifact_registry'
+                
+                def downloadSpec = """{
+                                        "files": [
+                                          {
+                                            "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                                            "target": "${env.BUILDID}/"
+                                          }
+                                        ]
+                                      }"""
+                
+                def buildInfo1 = server.download downloadSpec
+                println(">>> >>>> >>>>> "+buildInfo1)
+              }
+
               steps{
                     publishChecks name: 'Deployment',
                                   text: 'testing -> manual status: in progress',
                                   status: 'IN_PROGRESS'
+
                     rtServer (
                         id: pipelineParams['artifactoryGenericRegistry_ID'],
                         url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
@@ -250,6 +318,8 @@ def call(Map pipelineParams) {
                     )
                     rtPublishBuildInfo (
                         serverId: pipelineParams['artifactoryGenericRegistry_ID']
+                        //branch name
+                        //docker image
                     )
 
                     script {
@@ -296,7 +366,6 @@ def call(Map pipelineParams) {
                         ]
                   }"""
                 )
-                sh 'ls -la 64/'
                 sh 'ls -la'
                 rtUpload(
                     serverId: pipelineParams['artifactoryGenericRegistry_ID'],
