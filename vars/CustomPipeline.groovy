@@ -290,14 +290,13 @@ def call(Map pipelineParams) {
                       }
 
                       curlstr = "curl -k -X GET http://${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILD_ID}"
-
+ 
                       def buildInfoString = sh(
                             script: curlstr,
                             returnStdout: true
                       ).trim()
-                      buildInfo = (new JsonSlurperClassic().parseText(buildInfoString))
 
-                      println(">>> BUILD_INFO >>>>> "+buildInfo)
+                      println(">>> BUILD_INFO >>>>> "+buildInfoString)
                     }
 
                     publishChecks name: 'Deployment',
