@@ -144,10 +144,10 @@ def call(Map pipelineParams) {
 
                 // Check if build exists
                 script{
-
-                  def branchUrl = ${pipelineParams['repositoryName']} + "%20::%20"
-                  def buildInfoName = ${pipelineParams['repositoryName']} + " :: "
-
+println("HERE111")
+                  def branchUrl = pipelineParams['repositoryName'] + "%20::%20"
+                  def buildInfoName = pipelineParams['repositoryName'] + " :: "
+                  println("HERE222")
                   if (INFERRED_BRANCH_NAME.contains("/")){
                     branchUrl += INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
                     buildInfoName += INFERRED_BRANCH_NAME.replaceAll("/"," :: ")
