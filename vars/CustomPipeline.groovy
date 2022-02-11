@@ -62,7 +62,7 @@ def call(Map pipelineParams) {
 
                     println(">>> Fix version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
                     
-                    fixversions = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*$)/) ///^((feature|release)\/)(.*)$/
+                    fixversions = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*)$/) ///^((feature|release)\/)(.*)$/
                     if (fixversions){
                       env.FIX_VERSIONS = fixVersions[0].last() //version ID from the branch name with prefix feature/
                     } else{
