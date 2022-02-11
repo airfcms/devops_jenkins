@@ -283,9 +283,9 @@ def call(Map pipelineParams) {
 
                     script{
 
-                      if (INFERRED_BRANCH_NAME.contains("/"){
+                      if (INFERRED_BRANCH_NAME.contains("/")){
                         def branch_url = "%20::%20" + INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
-                      } else {
+                      } else{
                         def branch_url = "%20::%20" + INFERRED_BRANCH_NAME
                       }
 
