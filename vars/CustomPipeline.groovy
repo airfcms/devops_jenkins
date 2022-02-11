@@ -287,6 +287,8 @@ def call(Map pipelineParams) {
                       server.url = "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory"
                       server.credentialsId = 'artifact_registry'
                       
+                      println("### ${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/")
+
                       def downloadSpec = """{
                                               "files": [
                                                 {
