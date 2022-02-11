@@ -35,8 +35,8 @@ def call(Map pipelineParams) {
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
-                      [key: 'changelogStatus', value: '$.issue.fields.changelog.items[0].field'], //if status we use the below ones
-                      [key: 'fromWorkflow', value: '$.issue.fields.changelog.items[0].fromString']
+                      [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
+                      [key: 'fromWorkflow', value: '$.changelog.items[0].fromString']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
