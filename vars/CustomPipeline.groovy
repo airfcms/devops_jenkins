@@ -290,7 +290,8 @@ def call(Map pipelineParams) {
                       def downloadSpec = """{
                                               "files": [
                                                 {
-                                                  "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/"
+                                                  "pattern": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/",
+                                                  "target": "${env.BUILDID}/"
                                                 }
                                               ]
                                             }"""
