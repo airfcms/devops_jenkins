@@ -280,6 +280,7 @@ def call(Map pipelineParams) {
               //when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               
               script{
+                
                 def server = Artifactory.server pipelineParams['artifactoryGenericRegistry_ID'] url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory" credentialsId: credentialsId: 'artifact_registry'
                 
                 def downloadSpec = """{
