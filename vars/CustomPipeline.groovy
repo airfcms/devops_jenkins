@@ -86,16 +86,12 @@ def call(Map pipelineParams) {
                 script{
 
                   try{
-                    if (buildID == '0') { //default
-                      println(">>> BuildID not defined!!! Going to build...")
-                    }
+                    env.BUILDID = buildID //sets the env build id to o or the actual buildID
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("BuildID not defined!!! Might be triggered manually or by commit.")
-                    def buildID = '0'
+                    env.BUILDID = '0'
                   }
-                  // set env variable to the value of buildID
-                  env.BUILDID = buildID
 
                 }
               
