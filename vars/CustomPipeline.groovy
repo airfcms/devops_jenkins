@@ -5,7 +5,7 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 @NonCPS
 String getVersion(String INFERRED_BRANCH_NAME) {
   def matches = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*)$/)
-  fixversions = ""+matches[0].getAt(0)
+  fixversions = ""+matches[0].last()
   return fixversions
 }
 
