@@ -283,10 +283,12 @@ def call(Map pipelineParams) {
 
                     script{
 
+                      def branch_url = ""
+
                       if (INFERRED_BRANCH_NAME.contains("/")){
-                        def branch_url = "%20::%20" + INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
+                        branch_url = "%20::%20" + INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
                       } else{
-                        def branch_url = "%20::%20" + INFERRED_BRANCH_NAME
+                        branch_url = "%20::%20" + INFERRED_BRANCH_NAME
                       }
 
                       curlstr = "curl -k -X GET http://${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${pipelineParams['repositoryName']}${branch_url}/${env.BUILD_ID}"
