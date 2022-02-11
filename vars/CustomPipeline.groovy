@@ -141,6 +141,7 @@ def call(Map pipelineParams) {
                       }
                     }
                   } catch(Exception e){
+                      println(e)
                       println("Status has not changed!!! Either manual or git trigger. Setting default 'development' deployment")
                       env.BUILDID = '0'
                   }
