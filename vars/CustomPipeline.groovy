@@ -296,8 +296,8 @@ def call(Map pipelineParams) {
                                               ]
                                             }"""
                       
-                      def buildInfo1 = server.download downloadSpec
-                      println(">>> BUILD_INFO >>>>> "+buildInfo1.getArtifacts().size())
+                      def buildInfo = server.download downloadSpec
+                      println(">>> BUILD_INFO >>>>> "+buildInfo.getArtifacts().size())
                     }
 
                     publishChecks name: 'Deployment',
