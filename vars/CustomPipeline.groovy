@@ -107,13 +107,13 @@ def call(Map pipelineParams) {
                   try{
                     println(">>> "+deployment)
                     switch (deployment) {
-                        case 'STAGING':
+                        case 'Staging':
                             env.REPO_PATH = "staging-repo"
                             break
-                        case 'TESTING':
+                        case 'Testing':
                             env.REPO_PATH = "qa-repo"
                             break
-                        case 'RELEASE':
+                        case 'Release':
                             env.REPO_PATH = "release-repo"
                             break
                         default:
@@ -131,13 +131,13 @@ def call(Map pipelineParams) {
                   try{
                     if (changelogStatus == "status") {
                       switch (fromWorkflow) {
-                          case 'STAGING':
+                          case 'Staging':
                               env.ORIG_REPO_PATH = "staging-repo"
                               break
-                          case 'TESTING':
+                          case 'Testing':
                               env.ORIG_REPO_PATH = "qa-repo"
                               break
-                          case 'RELEASE':
+                          case 'Release':
                               env.ORIG_REPO_PATH = "release-repo"
                               break
                           default:
