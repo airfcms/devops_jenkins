@@ -4,6 +4,10 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 @NonCPS
 String getVersion(String INFERRED_BRANCH_NAME) {
+  /*
+  Method to get the fix version from the branch name
+  reference: https://www.javaallin.com/code/jenkins-groovy-regex-match-string-error-java-io-notserializableexception-jav.html
+  */
   def matches = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*)$/)
   fixversions = ""+matches[0].last()
   return fixversions
@@ -101,14 +105,15 @@ def call(Map pipelineParams) {
                   
                   env.REPO_PATH = "build-repo"
                   try{
+                    println(">>> "+deployment)
                     switch (deployment) {
-                        case 'staging':
+                        case 'STAGING':
                             env.REPO_PATH = "staging-repo"
                             break
-                        case 'qa':
+                        case 'TESTING':
                             env.REPO_PATH = "qa-repo"
                             break
-                        case 'release':
+                        case 'RELEASE':
                             env.REPO_PATH = "release-repo"
                             break
                         default:
@@ -126,13 +131,13 @@ def call(Map pipelineParams) {
                   try{
                     if (changelogStatus == "status") {
                       switch (fromWorkflow) {
-                          case 'staging':
+                          case 'STAGING':
                               env.ORIG_REPO_PATH = "staging-repo"
                               break
-                          case 'qa':
+                          case 'TESTING':
                               env.ORIG_REPO_PATH = "qa-repo"
                               break
-                          case 'release':
+                          case 'RELEASE':
                               env.ORIG_REPO_PATH = "release-repo"
                               break
                           default:
@@ -363,7 +368,7 @@ def call(Map pipelineParams) {
                 }
             } //stage(deploy) closed bracket
             stage(promote) {
-              when { expression { env.BUILDID != '0' } }//skip build stage if build ID defined in Jira
+              when { expression { env.BUILDID != '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
               steps {
                 publishChecks name: 'Promoting',
                                     text: 'testing -> manual status: in progress',
