@@ -403,6 +403,27 @@ def call(Map pipelineParams) {
                                       ]
                             }"""
                 )
+                rtPublishBuildInfo (
+                        serverId: pipelineParams['artifactoryGenericRegistry_ID']
+                        //branch name
+                        //docker image
+                )
+
+                script {
+                      def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>${pipelineParams['artifactoryGenericRegistry_URL']}.*${pipelineParams['repositoryName']}.*${env.BRANCH_NAME}.*${env.BUILD_NUMBER}.\d+.*)/
+		                  def matcher = null
+
+                      for(String line in currentBuild.getRawBuild().getLog(10)){
+
+                  			matcher = line =~ artifactoryRegexLink_Pattern
+                  			if (matcher.matches() && matcher.hasGroup())
+                  			{
+                  			  artifactoryLink = matcher.group("link")
+                  			}
+                      }
+                      artifactoryLink.length() == 0 ? env.JOB_DISPLAY_URL : artifactoryLink
+                    }
+
                 publishChecks name: 'Promoting',
                                     text: 'To view the artifactory please access it clicking the link below',
                                     status: 'COMPLETED',
