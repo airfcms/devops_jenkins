@@ -105,7 +105,6 @@ def call(Map pipelineParams) {
                   
                   env.REPO_PATH = "build-repo"
                   try{
-                    println(">>> "+deployment)
                     switch (deployment) {
                         case 'Staging':
                             env.REPO_PATH = "staging-repo"
