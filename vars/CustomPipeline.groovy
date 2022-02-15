@@ -146,15 +146,19 @@ def call(Map pipelineParams) {
                       switch (fromWorkflow) {
                           case 'Staging':
                               env.ORIG_REPO_PATH = "staging-repo"
+                              env.ORIG_STATUS = "Staging"
                               break
                           case 'Testing':
                               env.ORIG_REPO_PATH = "qa-repo"
+                              env.ORIG_STATUS = "Testing"
                               break
                           case 'Release':
                               env.ORIG_REPO_PATH = "release-repo"
+                              env.ORIG_STATUS = "Release"
                               break
                           default:
                               env.ORIG_REPO_PATH = "build-repo"
+                              env.ORIG_STATUS = "Not Deployed"
                               break
                       }
                     } else {
@@ -465,11 +469,8 @@ def call(Map pipelineParams) {
               step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployed" ]);
             }
             failure {
-              jiraComment(
-                  issueKey: "${env.ISSUE_KEY}",
-                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] failed!"
-                )
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: 'To Testing', comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployment Failed" ]);
+              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}", comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
 
               //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
             }
