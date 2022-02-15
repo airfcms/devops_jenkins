@@ -447,7 +447,7 @@ def call(Map pipelineParams) {
             } //stage(promote) closed bracket
             stage(jiracomment) {
               when { expression { issueKey } }
-              Steps {
+              steps {
                 jiraComment:
                   issueKey: issueKey
                   body: "Success!!!"
