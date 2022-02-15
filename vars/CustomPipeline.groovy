@@ -450,7 +450,7 @@ def call(Map pipelineParams) {
               steps {
                 jiraComment(
                   issueKey: issueKey,
-                  body: "Success!!!"
+                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
               }
             } //stage(post) closed bracket
