@@ -445,16 +445,28 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
-            stage(jiracomment) {
-              when { expression { issueKey } }
-              steps {
-                jiraComment(
+            // stage(jiracomment) {
+            //   when { expression { issueKey } }
+            //   steps {
+            //     jiraComment(
+            //       issueKey: issueKey,
+            //       body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
+            //     )
+            //   }
+            // } //stage(jiracomment) closed bracket
+          } //stages body closed bracket
+          post{
+            Success {
+              jiraComment(
                   issueKey: issueKey,
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
-              }
-            } //stage(post) closed bracket
-          } //stages body closed bracket
+            }
+            Failure {
+              issueKey: issueKey,
+                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
+            }
+          }
         } //pipeline body closed bracket
 } //def body closed bracket
 
