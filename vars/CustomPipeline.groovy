@@ -36,7 +36,7 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                     genericVariables: [
-                      [key: 'issueKey', value: '$.issue.key']
+                      [key: 'issueKey', value: '$.issue.key'],
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
