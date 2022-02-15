@@ -448,9 +448,10 @@ def call(Map pipelineParams) {
             stage(jiracomment) {
               when { expression { issueKey } }
               steps {
-                jiraComment:
+                jiraComment(
                   issueKey: issueKey
                   body: "Success!!!"
+                )
               }
             } //stage(post) closed bracket
           } //stages body closed bracket
