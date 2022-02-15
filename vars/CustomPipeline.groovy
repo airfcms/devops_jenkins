@@ -36,6 +36,7 @@ def call(Map pipelineParams) {
           triggers {
                   GenericTrigger(
                     genericVariables: [
+                      [key: 'issueKey', value: '$.issue.key']
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
@@ -90,6 +91,20 @@ def call(Map pipelineParams) {
                 script{
 
                   try{
+                    if (issueKey) {
+                      currentBuild.description = issueKey
+                    }
+                  }catch(Exception e) {
+                    println("Exception: ${e}")
+                    println("No Issue Key defined! Either manual or git trigger.")
+                  }
+
+                }
+
+                //verify the buildID field and set env variable
+                script{
+
+                  try{
                     env.BUILDID = buildID //sets the env build id to o or the actual buildID
                   }catch(Exception e) {
                     println("Exception: ${e}")
@@ -120,7 +135,7 @@ def call(Map pipelineParams) {
                             break
                     }
                   } catch(Exception e){
-                      println("Deployment type not defined!!! Either manual or git trigger. Setting default 'development' deployment")
+                      println("Deployment type not defined! Either manual or git trigger. Setting default 'development' deployment")
                       def deployment = 'development'
                   }
                 }
