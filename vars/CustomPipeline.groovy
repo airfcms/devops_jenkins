@@ -457,13 +457,13 @@ def call(Map pipelineParams) {
             // } //stage(jiracomment) closed bracket
           } //stages body closed bracket
           post{
-            Success {
+            success {
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
             }
-            Failure {
+            failure {
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
