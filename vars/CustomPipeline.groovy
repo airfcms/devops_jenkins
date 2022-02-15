@@ -449,7 +449,7 @@ def call(Map pipelineParams) {
               when { expression { issueKey } }
               steps {
                 jiraComment(
-                  issueKey: issueKey
+                  issueKey: issueKey,
                   body: "Success!!!"
                 )
               }
