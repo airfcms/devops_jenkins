@@ -462,6 +462,11 @@ def call(Map pipelineParams) {
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
+              step([$class: 'IssueFieldUpdateStep'])(
+                issueSelector([$class: 'JqlIssueSelector']): "issuekey = ${env.ISSUE_KEY}",
+                fieldId: "10801",
+                fieldValue: "Deployed"
+              )
             }
             failure {
               jiraComment(
