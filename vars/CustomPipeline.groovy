@@ -87,13 +87,11 @@ def call(Map pipelineParams) {
 
                 }
 
-                //verify the buildID field and set env variable
+                //Set issue key if exists
                 script{
 
                   try{
-                    if (issueKey) {
-                      currentBuild.description = issueKey
-                    }
+                    currentBuild.description = issueKey
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("No Issue Key defined! Either manual or git trigger.")
@@ -158,6 +156,9 @@ def call(Map pipelineParams) {
                               env.ORIG_REPO_PATH = "build-repo"
                               break
                       }
+                    } else {
+                      println("not a status change: "+changelogStatus)
+                      env.BUILDID = '0'
                     }
                   } catch(Exception e){
                       println(e)
