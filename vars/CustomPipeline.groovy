@@ -467,8 +467,11 @@ def call(Map pipelineParams) {
             failure {
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
-                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
+                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] failed!"
                 )
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'JqlIssueSelector', jql: "issuekey = ${env.ISSUE_KEY}"], fieldId: '10801', fieldValue:  "Deployment Failed" ]);
+
+              //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
             }
           }
         } //pipeline body closed bracket
