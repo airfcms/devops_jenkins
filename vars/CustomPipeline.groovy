@@ -92,6 +92,7 @@ def call(Map pipelineParams) {
 
                   try{
                     currentBuild.description = issueKey
+                    env.ISSUE_KEY = issueKey
                   }catch(Exception e) {
                     println("Exception: ${e}")
                     println("No Issue Key defined! Either manual or git trigger.")
@@ -458,12 +459,12 @@ def call(Map pipelineParams) {
           post{
             Success {
               jiraComment(
-                  issueKey: issueKey,
+                  issueKey: env.ISSUE_KEY,
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
             }
             Failure {
-              issueKey: issueKey,
+              issueKey: env.ISSUE_KEY,
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
             }
           }
