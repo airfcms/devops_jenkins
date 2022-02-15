@@ -445,6 +445,14 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
+            stage(Post){
+              when { expression { issueKey } }
+              Steps {
+                jiraComment:
+                  issueKey: issueKey
+                  body: "Success!!!"
+              }
+            }
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
