@@ -464,8 +464,10 @@ def call(Map pipelineParams) {
                 )
             }
             Failure {
-              issueKey: "${env.ISSUE_KEY}",
+              jiraComment(
+                  issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
+                )
             }
           }
         } //pipeline body closed bracket
