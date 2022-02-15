@@ -462,15 +462,14 @@ def call(Map pipelineParams) {
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'JqlIssueSelector', jql: "issuekey = ${env.ISSUE_KEY}"], fieldId: '10801', fieldValue:  "Deployed" ]);
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: 'To Testing', comment:  "Deployed!!" ]);
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'JqlIssueSelector', jql: "issuekey = ${env.ISSUE_KEY}"], fieldId: '10900', fieldValue:  "Deployed" ]);
             }
             failure {
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] failed!"
                 )
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'JqlIssueSelector', jql: "issuekey = ${env.ISSUE_KEY}"], fieldId: '10801', fieldValue:  "Deployment Failed" ]);
+              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: 'To Testing', comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
 
               //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
             }
