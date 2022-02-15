@@ -445,7 +445,7 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
-            stage(post){
+            stage(jiracomment) {
               when { expression { issueKey } }
               Steps {
                 jiraComment:
