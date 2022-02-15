@@ -463,7 +463,7 @@ def call(Map pipelineParams) {
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
               step([$class: 'IssueFieldUpdateStep'])(
-                issueSelector([$class: 'JqlIssueSelector']): "issuekey = ${env.ISSUE_KEY}",
+                issueSelector.JqlIssueSelector.jql: "issuekey = ${env.ISSUE_KEY}",
                 fieldId: "10801",
                 fieldValue: "Deployed"
               )
