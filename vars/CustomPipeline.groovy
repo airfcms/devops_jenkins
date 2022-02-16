@@ -55,8 +55,8 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
-                    regexpFilterExpression: '^'+INFERRED_BRANCH_NAME+';status;$'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus',
+                    regexpFilterExpression: '^'+INFERRED_BRANCH_NAME+';status'
                     
                   )
                 }
