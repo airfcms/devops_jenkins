@@ -55,8 +55,8 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus',
-                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status;^(?!Not Deployed$)'
                     
                   )
                 }
@@ -464,18 +464,25 @@ def call(Map pipelineParams) {
           } //stages body closed bracket
           post{
             success {
+              //comment
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
+              //change deployment status
               step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployed" ]);
               
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}", comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
             }
             failure {
+              //change deployment status
               step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployment Failed" ]);
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}", comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
-
+              //transition status
+              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}" ]);
+              //comment - after the transition to ensure there is no loop
+              jiraComment(
+                  issueKey: "${env.ISSUE_KEY}",
+                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!"
+                )
               //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
             }
           }
