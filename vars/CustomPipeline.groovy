@@ -464,15 +464,13 @@ def call(Map pipelineParams) {
           } //stages body closed bracket
           post{
             success {
-              //change deployment status
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployment Failed" ]);
-              //transition status
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}" ]);
-              //comment - after the transition to ensure there is no loop
+              //comment
               jiraComment(
                   issueKey: "${env.ISSUE_KEY}",
-                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!"
+                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
+              //change deployment status
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployed" ]);
               
             }
             failure {
