@@ -55,8 +55,8 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus',
-                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
+                    regexpFilterExpression: '^'+INFERRED_BRANCH_NAME+';status;$'
                     
                   )
                 }
@@ -469,6 +469,8 @@ def call(Map pipelineParams) {
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
               step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployed" ]);
+              
+              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}", comment:  "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!" ]);
             }
             failure {
               step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '10902', fieldValue: "Deployment Failed" ]);
