@@ -42,7 +42,7 @@ def call(Map pipelineParams) {
                       [key: 'deployment', value: '$.issue.fields.status.name'],
                       [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
-                      [key: 'deploymentStatus', value: '$.issue.fields.customfield_10902', regexpFilter: "^(?!.*Not\sDeployed).*$"]
+                      [key: 'deploymentStatus', value: '$.issue.fields.customfield_10902', regexpFilter: "^(?!.*Not\sDeployed).*$", defaultValue: 'Deployed']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
