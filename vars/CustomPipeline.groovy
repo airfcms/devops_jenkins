@@ -41,7 +41,8 @@ def call(Map pipelineParams) {
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
                       [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
-                      [key: 'fromWorkflow', value: '$.changelog.items[0].fromString']
+                      [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
+                      [key: 'deploymentStatus', value: '$.issue.fields.customfield_10902', regexpFilter: "^(?!.*Not\sDeployed).*$"]
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -56,6 +57,7 @@ def call(Map pipelineParams) {
 
                     regexpFilterText: 'feature/$fixVersions',
                     regexpFilterExpression: INFERRED_BRANCH_NAME
+                    
                   )
                 }
           stages {
