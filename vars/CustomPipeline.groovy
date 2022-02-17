@@ -391,6 +391,7 @@ def call(Map pipelineParams) {
             } //stage(deploy) closed bracket
             stage(promote) {
               when { expression { env.BUILDID != '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
+              
               steps {
                 publishChecks name: 'Promoting',
                                     text: 'testing -> manual status: in progress',
@@ -420,7 +421,7 @@ def call(Map pipelineParams) {
                             "files": [
                                         {
                                         "pattern": "${env.BUILDID}/*",
-                                        "target": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILD_ID}/"
+                                        "target": "${env.REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/"
                                         }
                                       ]
                             }"""
