@@ -470,11 +470,11 @@ def call(Map pipelineParams) {
                   body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
                 )
               //change deployment status
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11000', fieldValue: '[10400]' ]);
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11000', fieldValue: 'Deployed' ]);
             }
             failure {
               //change deployment status
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11000', fieldValue: '[10401]' ]);
+              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11000', fieldValue: 'Deployment Failed' ]);
               //transition status
               step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}" ]);
               //comment - after the transition to ensure there is no loop
