@@ -195,7 +195,16 @@ def call(Map pipelineParams) {
                         returnStdout: true
                   ).trim()
 
-                  if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\""))
+                  //check if artifact exists in the repo
+                  curlstr = "curl -I ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/${pipelineParams['repositoryName']}"
+
+                  def artifactInfoString = sh(
+                        script: curlstr,
+                        returnStdout: true
+                  ).trim()
+
+                  //if build exists and the artifact is in the correct repo, we proceed; Otherwise, we will force a new full build
+                  if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\"") && artifactInfoString.contains("200 OK"))
                     {
                       println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
                     }else {
@@ -431,6 +440,25 @@ def call(Map pipelineParams) {
                         //branch name
                         //docker image
                 )
+
+                //Delete the artifact from the origin
+                script {
+                  curlstr = "curl -k -X DELETE ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/${pipelineParams['repositoryName']}"
+
+                  def deleteResponse = sh(
+                        script: curlstr,
+                        returnStdout: true
+                  ).trim()
+
+                  if (!deleteResponse)
+                    {
+                      println("Artifact ${env.BUILDID}/${pipelineParams['repositoryName']} successfuly deleted from ${env.ORIG_REPO_PATH}...")
+                    }
+                  else{
+                    println("Something went wrong\n${deleteResponse}")
+                  }
+
+                }
 
                 script {
                       def artifactoryRegexLink_Pattern = /^(?i).*artif.*(?<link>${pipelineParams['artifactoryGenericRegistry_URL']}.*${pipelineParams['repositoryName']}.*${env.BRANCH_NAME}.*${env.BUILD_NUMBER}.\d+.*)/
