@@ -208,6 +208,7 @@ def call(Map pipelineParams) {
                       {
                         println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
                       }else {
+                        println("Not the correct project branch or build id. Will rebuild the it...")
                         env.BUILDID = '0'
                       }
                   }
