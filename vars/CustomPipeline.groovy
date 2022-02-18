@@ -444,7 +444,7 @@ def call(Map pipelineParams) {
 
                 //Delete the artifact from the origin
                 script {
-                  curlstr = "curl -k -X DELETE ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/${pipelineParams['repositoryName']}"
+                  curlstr = "curl -k -X DELETE ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}"
 
                   def deleteResponse = sh(
                         script: curlstr,
