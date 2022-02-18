@@ -176,41 +176,41 @@ def call(Map pipelineParams) {
 
                 // Check if build exists
                 script{
-                  
-                  def branchUrl = pipelineParams['repositoryName'] + "%20::%20"
-                  def buildInfoName = pipelineParams['repositoryName'] + " :: "
-                  
-                  if (INFERRED_BRANCH_NAME.contains("/")){
-                    branchUrl += INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
-                    buildInfoName += INFERRED_BRANCH_NAME.replaceAll("/"," :: ")
-                  } else{
-                    branchUrl += INFERRED_BRANCH_NAME
-                    buildInfoName += INFERRED_BRANCH_NAME
-                  }
-
-                  curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${branchUrl}/${env.BUILDID}"
-
-                  def buildInfoString = sh(
-                        script: curlstr,
-                        returnStdout: true
-                  ).trim()
-
-                  //check if artifact exists in the repo
-                  curlstr = "curl -I ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/${pipelineParams['repositoryName']}"
-
-                  def artifactInfoString = sh(
-                        script: curlstr,
-                        returnStdout: true
-                  ).trim()
-
-                  //if build exists and the artifact is in the correct repo, we proceed; Otherwise, we will force a new full build
-                  if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\"") && artifactInfoString.contains("200 OK"))
-                    {
-                      println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
-                    }else {
-                      env.BUILDID = '0'
+                  if(env.BUILDID != '0'){
+                    def branchUrl = pipelineParams['repositoryName'] + "%20::%20"
+                    def buildInfoName = pipelineParams['repositoryName'] + " :: "
+                    
+                    if (INFERRED_BRANCH_NAME.contains("/")){
+                      branchUrl += INFERRED_BRANCH_NAME.replaceAll("/","%20::%20")
+                      buildInfoName += INFERRED_BRANCH_NAME.replaceAll("/"," :: ")
+                    } else{
+                      branchUrl += INFERRED_BRANCH_NAME
+                      buildInfoName += INFERRED_BRANCH_NAME
                     }
 
+                    curlstr = "curl -k -X GET ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/api/build/${branchUrl}/${env.BUILDID}"
+
+                    def buildInfoString = sh(
+                          script: curlstr,
+                          returnStdout: true
+                    ).trim()
+
+                    //check if artifact exists in the repo
+                    curlstr = "curl -I ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}/${pipelineParams['repositoryName']}"
+
+                    def artifactInfoString = sh(
+                          script: curlstr,
+                          returnStdout: true
+                    ).trim()
+
+                    //if build exists and the artifact is in the correct repo, we proceed; Otherwise, we will force a new full build
+                    if (buildInfoString.contains("\"number\" : \"${env.BUILDID}\"") && buildInfoString.contains("\"name\" : \"${buildInfoName}\"") && artifactInfoString.contains("200 OK"))
+                      {
+                        println("This is the correct project branch and build id ${buildInfoName} ${env.BUILDID} ")
+                      }else {
+                        env.BUILDID = '0'
+                      }
+                  }
                 }
 
                 sh 'env | sort'
