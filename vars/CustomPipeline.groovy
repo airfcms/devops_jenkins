@@ -58,7 +58,8 @@ def call(Map pipelineParams) {
                     regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
                     regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
                     
-                  ),
+                  )
+
                   GenericTrigger(
                     genericVariables: [
                       [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
@@ -76,8 +77,8 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: '$released',
-                    regexpFilterExpression: 'true'
+                    regexpFilterText: 'feature/$releaseVersion;$released',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+';true'
                     
                   )
                 }
