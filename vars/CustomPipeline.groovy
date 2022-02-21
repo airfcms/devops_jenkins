@@ -34,7 +34,7 @@ def call(Map pipelineParams) {
          agent any
          //release/fixversion
           triggers {
-                  GenericTrigger(
+                  GenericTriggerDeploymentIssue(
                     genericVariables: [
                       [key: 'issueKey', value: '$.issue.key'],
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
@@ -59,8 +59,7 @@ def call(Map pipelineParams) {
                     regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
                     
                   )
-
-                  GenericTrigger(
+                  GenericTriggerRelease(
                     genericVariables: [
                       [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
                       [key: 'released', value: '$.issue.released'], //With this we evaluate if the pipeline is to run
