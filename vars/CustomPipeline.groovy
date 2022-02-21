@@ -42,7 +42,10 @@ def call(Map pipelineParams) {
                       [key: 'deployment', value: '$.issue.fields.status.name'],
                       [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
-                      [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100']
+                      [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
+                      [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
+                      [key: 'released', value: '$.issue.released'], //With this we evaluate if the pipeline is to run
+                      [key: 'projectID', value: '$.issue.key'] //Need this so we can create an issue if necessary
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -55,31 +58,8 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
-                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
-                    
-                  )
-                }
-          triggers {
-                  GenericTrigger(
-                    genericVariables: [
-                      [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
-                      [key: 'released', value: '$.issue.released'], //With this we evaluate if the pipeline is to run
-                      [key: 'projectID', value: '$.issue.key'] //Need this so we can create an issue if necessary
-                    ],
-
-                    causeString: 'Triggered on $releaseVersion',
-
-                    token: pipelineParams['repositoryName'],
-                    tokenCredentialId: '',
-
-                    printContributedVariables: true,
-                    printPostContent: true,
-
-                    silentResponse: false,
-
-                    regexpFilterText: 'feature/$releaseVersion;$released',
-                    regexpFilterExpression: INFERRED_BRANCH_NAME+';true'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
+                    regexpFilterExpression: '['+INFERRED_BRANCH_NAME+'|];[status|];(?!.*Deployment Failed).*;['+INFERRED_BRANCH_NAME+'|];[true|]'
                     
                   )
                 }
