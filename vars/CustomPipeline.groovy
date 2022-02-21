@@ -44,8 +44,8 @@ def call(Map pipelineParams) {
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
                       [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
                       [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
-                      [key: 'released', value: '$.issue.released'], //With this we evaluate if the pipeline is to run
-                      [key: 'projectID', value: '$.issue.key'] //Need this so we can create an issue if necessary
+                      [key: 'released', value: '$.version.released'], //With this we evaluate if the pipeline is to run
+                      [key: 'projectID', value: '$.version.projectId'] //Need this so we can create an issue if necessary
                     ],
 
                     causeString: 'Triggered on $fixVersions',
