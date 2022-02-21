@@ -58,8 +58,29 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
-                    regexpFilterExpression: '['+INFERRED_BRANCH_NAME+'|];[status|];(?!.*Deployment Failed).*'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
+                    
+                  )
+                  GenericTrigger(
+                    genericVariables: [
+                      [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
+                      [key: 'released', value: '$.issue.released'], //With this we evaluate if the pipeline is to run
+                      [key: 'projectID', value: '$.issue.key'] //Need this so we can create an issue if necessary
+                    ],
+
+                    causeString: 'Triggered on $releaseVersion',
+
+                    token: pipelineParams['repositoryName'],
+                    tokenCredentialId: '',
+
+                    printContributedVariables: true,
+                    printPostContent: true,
+
+                    silentResponse: false,
+
+                    regexpFilterText: 'feature/$releaseVersion;$released',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+';true'
                     
                   )
                 }
