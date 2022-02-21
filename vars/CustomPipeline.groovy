@@ -59,6 +59,8 @@ def call(Map pipelineParams) {
                     regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
                     
                   )
+                }
+          triggers {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
