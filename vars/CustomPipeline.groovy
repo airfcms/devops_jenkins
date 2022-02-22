@@ -497,13 +497,13 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
-            stage(merge){
-              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
-              steps{
+            // stage(merge){
+            //   when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+            //   steps{
 
-              }
+            //   }
 
-            }
+            // }
             // stage(jiracomment) {
             //   when { expression { issueKey } }
             //   steps {
