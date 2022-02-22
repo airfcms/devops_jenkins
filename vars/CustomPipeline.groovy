@@ -37,13 +37,13 @@ def call(Map pipelineParams) {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'issueKey', value: '$.issue.key'],
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name', defaultValue: '0'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
                       [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
                       [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
-                      [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
+                      [key: 'releaseVersion', value: '$.version.name', defaultValue: '0'], //From here, parameters related to release
                       [key: 'released', value: '$.version.released'], //With this we evaluate if the pipeline is to run
                       [key: 'projectID', value: '$.version.projectId'] //Need this so we can create an issue if necessary
                     ],
@@ -73,23 +73,19 @@ def call(Map pipelineParams) {
                 // If defined in the Jira issue and passed the trigger, it comes from the genericVatriables
                 // If not, it will be calculated
                 script{
-                  try{
-                      env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
-                  }catch(Exception e) {
-
-                    println(">>> Fix version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
-                    
-                    def fixVersions = getVersion(INFERRED_BRANCH_NAME) ///^((feature|release)\/)(.*)$/
-                    println(">>> ${fixVersions}")
-                    if (fixVersions){
-                      env.FIX_VERSIONS = fixVersions //version ID from the branch name with prefix feature/
-                    } else{
-                      println("not a valid branch name")
+                  if (fixVersions != '0'){
+                    env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
+                  } else if (releaseVersion != '0'){
+                    env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
+                  } else {
+                    println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
+                    try{
+                      env.FIX_VERSIONS = getVersion(INFERRED_BRANCH_NAME) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
+                    }catch(Exception e) {
+                      println("Not a valid branch name")
                       env.FIX_VERSIONS = env.BUILD_ID //set fix version to Branch id
                     }
-
                   }
-
                 }
 
                 //Set issue key if exists
@@ -140,7 +136,9 @@ def call(Map pipelineParams) {
                     }
                   } catch(Exception e){
                       println("Deployment type not defined! Either manual or git trigger. Setting default 'development' deployment")
-                      def deployment = 'development'
+                      if (INFERRED_BRANCH_NAME == 'main'){
+                        env.REPO_PATH = "release-repo" // Should only be here if there was a merge; might need to block direct commits to Main
+                      }
                   }
                 }
 
@@ -177,9 +175,23 @@ def call(Map pipelineParams) {
                   }
                 }
 
-                // Check if build exists
+                //needs to get the jira status name for the case selector
+                //Set deployment REPO_PATH
+                script {
+                  
+                  try{
+                    if (released == 'true'){
+                      env.BUILDID = '0'
+
+                    }
+                  } catch(Exception e){
+                      
+                  }
+                }
+
+                // Check if build exists when using deployment issue type strategy
                 script{
-                  if(env.BUILDID != '0'){
+                  if(env.BUILDID > '0'){
                     def branchUrl = pipelineParams['repositoryName'] + "%20::%20"
                     def buildInfoName = pipelineParams['repositoryName'] + " :: "
                     
@@ -403,7 +415,7 @@ def call(Map pipelineParams) {
                 }
             } //stage(deploy) closed bracket
             stage(promote) {
-              when { expression { env.BUILDID != '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
+              when { expression { env.BUILDID > '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
               
               steps {
                 publishChecks name: 'Promoting',
@@ -485,6 +497,13 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
+            stage(merge){
+              when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
+              steps{
+
+              }
+
+            }
             // stage(jiracomment) {
             //   when { expression { issueKey } }
             //   steps {
