@@ -73,19 +73,19 @@ def call(Map pipelineParams) {
                 // If defined in the Jira issue and passed the trigger, it comes from the genericVatriables
                 // If not, it will be calculated
                 script{
-                  if (fixVersions != '0'){
-                    env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
-                  } else if (releaseVersion != '0'){
-                    env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
-                  } else {
-                    println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
-                    try{
+                  try{
+                    if (fixVersions != '0'){
+                      env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
+                    } else if (releaseVersion != '0'){
+                      env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
+                    } else {
+                      println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
                       env.FIX_VERSIONS = getVersion(INFERRED_BRANCH_NAME) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
-                    }catch(Exception e) {
+                    }
+                  }catch(Exception e) {
                       println("Not a valid branch name")
                       env.FIX_VERSIONS = env.BUILD_ID //set fix version to Branch id
                     }
-                  }
                 }
 
                 //Set issue key if exists
