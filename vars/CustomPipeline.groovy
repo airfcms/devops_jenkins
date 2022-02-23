@@ -81,10 +81,11 @@ def call(Map pipelineParams) {
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
                       if (INFERRED_BRANCH_NAME == "Main"){
-
-                        regexParser(INFERRED_BRANCH_NAME, "/^.*,\s(.+)$/")
+                        //needs to get the previous branch
+                        //git show -s --format='%D' <commit hash>
+                        env.FIX_VERSIONS = regexParser(regexParser(INFERRED_BRANCH_NAME, '/^.*,\s(.+)$/'), '/^(feature\/)(.*)$/')
                       }
-                      env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, "/^(feature\/)(.*)$/") ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
+                      env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, '/^(feature\/)(.*)$/') ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
                     }
                   }catch(Exception e) {
                       println("Not a valid branch name")
