@@ -83,7 +83,7 @@ def call(Map pipelineParams) {
                       if (INFERRED_BRANCH_NAME == "Main"){
                         //needs to get the previous branch
                         //git show -s --format='%D' <commit hash>
-                        env.FIX_VERSIONS = regexParser(regexParser(INFERRED_BRANCH_NAME, '/^.*, (.+)$/'), '/^(feature\/)(.*)$/')
+                        env.FIX_VERSIONS = regexParser(regexParser(INFERRED_BRANCH_NAME, /^.*, (.+)$/), /^(feature\/)(.*)$/)
                       }
                       env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, '/^(feature\/)(.*)$/') ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
                     }
