@@ -3,14 +3,14 @@ import io.jenkins.plugins.checks.api.ChecksPublisher;
 import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 @NonCPS
-String getVersion(String INFERRED_BRANCH_NAME) {
+String regexParser(String stringToCheck, String regexCompare) {
   /*
   Method to get the fix version from the branch name
   reference: https://www.javaallin.com/code/jenkins-groovy-regex-match-string-error-java-io-notserializableexception-jav.html
   */
-  def matches = (INFERRED_BRANCH_NAME =~ /^(feature\/)(.*)$/)
-  fixversions = ""+matches[0].last()
-  return fixversions
+  def matches = (stringToCheck =~ regexCompare)
+  result = ""+matches[0].last()
+  return result
 }
 
 def call(Map pipelineParams) {
@@ -80,7 +80,11 @@ def call(Map pipelineParams) {
                       env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
-                      env.FIX_VERSIONS = getVersion(INFERRED_BRANCH_NAME) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
+                      if (INFERRED_BRANCH_NAME == "Main"){
+
+                        regexParser(INFERRED_BRANCH_NAME, "/^.*,\s(.+)$/")
+                      }
+                      env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, "/^(feature\/)(.*)$/") ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
                     }
                   }catch(Exception e) {
                       println("Not a valid branch name")
@@ -182,7 +186,6 @@ def call(Map pipelineParams) {
                   try{
                     if (released == 'true'){
                       env.BUILDID = '0'
-
                     }
                   } catch(Exception e){
                       
@@ -369,7 +372,7 @@ def call(Map pipelineParams) {
               steps{
 
                     publishChecks name: 'Deployment',
-                                  text: 'testing -> manual status: in progress',
+                                  text: 'Deploying -> manual status: in progress',
                                   status: 'IN_PROGRESS'
 
                     rtServer (
@@ -419,7 +422,7 @@ def call(Map pipelineParams) {
               
               steps {
                 publishChecks name: 'Promoting',
-                                    text: 'testing -> manual status: in progress',
+                                    text: 'Promoting -> manual status: in progress',
                                     status: 'IN_PROGRESS'
                 sh 'ls -la ../'
                 rtServer (
@@ -497,13 +500,23 @@ def call(Map pipelineParams) {
                                     detailsURL: artifactoryLink
               }
             } //stage(promote) closed bracket
-            // stage(merge){
-            //   when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
-            //   steps{
+            stage(merge){
+              when { expression { env.BUILDID == '0' && released == 'true'} }//perform the merge if the released is true and a build was Done
+              steps{
+                publishChecks name: 'Merge to Master',
+                              text: 'Merging -> manual status: in progress',
+                              status: 'IN_PROGRESS'
 
-            //   }
+                sh"""
+                  echo Checking out Main Branch in Docker Image Workspace
+                  ls -la
+                 """
 
-            // }
+				        publishChecks name: 'Merge to Master',
+                              status: 'COMPLETED'
+
+              }
+            }//stage(merge) closed bracket
             // stage(jiracomment) {
             //   when { expression { issueKey } }
             //   steps {
