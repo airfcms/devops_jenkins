@@ -58,8 +58,10 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
-                    regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+';true]'
+                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
+                    //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
+                    //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+';true]'
                     
                   )
                 }
@@ -74,9 +76,8 @@ def call(Map pipelineParams) {
                 // If not, it will be calculated
                 script{
                   try{
-                    if (fixVersions != '0'){
-                      env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
-                    } else if (releaseVersion != '0'){
+                    env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
+                    
                       env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
@@ -88,8 +89,7 @@ def call(Map pipelineParams) {
                       env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, /^(feature\/)(.*)$/) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
                     }
                   }catch(Exception e) {
-                      println("Not a valid branch name")
-                      env.FIX_VERSIONS = env.BUILD_ID //set fix version to Branch id
+                      env.FIX_VERSIONS = releaseVersion
                     }
                 }
 
