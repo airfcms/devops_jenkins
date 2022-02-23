@@ -37,7 +37,7 @@ def call(Map pipelineParams) {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'issueKey', value: '$.issue.key'],
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name', defaultValue: '0'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
                       [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
@@ -76,8 +76,9 @@ def call(Map pipelineParams) {
                 // If not, it will be calculated
                 script{
                   try{
-                    env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
-                    
+                    if (fixVersions != '0'){
+                      env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
+                    } else if (releaseVersion != '0'){
                       env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
