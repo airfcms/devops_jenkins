@@ -90,7 +90,7 @@ def call(Map pipelineParams) {
                       env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, /^(feature\/)(.*)$/) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
                     }
                   }catch(Exception e) {
-                      env.FIX_VERSIONS = releaseVersion
+                      env.FIX_VERSIONS = '0'
                     }
                 }
 
