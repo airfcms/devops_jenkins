@@ -262,7 +262,9 @@ def call(Map pipelineParams) {
                 sh"""
                   echo Cloning Repository in Docker Image Workspace
                   git clone ${scmUrl}
+                  ls -la
                   cd ${pipelineParams['repositoryName']}
+                  ls -la
 
                   git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
@@ -511,6 +513,8 @@ def call(Map pipelineParams) {
                 sh"""
                   echo Checking out Main Branch in Docker Image Workspace
                   ls -la
+                  ls -la ${pipelineParams['repositoryName']}
+
                  """
 
 				        publishChecks name: 'Merge to Master',
