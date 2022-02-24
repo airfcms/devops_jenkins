@@ -273,15 +273,22 @@ def call(Map pipelineParams) {
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
                  """
+
+                //Get version from commit; not possible to get on the Init Stage
                 script{
                   try{
-                    if (INFERRED_BRANCH_NAME == "Main"){
+                    if (INFERRED_BRANCH_NAME == "main" && released == 'true'){
                           //needs to get the previous branch
-                          //git show -s --format='%D' <commit hash>
-                          env.FIX_VERSIONS = regexParser(regexParser(INFERRED_BRANCH_NAME, /^.*,\s(.+)$/), /^(feature\/)(.*)$/)
+                          def commitBranches = sh(
+                          script: 'git show -s --format=%D $env.GIT_COMMIT',
+                          returnStdout: true
+                          )
+                          env.FIX_VERSIONS = regexParser(regexParser(commitBranches, /^.*,\s(.+)$/), /^(feature\/)(.*)$/)
+                        } else {
+                          println("Manual build...")
                         }
                   }catch(Exception e){
-
+                    println("Valid Release Branch not found!!! Either manual or git trigger (direct commit to main).")
                   }
                 }
 
