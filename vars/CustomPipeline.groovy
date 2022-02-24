@@ -141,6 +141,8 @@ def call(Map pipelineParams) {
                       println("Deployment type not defined! Either manual or git trigger. Setting default 'development' deployment")
                       if (INFERRED_BRANCH_NAME == 'main'){
                         env.REPO_PATH = "release-repo" // Should only be here if there was a merge; might need to block direct commits to Main
+                      }else{
+                        env.REPO_PATH = "build-repo"
                       }
                   }
                 }
@@ -187,7 +189,10 @@ def call(Map pipelineParams) {
                       env.BUILDID = '0'
                     }
                   } catch(Exception e){
-                      
+                      println(e)
+                      println("Status has not changed!!! Either manual or git trigger. Setting default 'development' deployment")
+                      released == 'false' //just to make sure it does not merge
+                      env.BUILDID = '0'
                   }
                 }
 
@@ -512,7 +517,7 @@ def call(Map pipelineParams) {
               }
             } //stage(promote) closed bracket
             stage(merge){
-              when { expression { env.BUILDID == '0' && released == 'true'} }//perform the merge if the released is true and a build was Done
+              when { expression { env.BUILDID == '0' && released == 'true' && currentBuild.getCurrentResult() == 'SUCCESS'} }//perform the merge if the released is true and a build was Done
               steps{
                 publishChecks name: 'Merge to Master',
                               text: 'Merging -> manual status: in progress',
