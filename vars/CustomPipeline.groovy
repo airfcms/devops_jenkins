@@ -63,7 +63,7 @@ def call(Map pipelineParams) {
                     //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*;;|;;;'+INFERRED_BRANCH_NAME+';true]'
                     regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
-                    regexpFilterExpression: '(\b'+INFERRED_BRANCH_NAME+'\b|(^ *$));(status|(^ *$));(?!.*Deployment Failed).*;(^ *$);(^ *$)|(^ *$);(^ *$);(^ *$);(\b'+INFERRED_BRANCH_NAME+'\b|(^ *$));(true|(^ *$))]'
+                    regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|(^ *$));(status|(^ *$));(?!.*Deployment Failed).*;(^ *$);(^ *$)|(^ *$);(^ *$);(^ *$);('+INFERRED_BRANCH_NAME+'|(^ *$));(true|(^ *$))]'
                     
                   )
                 }
