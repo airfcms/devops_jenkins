@@ -40,11 +40,11 @@ def call(Map pipelineParams) {
                       [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name', defaultValue: '0'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
-                      [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
+                      [key: 'changelogStatus', value: '$.changelog.items[0].field', defaultValue: '0'], //if status we use the below ones
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
                       [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
                       [key: 'releaseVersion', value: '$.version.name', defaultValue: '0'], //From here, parameters related to release
-                      [key: 'released', value: '$.version.released'], //With this we evaluate if the pipeline is to run
+                      [key: 'released', value: '$.version.released', defaultValue: '0'], //With this we evaluate if the pipeline is to run
                       [key: 'projectID', value: '$.version.projectId'] //Need this so we can create an issue if necessary
                     ],
 
@@ -63,7 +63,7 @@ def call(Map pipelineParams) {
                     //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*;;|;;;'+INFERRED_BRANCH_NAME+';true]'
                     regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
-                    regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(true|)'
+                    regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|0);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(true|0)'
                     
                   )
                 }
