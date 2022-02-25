@@ -413,14 +413,14 @@ def call(Map pipelineParams) {
                 post{
                   failure {
                     def project = jiraGetProject(
-                      idOrKey: "$projectID"
+                      idOrKey: "${projectID}"
                     ).data.toDtring()
                     
 
-                    def issueDescription = "${BUILD_LOG, maxLines=50, escapeHtml=false}"
+                    def issueDescription = "\${BUILD_LOG, maxLines=50, escapeHtml=false}"
                     //create issue
                     def failIssue = [fields: [ // id or key must present for project.
-                               project: [id: "$projectID"],
+                               project: [id: "${projectID}"],
                                summary: "Release Build $env.BUILD_ID has failed",
                                description: "${issueDescription}",
                                // id or name must present for issueType.
@@ -431,14 +431,14 @@ def call(Map pipelineParams) {
                     )
 
                     //revert to unreleased
-                    def editedVersion = [ id: "$releaseVersionID", // need to change this to get the correct id from the version name
-                        name: "$env.FIX_VERSIONS",
+                    def editedVersion = [ id: "${releaseVersionID}", // need to change this to get the correct id from the version name
+                        name: "${env.FIX_VERSIONS}",
                         archived: false,
                         released: false,
-                        project: "$projectID" ]
+                        project: "${projectID}" ]
 
                     jiraEditVersion(
-                      id: "$releaseVersionID",
+                      id: "${releaseVersionID}",
                       version: editedVersion
                     )
 
@@ -509,15 +509,15 @@ def call(Map pipelineParams) {
                 post{
                   failure {
                     def project = jiraGetProject(
-                      idOrKey: "$projectID" //might know it from the commit merge message?
+                      idOrKey: "${projectID}" //might know it from the commit merge message?
                     ).data.toDtring()
                     
-                    def issueDescription = "${BUILD_LOG, maxLines=50, escapeHtml=false}"
+                    def issueDescription = "\${BUILD_LOG, maxLines=50, escapeHtml=false}"
 
                     //create issue
                     def failIssue = [fields: [ // id or key must present for project.
-                               project: [id: "$projectID"],
-                               summary: "Release Build $env.BUILD_ID has failed",
+                               project: [id: "${projectID}"],
+                               summary: "Release Build ${env.BUILD_ID} has failed",
                                description: "${issueDescription}",
                                // id or name must present for issueType.
                                issuetype: [id: '3']]]
@@ -528,7 +528,7 @@ def call(Map pipelineParams) {
 
                     //revert to unreleased
                     def testVersion = [ id: '10205', // need to change this to get the correct id from the version name
-                        name: "$env.FIX_VERSIONS",
+                        name: "${env.FIX_VERSIONS}",
                         archived: true,
                         released: true,
                         description: 'desc',
