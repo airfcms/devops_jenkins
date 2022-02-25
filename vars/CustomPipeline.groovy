@@ -416,11 +416,13 @@ def call(Map pipelineParams) {
                       idOrKey: "$projectID"
                     ).data.toDtring()
                     
+
+                    def issueDescription = "${BUILD_LOG, maxLines=50, escapeHtml=false}"
                     //create issue
                     def failIssue = [fields: [ // id or key must present for project.
                                project: [id: "$projectID"],
                                summary: "Release Build $env.BUILD_ID has failed",
-                               description: "${BUILD_LOG, maxLines=50, escapeHtml=false}",
+                               description: "${issueDescription}",
                                // id or name must present for issueType.
                                issuetype: [id: '3']]]
 
@@ -510,11 +512,13 @@ def call(Map pipelineParams) {
                       idOrKey: "$projectID" //might know it from the commit merge message?
                     ).data.toDtring()
                     
+                    def issueDescription = "${BUILD_LOG, maxLines=50, escapeHtml=false}"
+
                     //create issue
                     def failIssue = [fields: [ // id or key must present for project.
                                project: [id: "$projectID"],
                                summary: "Release Build $env.BUILD_ID has failed",
-                               description: "${BUILD_LOG, maxLines=50, escapeHtml=false}",
+                               description: "${issueDescription}",
                                // id or name must present for issueType.
                                issuetype: [id: '3']]]
 
