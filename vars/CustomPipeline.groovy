@@ -420,7 +420,7 @@ def call(Map pipelineParams) {
                     def failIssue = [fields: [ // id or key must present for project.
                                project: [id: "$projectID"],
                                summary: "Release Build $env.BUILD_ID has failed",
-                               description: '${BUILD_LOG_REGEX, regex="^.*?BUILD FAILED.*?$", linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true}',
+                               description: ${BUILD_LOG_REGEX, regex="^.*?BUILD FAILED.*?$", linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true},
                                // id or name must present for issueType.
                                issuetype: [id: '3']]]
 
@@ -514,7 +514,7 @@ def call(Map pipelineParams) {
                     def failIssue = [fields: [ // id or key must present for project.
                                project: [id: "$projectID"],
                                summary: "Release Build $env.BUILD_ID has failed",
-                               description: "${BUILD_LOG_REGEX, regex=”^.*?BUILD FAILED.*?$”, linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true}",
+                               description: ${BUILD_LOG_REGEX, regex="^.*?BUILD FAILED.*?$", linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true},
                                // id or name must present for issueType.
                                issuetype: [id: '3']]]
 
