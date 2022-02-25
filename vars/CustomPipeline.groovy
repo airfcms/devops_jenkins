@@ -192,7 +192,7 @@ def call(Map pipelineParams) {
                   } catch(Exception e){
                       println(e)
                       println("Status has not changed!!! Either manual or git trigger. Setting default 'development' deployment")
-                      def released == 'false' //just to make sure it does not merge
+                      released = 'false' //just to make sure it does not merge
                       env.BUILDID = '0'
                   }
                 }
