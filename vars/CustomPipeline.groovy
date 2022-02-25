@@ -37,13 +37,13 @@ def call(Map pipelineParams) {
                   GenericTrigger(
                     genericVariables: [
                       [key: 'issueKey', value: '$.issue.key'],
-                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name', defaultValue: '0'],
+                      [key: 'fixVersions', value: '$.issue.fields.fixVersions[0].name'],
                       [key: 'buildID', value: '$.issue.fields.customfield_10700', defaultValue: '0'], //defined default value so it does not fail
                       [key: 'deployment', value: '$.issue.fields.status.name'],
-                      [key: 'changelogStatus', value: '$.changelog.items[0].field', defaultValue: '0'], //if status we use the below ones
+                      [key: 'changelogStatus', value: '$.changelog.items[0].field'], //if status we use the below ones
                       [key: 'fromWorkflow', value: '$.changelog.items[0].fromString'],
                       [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
-                      [key: 'releaseVersion', value: '$.version.name', defaultValue: '0'], //From here, parameters related to release
+                      [key: 'releaseVersion', value: '$.version.name'], //From here, parameters related to release
                       [key: 'released', value: '$.version.released'], //With this we evaluate if the pipeline is to run
                       [key: 'projectID', value: '$.version.projectId'], //Need this so we can create an issue if necessary
                       [key: 'releaseVersionID', value: '$.version.id']
@@ -63,8 +63,10 @@ def call(Map pipelineParams) {
                     //regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
                     //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*;;|;;;'+INFERRED_BRANCH_NAME+';true]'
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
-                    regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|0);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(?!false).*'
+                    // regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
+                    // regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|0);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(?!false).*'
+                    regexpFilterText: 'feature/$fixVersions$changelogStatus$deploymentStatusfeature/$releaseVersion$released',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+'status(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+'true'
                     
                   )
                 }
@@ -79,9 +81,9 @@ def call(Map pipelineParams) {
                 // If not, it will be calculated
                 script{
                   try{
-                    if (fixVersions != '0'){
+                    if (fixVersions){
                       env.FIX_VERSIONS = fixVersions //passed the trigger and was defined in the Jira issue
-                    } else if (releaseVersion != '0'){
+                    } else if (releaseVersion){
                       env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
