@@ -45,7 +45,8 @@ def call(Map pipelineParams) {
                       [key: 'deploymentStatus', value: '$.issue.fields.customfield_11100'],
                       [key: 'releaseVersion', value: '$.version.name', defaultValue: '0'], //From here, parameters related to release
                       [key: 'released', value: '$.version.released', defaultValue: '0'], //With this we evaluate if the pipeline is to run
-                      [key: 'projectID', value: '$.version.projectId'] //Need this so we can create an issue if necessary
+                      [key: 'projectID', value: '$.version.projectId'], //Need this so we can create an issue if necessary
+                      [key: 'releaseVersionID', value: '$.version.id']
                     ],
 
                     causeString: 'Triggered on $fixVersions',
@@ -277,7 +278,7 @@ def call(Map pipelineParams) {
                 //Get version from commit; not possible to get on the Init Stage
                 script{
                   try{
-                    if (INFERRED_BRANCH_NAME == "main" && released == 'true'){
+                    if (INFERRED_BRANCH_NAME == "main"){
                           //needs to get the previous branch
                           def commitBranches = sh(
                           script: 'git show -s --format=%D $env.GIT_COMMIT',
@@ -389,6 +390,60 @@ def call(Map pipelineParams) {
               }
 
             }//stage(static analysis) closed bracket
+            stage(merge){
+              when { expression { env.BUILDID == '0' && released == 'true' && currentBuild.getCurrentResult() == 'SUCCESS'} }//perform the merge if the released is true and a build was Done
+              steps{
+                publishChecks name: 'Merge to Master',
+                              text: 'Merging -> manual status: in progress',
+                              status: 'IN_PROGRESS'
+
+                sh"""
+                  echo Checking out Main Branch in Docker Image Workspace
+                  cd ${pipelineParams['repositoryName']}
+                  git checkout main
+                  git pull
+                  git merge ${INFERRED_BRANCH_NAME}
+                  git push
+                 """
+
+				        publishChecks name: 'Merge to Master',
+                              status: 'COMPLETED'
+              }
+              //post action to create issue and revert the state
+                post{
+                  failure {
+                    def project = jiraGetProject(
+                      idOrKey: "$projectID"
+                    ).data.toDtring()
+                    
+                    //create issue
+                    def failIssue = [fields: [ // id or key must present for project.
+                               project: [id: "$projectID"],
+                               summary: "Release Build $env.BUILD_ID has failed",
+                               description: "${BUILD_LOG_REGEX, regex=”^.*?BUILD FAILED.*?$”, linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true}",
+                               // id or name must present for issueType.
+                               issuetype: [id: '3']]]
+
+                    jiraNewIssue(
+                      issue: failIssue
+                    )
+
+                    //revert to unreleased
+                    def editedVersion = [ id: "$releaseVersionID", // need to change this to get the correct id from the version name
+                        name: "$env.FIX_VERSIONS",
+                        archived: false,
+                        released: false,
+                        project: "$projectID" ]
+
+                    jiraEditVersion(
+                      id: "$releaseVersionID",
+                      version: editedVersion
+                    )
+
+                    
+                  }
+                }
+            }//stage(merge) closed bracket
             stage('deploy') {
               when { expression { env.BUILDID == '0' } }//skip build stage if build ID defined in Jira
               
@@ -438,6 +493,41 @@ def call(Map pipelineParams) {
                                   text: 'To view the artifactory please access it clicking the link below',
                                   status: 'COMPLETED',
                                   detailsURL: artifactoryLink
+                }
+                //post action to create issue and revert the state
+                post{
+                  failure {
+                    def project = jiraGetProject(
+                      idOrKey: "$projectID" //might know it from the commit merge message?
+                    ).data.toDtring()
+                    
+                    //create issue
+                    def failIssue = [fields: [ // id or key must present for project.
+                               project: [id: "$projectID"],
+                               summary: "Release Build $env.BUILD_ID has failed",
+                               description: "${BUILD_LOG_REGEX, regex=”^.*?BUILD FAILED.*?$”, linesBefore=0, linesAfter=10, maxMatches=5, showTruncatedLines=false, escapeHtml=true}",
+                               // id or name must present for issueType.
+                               issuetype: [id: '3']]]
+
+                    jiraNewIssue(
+                      issue: failIssue
+                    )
+
+                    //revert to unreleased
+                    def testVersion = [ id: '10205', // need to change this to get the correct id from the version name
+                        name: "$env.FIX_VERSIONS",
+                        archived: true,
+                        released: true,
+                        description: 'desc',
+                        project: 'TEST' ]
+
+                    jiraEditVersion(
+                      id: '1000',
+                      version: testVersion
+                    )
+
+                    
+                  }
                 }
             } //stage(deploy) closed bracket
             stage(promote) {
@@ -522,28 +612,32 @@ def call(Map pipelineParams) {
                                     status: 'COMPLETED',
                                     detailsURL: artifactoryLink
               }
-            } //stage(promote) closed bracket
-            stage(merge){
-              when { expression { env.BUILDID == '0' && released == 'true' && currentBuild.getCurrentResult() == 'SUCCESS'} }//perform the merge if the released is true and a build was Done
-              steps{
-                publishChecks name: 'Merge to Master',
-                              text: 'Merging -> manual status: in progress',
-                              status: 'IN_PROGRESS'
 
-                sh"""
-                  echo Checking out Main Branch in Docker Image Workspace
-                  cd ${pipelineParams['repositoryName']}
-                  git checkout main
-                  git pull
-                  git merge ${INFERRED_BRANCH_NAME}
-                  git push
-                 """
-
-				        publishChecks name: 'Merge to Master',
-                              status: 'COMPLETED'
-
+              //post action to comment on issue and revert the state
+              post{
+                success {
+                  //comment
+                  jiraComment(
+                      issueKey: "${env.ISSUE_KEY}",
+                      body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
+                    )
+                  //change deployment status
+                  step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11100', fieldValue: 'Deployed' ]);
+                }
+                failure {
+                  //change deployment status
+                  step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11100', fieldValue: 'Deployment Failed' ]);
+                  //transition status
+                  step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}" ]);
+                  //comment - after the transition to ensure there is no loop
+                  jiraComment(
+                      issueKey: "${env.ISSUE_KEY}",
+                      body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!"
+                    )
+                  //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
+                }
               }
-            }//stage(merge) closed bracket
+            } //stage(promote) closed bracket
             // stage(jiracomment) {
             //   when { expression { issueKey } }
             //   steps {
@@ -554,29 +648,6 @@ def call(Map pipelineParams) {
             //   }
             // } //stage(jiracomment) closed bracket
           } //stages body closed bracket
-          post{
-            success {
-              //comment
-              jiraComment(
-                  issueKey: "${env.ISSUE_KEY}",
-                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] succeded!"
-                )
-              //change deployment status
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11100', fieldValue: 'Deployed' ]);
-            }
-            failure {
-              //change deployment status
-              step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: "${env.ISSUE_KEY}"], fieldId: '11100', fieldValue: 'Deployment Failed' ]);
-              //transition status
-              step([$class: 'JiraIssueUpdateBuilder', jqlSearch: "issuekey = ${env.ISSUE_KEY}", workflowActionName: "${env.ORIG_STATUS}" ]);
-              //comment - after the transition to ensure there is no loop
-              jiraComment(
-                  issueKey: "${env.ISSUE_KEY}",
-                  body: "Build [${env.BUILD_DISPLAY_NAME}|${env.BUILD_URL}] has FAILED!"
-                )
-              //step([$class: 'IssueFieldUpdateStep', issueSelector: [$class: 'jql'], fieldId: 'status', fieldValue:  "Deployment Failed" ]);
-            }
-          }
         } //pipeline body closed bracket
 } //def body closed bracket
 
