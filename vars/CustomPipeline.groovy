@@ -458,6 +458,13 @@ def call(Map pipelineParams) {
                         url: "${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory",
                         credentialsId: 'artifact_registry'
                     )
+
+                    rtBuildInfo (
+                        captureEnv: true,
+                        includeEnvPatterns: ['*BUILD_*', '*DOCKER_*'],
+                        excludeEnvPatterns: ['*private*', 'internal-*'],
+                    )
+
                     rtUpload(
                         serverId: pipelineParams['artifactoryGenericRegistry_ID'],
                         spec: """{
@@ -470,6 +477,8 @@ def call(Map pipelineParams) {
                                 }"""
                     )
                     rtPublishBuildInfo (
+
+
                         serverId: pipelineParams['artifactoryGenericRegistry_ID']
                         //branch name
                         //docker image
@@ -525,8 +534,6 @@ def call(Map pipelineParams) {
                       id: '1000',
                       version: testVersion
                     )
-
-                    
                   }
                 }
             } //stage(deploy) closed bracket
