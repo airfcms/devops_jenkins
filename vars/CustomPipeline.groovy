@@ -498,41 +498,41 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
                 //post action to create issue and revert the state
-                post{
-                  failure {
-                    // def project = jiraGetProject(
-                    //   idOrKey: "${projectID}" //might know it from the commit merge message?
-                    // ).data.toDtring()
+                // post{
+                //   failure {
+                //     // def project = jiraGetProject(
+                //     //   idOrKey: "${projectID}" //might know it from the commit merge message?
+                //     // ).data.toDtring()
                     
-                    // def issueDescription = "\${BUILD_LOG, maxLines=50, escapeHtml=false}"
+                //     def issueDescription = "\${BUILD_LOG, maxLines=50, escapeHtml=false}"
 
-                    // //create issue
-                    // def failIssue = [fields: [ // id or key must present for project.
-                    //           project: [id: "${projectID}"],
-                    //           summary: "Release Build ${env.BUILD_ID} has failed",
-                    //           description: "${issueDescription}",
-                    //           // id or name must present for issueType.
-                    //           issuetype: [id: '3']]]
+                //     //create issue
+                //     def failIssue = [fields: [ // id or key must present for project.
+                //               project: [id: "${projectID}"],
+                //               summary: "Release Build ${env.BUILD_ID} has failed",
+                //               description: "${issueDescription}",
+                //               // id or name must present for issueType.
+                //               issuetype: [id: '3']]]
 
-                    // jiraNewIssue(
-                    //   issue: failIssue
-                    // )
+                //     jiraNewIssue(
+                //       issue: failIssue
+                //     )
 
-                    // //revert to unreleased
-                    // def testVersion = [ id: '10205', // need to change this to get the correct id from the version name
-                    //     name: "${env.FIX_VERSIONS}",
-                    //     archived: true,
-                    //     released: true,
-                    //     description: 'desc',
-                    //     project: 'TEST' ]
+                //     //revert to unreleased
+                //     def testVersion = [ id: '10205', // need to change this to get the correct id from the version name
+                //         name: "${env.FIX_VERSIONS}",
+                //         archived: true,
+                //         released: true,
+                //         description: 'desc',
+                //         project: 'TEST' ]
 
-                    // jiraEditVersion(
-                    //   id: '1000',
-                    //   version: testVersion
-                    // )
+                //     jiraEditVersion(
+                //       id: '1000',
+                //       version: testVersion
+                //     )
                     
-                  }
-                }
+                //   }
+                // }
             } //stage(deploy) closed bracket
             stage(promote) {
               when { expression { env.BUILDID > '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
