@@ -259,13 +259,13 @@ def call(Map pipelineParams) {
                               status: 'IN_PROGRESS'
                 //Link can't be literally here #########
                 
-                sh 'env | sort' //To check available global variables
+                //sh 'env | sort' //To check available global variables
 
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
 
                 sh"""
-                  if [${released} == "true"]
+                  if [${released} == "true"];
                   then
                     echo Checking out Main Branch in Docker Image Workspace for merge
                     cd ${pipelineParams['repositoryName']}
