@@ -264,6 +264,8 @@ def call(Map pipelineParams) {
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
 
+
+                //https://stackoverflow.com/questions/16862933/how-to-resolve-gits-not-something-we-can-merge-error/16862934#16862934
                 sh"""
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
@@ -394,6 +396,8 @@ def call(Map pipelineParams) {
                 sh"""
                   echo Pushing the code to complete the merge to Main
                   cd ${pipelineParams['repositoryName']}
+                  ls -la
+                  ls -la ../
                   git push
                  """
 
