@@ -424,7 +424,7 @@ def call(Map pipelineParams) {
                               description: "\${BUILD_LOG, maxLines=50, escapeHtml=false}",
                               // id or name must present for issueType.
                               issuetype: [id: '10004']]], //bug
-                              site: JIRA-AZURE
+                              site: 'JIRA-AZURE'
                   )
 
                   //revert to unreleased
@@ -436,7 +436,7 @@ def call(Map pipelineParams) {
                       archived: false,
                       released: false,
                       project: "${projectID}" ],
-                      site: JIRA-AZURE
+                      site: 'JIRA-AZURE'
                   )
                 }
               }
