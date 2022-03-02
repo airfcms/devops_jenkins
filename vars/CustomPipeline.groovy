@@ -265,7 +265,7 @@ def call(Map pipelineParams) {
                 sh 'rm -rf ${WORKSPACE}/*'
 
                 sh"""
-                  if [ ${released} == "true" ]
+                  if [ ${released} == 'true' ]
                   then
                     echo Checking out Main Branch in Docker Image Workspace for merge
                     cd ${pipelineParams['repositoryName']}
