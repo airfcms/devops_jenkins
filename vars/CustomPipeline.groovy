@@ -423,7 +423,8 @@ def call(Map pipelineParams) {
                               summary: "Release Build $env.BUILD_ID has failed",
                               description: "\${BUILD_LOG, maxLines=50, escapeHtml=false}",
                               // id or name must present for issueType.
-                              issuetype: [id: '10004']]] //bug
+                              issuetype: [id: '10004']]], //bug
+                              site: JIRA-AZURE
                   )
 
                   //revert to unreleased
@@ -434,7 +435,8 @@ def call(Map pipelineParams) {
                       name: "${env.FIX_VERSIONS}",
                       archived: false,
                       released: false,
-                      project: "${projectID}" ]
+                      project: "${projectID}" ],
+                      site: JIRA-AZURE
                   )
                 }
               }
