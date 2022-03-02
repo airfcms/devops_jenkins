@@ -268,7 +268,7 @@ def call(Map pipelineParams) {
                   git clone ${scmUrl}
                   cd ${pipelineParams['repositoryName']}
 
-                  if [ ${released} == 'true' ]
+                  if [ ${released} = 'true' ]
                   then
                     echo Checking out Main Branch in Docker Image Workspace for merge
                     git checkout main
