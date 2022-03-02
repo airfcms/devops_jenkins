@@ -65,7 +65,7 @@ def call(Map pipelineParams) {
                     //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*;;|;;;'+INFERRED_BRANCH_NAME+';true]'
                     // regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     // regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|0);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(?!false).*'
-                    regexpFilterText: 'feature/$fixVersions$changelogStatus$deploymentStatusfeature/$releaseVersion$released',
+                    regexpFilterText: 'release/$fixVersions$changelogStatus$deploymentStatusrelease/$releaseVersion$released',
                     regexpFilterExpression: INFERRED_BRANCH_NAME+'status(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+'true'
                     
                   )
@@ -87,7 +87,7 @@ def call(Map pipelineParams) {
                       env.FIX_VERSIONS = releaseVersion //passed the trigger and was defined in the Jira Release
                     } else {
                       println(">>> Fix/Release version not defined! Might be triggered manually or by commit. Going to get it from the Branch name.")
-                      env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, /^(feature\/)(.*)$/) ///^((feature|release)\/)(.*)$/ ; version ID from the branch name with prefix feature/
+                      env.FIX_VERSIONS = regexParser(INFERRED_BRANCH_NAME, /^(release\/)(.*)$/) ///^((release|release)\/)(.*)$/ ; version ID from the branch name with prefix release/
                     }
                   }catch(Exception e) {
                       env.FIX_VERSIONS = '0'
@@ -285,7 +285,7 @@ def call(Map pipelineParams) {
                           script: 'git show -s --format=%D $env.GIT_COMMIT',
                           returnStdout: true
                           )
-                          env.FIX_VERSIONS = regexParser(regexParser(commitBranches, /^.*,\s(.+)$/), /^(feature\/)(.*)$/)
+                          env.FIX_VERSIONS = regexParser(regexParser(commitBranches, /^.*,\s(.+)$/), /^(release\/)(.*)$/)
                         } else {
                           println("Manual build...")
                         }
