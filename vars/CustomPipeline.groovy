@@ -392,6 +392,7 @@ def call(Map pipelineParams) {
                 //checkout main, merge and build; 
                 sh"""
                   echo Pushing the code to complete the merge to Main
+                  cd ${pipelineParams['repositoryName']}
                   git push
                  """
 
