@@ -406,6 +406,10 @@ def call(Map pipelineParams) {
                   cd ${pipelineParams['repositoryName']}
                   ls -la
                   ls -la ../
+                  git checkout ${INFERRED_BRANCH_NAME}
+                  git checkout main
+                  git pull
+                  git merge ${INFERRED_BRANCH_NAME}
                   git push
                  """
 
