@@ -387,6 +387,14 @@ def call(Map pipelineParams) {
             }//stage(static analysis) closed bracket
             stage(merge){
               when { expression { env.BUILDID == '0' && released == 'true'} }//perform the merge if the released is true and a build was Done
+              agent{
+                docker {
+                  image pipelineParams['dockerImage']
+                  registryUrl pipelineParams['dockerRegistryUrl']
+                  registryCredentialsId 'docker-registry'
+                  reuseNode true
+                }
+              }
               steps{
                 publishChecks name: 'Merge to Master',
                               text: 'Merging -> manual status: in progress',
