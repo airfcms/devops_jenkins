@@ -265,15 +265,24 @@ def call(Map pipelineParams) {
                 sh 'rm -rf ${WORKSPACE}/*'
 
                 sh"""
-                  echo Cloning Repository in Docker Image Workspace
-                  git clone ${scmUrl}
-                  
-                  cd ${pipelineParams['repositoryName']}
+                  if [ ${INFERRED_BRANCH_NAME} == "main" ]
+                  then
+                    echo Checking out Main Branch in Docker Image Workspace for merge
+                    cd ${pipelineParams['repositoryName']}
+                    git checkout main
+                    git pull
+                    git merge ${INFERRED_BRANCH_NAME}
+                  else
+                    echo Cloning Repository in Docker Image Workspace
+                    git clone ${scmUrl}
+                    cd ${pipelineParams['repositoryName']}
+                    git checkout ${INFERRED_BRANCH_NAME}
+                  fi
 
-                  git checkout ${INFERRED_BRANCH_NAME}
                   cd ..
                   cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
                   make -C ${pipelineParams['cmakeBuildDir']}
+
                  """
 
                 //Get version from commit; not possible to get on the Init Stage
@@ -398,12 +407,9 @@ def call(Map pipelineParams) {
                               text: 'Merging -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
+                //checkout main, merge and build; 
                 sh"""
-                  echo Checking out Main Branch in Docker Image Workspace
-                  cd ${pipelineParams['repositoryName']}
-                  git checkout main
-                  git pull
-                  git merge ${INFERRED_BRANCH_NAME}
+                  echo Pushing the code to complete the merge to Main
                   git push
                  """
 
