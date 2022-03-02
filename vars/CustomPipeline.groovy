@@ -400,16 +400,10 @@ def call(Map pipelineParams) {
                               text: 'Merging -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
-                //checkout main, merge and build; 
+                //push the merge after a successful build; 
                 sh"""
                   echo Pushing the code to complete the merge to Main
                   cd ${pipelineParams['repositoryName']}
-                  ls -la
-                  ls -la ../
-                  git checkout ${INFERRED_BRANCH_NAME}
-                  git checkout main
-                  git pull
-                  git merge ${INFERRED_BRANCH_NAME}
                   git push
                  """
 
@@ -429,7 +423,7 @@ def call(Map pipelineParams) {
                               summary: "Release Build $env.BUILD_ID has failed",
                               description: "\${BUILD_LOG, maxLines=50, escapeHtml=false}",
                               // id or name must present for issueType.
-                              issuetype: [id: '3']]]
+                              issuetype: [id: '10004']]] //bug
                   )
 
                   //revert to unreleased
