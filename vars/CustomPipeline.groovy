@@ -271,6 +271,7 @@ def call(Map pipelineParams) {
                   if [ ${released} = 'true' ]
                   then
                     echo Checking out Main Branch in Docker Image Workspace for merge
+                    git checkout ${INFERRED_BRANCH_NAME}
                     git checkout main
                     git pull
                     git merge ${INFERRED_BRANCH_NAME}
