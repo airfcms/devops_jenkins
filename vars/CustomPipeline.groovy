@@ -265,7 +265,7 @@ def call(Map pipelineParams) {
                 sh 'rm -rf ${WORKSPACE}/*'
 
                 sh"""
-                  if [ ${INFERRED_BRANCH_NAME} == "main" ] && [${released} == "true"]
+                  if [${released} == "true"]
                   then
                     echo Checking out Main Branch in Docker Image Workspace for merge
                     cd ${pipelineParams['repositoryName']}
@@ -284,24 +284,6 @@ def call(Map pipelineParams) {
                   make -C ${pipelineParams['cmakeBuildDir']}
 
                  """
-
-                //Get version from commit; not possible to get on the Init Stage
-                script{
-                  try{
-                    if (INFERRED_BRANCH_NAME == "main"){
-                          //needs to get the previous branch
-                          def commitBranches = sh(
-                          script: 'git show -s --format=%D $env.GIT_COMMIT',
-                          returnStdout: true
-                          )
-                          env.FIX_VERSIONS = regexParser(regexParser(commitBranches, /^.*,\s(.+)$/), /^(release\/)(.*)$/)
-                        } else {
-                          println("Manual build...")
-                        }
-                  }catch(Exception e){
-                    println("Valid Release Branch not found!!! Either manual or git trigger (direct commit to main).")
-                  }
-                }
 
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
@@ -401,7 +383,7 @@ def call(Map pipelineParams) {
 
             }//stage(static analysis) closed bracket
             stage(merge){
-              when { expression { env.BUILDID == '0' && released == 'true' && currentBuild.getCurrentResult() == 'SUCCESS'} }//perform the merge if the released is true and a build was Done
+              when { expression { env.BUILDID == '0' && released == 'true'} }//perform the merge if the released is true and a build was Done
               steps{
                 publishChecks name: 'Merge to Master',
                               text: 'Merging -> manual status: in progress',
