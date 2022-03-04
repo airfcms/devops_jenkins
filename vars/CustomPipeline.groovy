@@ -403,9 +403,11 @@ def call(Map pipelineParams) {
                 //push the merge after a successful build; 
                 sh"""
                   echo Pushing the code to complete the merge to Main
-                  cd ${pipelineParams['repositoryName']}
-                  git push
                  """
+
+                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
+                                sh "cd ${pipelineParams['repositoryName']} && git push"
+                              }
 
 				        publishChecks name: 'Merge to Master',
                               status: 'COMPLETED'
@@ -581,7 +583,7 @@ def call(Map pipelineParams) {
                 )
 
                 //Delete the artifact from the origin
-                script {
+                script { 
                   curlstr = "curl -k -X DELETE ${pipelineParams['artifactoryGenericRegistry_URL']}/artifactory/${env.ORIG_REPO_PATH}/${pipelineParams['repositoryName']}/${env.BUILDID}"
 
                   def deleteResponse = sh(
