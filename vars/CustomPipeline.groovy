@@ -59,14 +59,14 @@ def call(Map pipelineParams) {
 
                     silentResponse: false,
 
-                    regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
-                    regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
+                    //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus',
+                    //regexpFilterExpression: INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*'
                     //regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     //regexpFilterExpression: '['+INFERRED_BRANCH_NAME+';status;(?!.*Deployment Failed).*;;|;;;'+INFERRED_BRANCH_NAME+';true]'
                     // regexpFilterText: 'feature/$fixVersions;$changelogStatus;$deploymentStatus;feature/$releaseVersion;$released',
                     // regexpFilterExpression: '('+INFERRED_BRANCH_NAME+'|feature/0);(status|0);(?!.*Deployment Failed).*;('+INFERRED_BRANCH_NAME+'|feature/0);(?!false).*'
-                    //regexpFilterText: 'release/$fixVersions$changelogStatus$deploymentStatusrelease/$releaseVersion$released',
-                    //regexpFilterExpression: INFERRED_BRANCH_NAME+'status(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+'true'
+                    regexpFilterText: 'release/$fixVersions$changelogStatus$deploymentStatusrelease/$releaseVersion$released',
+                    regexpFilterExpression: INFERRED_BRANCH_NAME+'status(?!.*Deployment Failed).*|'+INFERRED_BRANCH_NAME+'true'
                     
                   )
                 }
