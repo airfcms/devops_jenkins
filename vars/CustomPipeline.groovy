@@ -418,7 +418,7 @@ def call(Map pipelineParams) {
               post{
                 always {
                     script {
-                        def log = "${BUILD_LOG, maxLines=50, escapeHtml=false}"
+                        println("${BUILD_LOG}")
                     }
                 }
                 failure {
