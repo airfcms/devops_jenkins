@@ -405,7 +405,7 @@ def call(Map pipelineParams) {
                   echo Pushing the code to complete the merge to Main
                  """
 
-                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
+                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms', gitToolName: 'git-tool')]) {
                                 sh "cd ${pipelineParams['repositoryName']} && git push"
                               }
 
@@ -434,7 +434,6 @@ def call(Map pipelineParams) {
                   jiraEditVersion(
                     id: "${releaseVersionID}",
                     version: [ id: "${releaseVersionID}", // need to change this to get the correct id from the version name
-                      name: "${env.FIX_VERSIONS}",
                       archived: false,
                       released: false,
                       project: "${projectID}" ],
@@ -503,41 +502,34 @@ def call(Map pipelineParams) {
                                   detailsURL: artifactoryLink
                 }
                 //post action to create issue and revert the state
-                // post{
-                //   failure {
-                //     // def project = jiraGetProject(
-                //     //   idOrKey: "${projectID}" //might know it from the commit merge message?
-                //     // ).data.toDtring()
-                    
-                //     def issueDescription = "\${BUILD_LOG, maxLines=50, escapeHtml=false}"
+                post{
+                  failure {
+                    // def project = jiraGetProject(
+                    //   idOrKey: "${projectID}"
+                    // ).data.toDtring()
 
-                //     //create issue
-                //     def failIssue = [fields: [ // id or key must present for project.
-                //               project: [id: "${projectID}"],
-                //               summary: "Release Build ${env.BUILD_ID} has failed",
-                //               description: "${issueDescription}",
-                //               // id or name must present for issueType.
-                //               issuetype: [id: '3']]]
+                    jiraNewIssue(
+                      issue: [fields: [ // id or key must present for project.
+                                project: [id: "${projectID}"],
+                                summary: "Release Build $env.BUILD_ID has failed",
+                                description: "\${BUILD_LOG, maxLines=50, escapeHtml=false}",
+                                // id or name must present for issueType.
+                                issuetype: [id: '10004']]], //bug
+                                site: 'JIRA-AZURE'
+                    )
 
-                //     jiraNewIssue(
-                //       issue: failIssue
-                //     )
+                    //revert to unreleased
 
-                //     //revert to unreleased
-                //     def testVersion = [ id: '10205', // need to change this to get the correct id from the version name
-                //         name: "${env.FIX_VERSIONS}",
-                //         archived: true,
-                //         released: true,
-                //         description: 'desc',
-                //         project: 'TEST' ]
-
-                //     jiraEditVersion(
-                //       id: '1000',
-                //       version: testVersion
-                //     )
-                    
-                //   }
-                // }
+                    jiraEditVersion(
+                      id: "${releaseVersionID}",
+                      version: [ id: "${releaseVersionID}", // need to change this to get the correct id from the version name
+                        archived: false,
+                        released: false,
+                        project: "${projectID}" ],
+                        site: 'JIRA-AZURE'
+                    )
+                  }
+                }
             } //stage(deploy) closed bracket
             stage(promote) {
               when { expression { env.BUILDID > '0' && env.ORIG_REPO_PATH != env.REPO_PATH } }//skip build stage if build ID defined in Jira
