@@ -405,9 +405,9 @@ def call(Map pipelineParams) {
                   echo Pushing the code to complete the merge to Main
                  """
 
-                //  withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
-                //                 sh "cd ${pipelineParams['repositoryName']} && git push"
-                //               }
+                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
+                                sh "cd ${pipelineParams['repositoryName']} && git push"
+                              }
 
 				        publishChecks name: 'Merge to Master',
                               status: 'COMPLETED'
