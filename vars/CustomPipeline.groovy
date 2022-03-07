@@ -416,11 +416,6 @@ def call(Map pipelineParams) {
               }
               //post action to create issue and revert the state
               post{
-                always {
-                    script {
-                        println("${BUILD_LOG}")
-                    }
-                }
                 failure {
                   // def project = jiraGetProject(
                   //   idOrKey: "${projectID}"
@@ -431,7 +426,8 @@ def call(Map pipelineParams) {
                     issue: [fields: [ // id or key must present for project.
                               project: [id: "${projectID}"],
                               summary: "Release Build $env.BUILD_ID has failed",
-                              description: "${log}",
+                              description: "Release Build $env.BUILD_ID has failed",
+                              priority: "High"
                               // id or name must present for issueType.
                               issuetype: [id: '10004']]], //bug
                               site: 'JIRA-AZURE'
