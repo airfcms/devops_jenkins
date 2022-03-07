@@ -266,27 +266,29 @@ def call(Map pipelineParams) {
 
 
                 //https://stackoverflow.com/questions/16862933/how-to-resolve-gits-not-something-we-can-merge-error/16862934#16862934
-                sh"""
-                  git clone ${scmUrl}
-                  cd ${pipelineParams['repositoryName']}
 
-                  if [ ${released} = 'true' ]
-                  then
-                    echo Checking out Main Branch in Docker Image Workspace for merge
-                    git checkout ${INFERRED_BRANCH_NAME}
-                    git checkout main
-                    git pull
-                    git merge ${INFERRED_BRANCH_NAME}
-                  else
-                    echo Cloning Repository in Docker Image Workspace
-                    git checkout ${INFERRED_BRANCH_NAME}
-                  fi
+                withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git')]) {
+                                sh"""
+                                  git clone ${scmUrl}
+                                  cd ${pipelineParams['repositoryName']}
 
-                  cd ..
-                  cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
-                  make -C ${pipelineParams['cmakeBuildDir']}
+                                  if [ ${released} = 'true' ]
+                                  then
+                                    echo Checking out Main Branch in Docker Image Workspace for merge
+                                    git checkout ${INFERRED_BRANCH_NAME}
+                                    git checkout main
+                                    git pull
+                                    git merge ${INFERRED_BRANCH_NAME}
+                                  else
+                                    echo Cloning Repository in Docker Image Workspace
+                                    git checkout ${INFERRED_BRANCH_NAME}
+                                  fi
 
-                 """
+                                  cd ..
+                                  cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
+                                  make -C ${pipelineParams['cmakeBuildDir']}
+                                """
+                              }
 
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
