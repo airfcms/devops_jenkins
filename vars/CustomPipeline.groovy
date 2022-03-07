@@ -405,7 +405,7 @@ def call(Map pipelineParams) {
                   echo Pushing the code to complete the merge to Main
                  """
 
-                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms', gitToolName: 'git-tool')]) {
+                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git')]) {
                                 sh "cd ${pipelineParams['repositoryName']} && git push"
                               }
 
