@@ -400,14 +400,14 @@ def call(Map pipelineParams) {
                               text: 'Merging -> manual status: in progress',
                               status: 'IN_PROGRESS'
 
-                //push the merge after a successful build; 
+                //push the merge after a successful build;
                 sh"""
                   echo Pushing the code to complete the merge to Main
                  """
 
-                 withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
-                                sh "cd ${pipelineParams['repositoryName']} && git push"
-                              }
+                //  withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git-tool')]) {
+                //                 sh "cd ${pipelineParams['repositoryName']} && git push"
+                //               }
 
 				        publishChecks name: 'Merge to Master',
                               status: 'COMPLETED'
