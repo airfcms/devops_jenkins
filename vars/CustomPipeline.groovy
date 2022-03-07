@@ -425,7 +425,7 @@ def call(Map pipelineParams) {
                     issue: [fields: [ // id or key must present for project.
                               project: [id: "${projectID}"],
                               summary: "Release Build $env.BUILD_ID has failed",
-                              description: '''${BUILD_LOG, maxLines=50, escapeHtml=false}''',
+                              description: ${BUILD_LOG, maxLines=50, escapeHtml=false},
                               // id or name must present for issueType.
                               issuetype: [id: '10004']]], //bug
                               site: 'JIRA-AZURE'
