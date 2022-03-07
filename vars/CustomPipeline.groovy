@@ -427,7 +427,7 @@ def call(Map pipelineParams) {
                               project: [id: "${projectID}"],
                               summary: "Release Build $env.BUILD_ID has failed",
                               description: "Release Build $env.BUILD_ID has failed",
-                              priority: "High"
+                              priority: "High",
                               // id or name must present for issueType.
                               issuetype: [id: '10004']]], //bug
                               site: 'JIRA-AZURE'
