@@ -408,7 +408,7 @@ def call(Map pipelineParams) {
                  """
 
                  withCredentials([gitUsernamePassword(credentialsId: 'github-airfcms-user-pwd', gitToolName: 'git')]) {
-                                sh "cd ${pipelineParams['repositoryName']} && git pus"
+                                sh "cd ${pipelineParams['repositoryName']} && git push"
                               }
 
 				        publishChecks name: 'Merge to Master',
