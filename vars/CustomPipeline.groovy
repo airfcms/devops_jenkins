@@ -278,6 +278,7 @@ def call(Map pipelineParams) {
                                     git checkout ${INFERRED_BRANCH_NAME}
                                     git checkout main
                                     git pull
+                                    git push
                                     git merge ${INFERRED_BRANCH_NAME}
                                   else
                                     echo Cloning Repository in Docker Image Workspace
