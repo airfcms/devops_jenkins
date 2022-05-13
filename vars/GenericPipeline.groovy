@@ -4,34 +4,90 @@ import io.jenkins.plugins.checks.github.GitHubChecksPublisherFactory;
 
 def call(Map pipelineParams) {
 
-  scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+    scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
 
-  sonarDashboard = "/dashboard?id="
-  sonarReportLink = ""
-  String artifactoryLink = ""
+    sonarDashboard = "/dashboard?id="
+    sonarReportLink = ""
+    String artifactoryLink = ""
+    String cmpCheckStatus = ""
 
-	INFERRED_BRANCH_NAME = env.BRANCH_NAME
+    INFERRED_BRANCH_NAME = env.BRANCH_NAME
 
-	if (env.CHANGE_ID)
-  {
-		INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
-	}
+    if (env.CHANGE_ID)
+    {
+        INFERRED_BRANCH_NAME = env.CHANGE_BRANCH
+    }
 
     pipeline {
         agent any
-          stages {
+          stages {          
+            
+            //
+            // CMP Check
+            //
             stage('cmp check'){
-                    when {
-                        expression { pipelineParams['checkCmp'] == true }
-                    }
-			        steps {
-				        publishChecks name: 'CMP Check'
+                when {
+                    expression { pipelineParams['checkCmp'] == true }
+                }
+                options {
+                    timeout(time: 5, unit: "MINUTES")
+                }
+                steps {
+                    publishChecks name: 'CMP Check'
+                    
+                    script {
+                        // Resolve dependencies
+                        def user_id = sh(returnStdout: true, script: 'id -u').trim()
                         
-                        sh 'env | sort' //To check available global variables
-                        sh 'ls'
-			        }
+                        if (user_id == "0") {
+                            println("Installing dependencies")
+                            sh '''
+                                apt update
+                                apt install -y python3 python3-pip
+                                pip3 install gitpython xmlschema requests lxml colorama
+                            '''
+                        } else {
+                            println("Executing as non-root user ($user_id), skipping dependencies install.")
+                        }
+                    }
+                    
+                    // Update submodules (workaround)
+                    withCredentials([sshUserPrivateKey(credentialsId: 'github_airfcmssvc', keyFileVariable: 'ssh_key')]){
+                        sh '''
+                            GIT_SSH_COMMAND="ssh -i $ssh_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git submodule init
+                            GIT_SSH_COMMAND="ssh -i $ssh_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git submodule update
+                        '''
+                    }
+                    
+                    // Check CMP                    
+                    script {
+                        def cmds = ["python3 cmpchecker/cmpcheck.py --cmp-xsd cmpchecker/cmp_schema.xsd --cmp-xml cmp_val_1/cmp_config.xml cmp_val_2/cmp_config.xml cmp_val_3/cmp_config.xml"]
+   
+                        try {
+                            cmds.each {
+                                def code = sh(script: it, returnStatus: true)
+                                println("cmd: [$code] $it")
+                                
+                                if (code == 1){
+                                    println("CMP Validation exit with code $code, marking build as: UNSTABLE")
+                                    cmpCheckStatus = 'UNSTABLE'
+                                }
+                                else if (code == 2){
+                                    println("CMP Validation exit with code $code, marking build as: FAILURE")
+                                    cmpCheckStatus = 'FAILURE'
+                                }
+                            }
+                        }
+                        catch (err) {                                        
+                            unstable(message: "CMP Check exited with code != 0")
+                        }
+                    }
+                }
             }
           
+            //
+            // Build
+            //
             stage('build') {
               agent{
                 docker {
@@ -51,36 +107,52 @@ def call(Map pipelineParams) {
                 //Work around because the declarative sintax bugs with deleteDir() and cleanWS()
                 sh 'rm -rf ${WORKSPACE}/*'
 
-                sh"""
-                  echo Cloning Repository in Docker Image Workspace
-                  git clone ${scmUrl}
-                  cd ${pipelineParams['repositoryName']}
-
-                  git checkout ${INFERRED_BRANCH_NAME}
-                  cd ..
-                  cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
-                  make -C ${pipelineParams['cmakeBuildDir']}
-                 """
+                withCredentials([sshUserPrivateKey(credentialsId: 'github_airfcmssvc', keyFileVariable: 'ssh_key')]){
+                    sh"""
+                      echo Cloning Repository in Docker Image Workspace
+                      
+                      GIT_SSH_COMMAND="ssh -i $ssh_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git clone -b ${INFERRED_BRANCH_NAME} ${scmUrl}
+                                            
+                      cmake -S ${pipelineParams['repositoryName']} -B ${pipelineParams['cmakeBuildDir']}
+                      make -C ${pipelineParams['cmakeBuildDir']}
+                     """
+                 }
                 //sh 'sleep 60' //For testing but couldn't see the changes...
 				        publishChecks name: 'Build',
                               status: 'COMPLETED'
              }
             } //stage(build) closed bracket
+            
+            //
+            // Unit Testnig
+            //
             stage('unit testing'){
-			        steps {
-				        publishChecks name: 'Unit Testing'
-			        }
+                steps {
+                    publishChecks name: 'Unit Testing'
+                }
             }
+            
+            //
+            // Integration Testing
+            //
             stage('sw integration testing') {
-			        steps {
-				        publishChecks name: 'Integration Testing'
-			        }
+                steps {
+                    publishChecks name: 'Integration Testing'
+                }
             }
+            
+            //
+            // HW/SW Integration Testing
+            //
             stage('hw/sw integration testing') {
-			        steps {
-			          publishChecks name: 'HW/SW Integration Testing'
-			        }
+                steps {
+                  publishChecks name: 'HW/SW Integration Testing'
+                }
             }
+            
+            //
+            // Static Analysis
+            //
             stage('static analysis') {
                 environment {
                   scannerHome = tool 'sonnar_scanner'
@@ -110,6 +182,10 @@ def call(Map pipelineParams) {
                                 detailsURL: sonarReportLink
                 }
             } //stage(static analysis) closed bracket
+            
+            //
+            // Deploy
+            //
             stage('deploy') {
               steps{
                     publishChecks name: 'Deployment',
@@ -158,6 +234,10 @@ def call(Map pipelineParams) {
                                   //annotations: [[path : "hello_world/src/main.*", startLine: 1, endLine: 5, message: 'testing annotations in message', title: 'testing annotations in title' ]]
                 }
             } //stage(deploy) closed bracket
+            
+            //
+            // Promote
+            //
             stage(promote){
               steps{
                 rtServer (
@@ -194,6 +274,33 @@ def call(Map pipelineParams) {
                 )
               }
             } //stage(promote) closed bracket
+            
+            //
+            // CMP Validation
+            //
+            stage('cmp_validation'){
+                when {
+                    expression { pipelineParams['checkCmp'] == true }
+                }
+                
+                // The build will be marked as FAILURE or UNSTABLE due to CMP check errors only at the end to avoid an
+                // early pipeline termination.
+                steps {
+                    publishChecks name: 'CMP Validation'
+
+                    script {
+                        if (currentBuild.result != "FAILURE") {
+                            if (cmpCheckStatus == 'UNSTABLE'){
+                                currentBuild.result = 'UNSTABLE'
+                            }
+                            else if (cmpCheckStatus == 'FAILURE'){
+                                currentBuild.result = 'FAILURE'
+                            }
+                        }
+                    }
+                }
+            }
+            
           } //stages body closed bracket
         } //pipeline body closed bracket
 } //def body closed bracket
