@@ -20,6 +20,18 @@ def call(Map pipelineParams) {
     pipeline {
         agent any
           stages {
+            stage('cmp check'){
+                    when {
+                        expression { pipelineParams['checkCmp'] == true }
+                    }
+			        steps {
+				        publishChecks name: 'CMP Check'
+                        
+                        sh 'env | sort' //To check available global variables
+                        sh 'ls'
+			        }
+            }
+          
             stage('build') {
               agent{
                 docker {
