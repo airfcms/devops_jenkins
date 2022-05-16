@@ -66,16 +66,18 @@ def call(Map pipelineParams) {
                         try {
                             cmds.each {
                                 def code = sh(script: it, returnStatus: true)
-                                println("cmd: [$code] $it")
                                 
-                                if (code == 1){
-                                    println("CMP Validation exit with code $code, marking build as: UNSTABLE")
-                                    cmpCheckStatus = 'UNSTABLE'
-                                }
-                                else if (code == 2){
-                                    println("CMP Validation exit with code $code, marking build as: FAILURE")
-                                    cmpCheckStatus = 'FAILURE'
-                                }
+                                if (code != 0) {
+                                    println("CMP Check exit with code $code")
+                                    unstable(message: "CMP Check exited with code $code != 0")
+
+                                    if (code == 1){
+                                        cmpCheckStatus = 'UNSTABLE'
+                                    }
+                                    else if (code == 2){
+                                        cmpCheckStatus = 'FAILURE'
+                                    }
+                                }                                
                             }
                         }
                         catch (err) {                                        
@@ -278,9 +280,9 @@ def call(Map pipelineParams) {
             //
             // CMP Validation
             //
-            stage('cmp_validation'){
+            stage('cmp validation'){
                 when {
-                    expression { pipelineParams['checkCmp'] == true }
+                    expression { checkCmp == true }
                 }
                 
                 // The build will be marked as FAILURE or UNSTABLE due to CMP check errors only at the end to avoid an
@@ -289,11 +291,14 @@ def call(Map pipelineParams) {
                     publishChecks name: 'CMP Validation'
 
                     script {
+                        echo "Build status: " + currentBuild.result
                         if (currentBuild.result != "FAILURE") {
                             if (cmpCheckStatus == 'UNSTABLE'){
+                                echo "CMP Check finished with errors, marking build as UNSTABLE"
                                 currentBuild.result = 'UNSTABLE'
                             }
                             else if (cmpCheckStatus == 'FAILURE'){
+                                echo "CMP Check finished with errors, marking build as FAILURE"
                                 currentBuild.result = 'FAILURE'
                             }
                         }
