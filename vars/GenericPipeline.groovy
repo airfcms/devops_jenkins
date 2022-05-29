@@ -282,7 +282,7 @@ def call(Map pipelineParams) {
             //
             stage('cmp validation'){
                 when {
-                    expression { checkCmp == true }
+                    expression { pipelineParams['checkCmp'] == true }
                 }
                 
                 // The build will be marked as FAILURE or UNSTABLE due to CMP check errors only at the end to avoid an
